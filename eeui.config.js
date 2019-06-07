@@ -29,13 +29,13 @@ module.exports = {
     umeng: {
         ios: {
             enabled: true,
-            appKey: "5c79d535203657751400106e",
+            appKey: "5cfa398c3fc1959f7b000e9b",
             channel: "eeuidemo",
         },
         android: {
             enabled: true,
-            appKey: "5ab9d815f29d980730000365",
-            messageSecret: "0f6e074e1443674fc7ba4327bf93939a",
+            appKey: "5cfa3958570df3a0e8001015",
+            messageSecret: "49d0bac141dc8dc6df35d210a9c79289",
             channel: "eeuidemo",
         }
     },
