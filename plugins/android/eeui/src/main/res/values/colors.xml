@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="eeui_white">#FFFFFF</color>
+    <color name="eeui_black">#000000</color>
+    <color name="eeui_transparent">#00000000</color>
+    <color name="eeui_line">#888888</color>
+    <color name="eeui_red">#ff0000</color>
+
+    <color name="eeui_background">#ffffff</color>
+    <color name="eeui_242424">#242424</color>
+    <color name="eeui_c6c6c6">#c6c6c6</color>
+    <color name="eeui_f2f2f2">#f2f2f2</color>
+
+    <color name="eeui_navbar">#3EB4FF</color>
+
+</resources>

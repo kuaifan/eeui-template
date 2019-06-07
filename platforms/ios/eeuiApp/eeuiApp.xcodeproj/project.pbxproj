@@ -1,0 +1,812 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		532E406F594B06E77A17129D /* libPods-eeuiApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF4738D867E50FB2D943A92A /* libPods-eeuiApp.a */; };
+		B210031C2191D6C5001F2CBA /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B210031B2191D6C5001F2CBA /* CoreText.framework */; };
+		B210031E2191D703001F2CBA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B210031D2191D703001F2CBA /* Foundation.framework */; };
+		B21003202191D727001F2CBA /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B210031F2191D727001F2CBA /* CoreMotion.framework */; };
+		B21356352124045E00EDD991 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B21356342124045E00EDD991 /* AppDelegate.m */; };
+		B21356382124045E00EDD991 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B21356372124045E00EDD991 /* ViewController.m */; };
+		B213563B2124045E00EDD991 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B21356392124045E00EDD991 /* Main.storyboard */; };
+		B213563D2124046000EDD991 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B213563C2124046000EDD991 /* Assets.xcassets */; };
+		B21356402124046000EDD991 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B213563E2124046000EDD991 /* LaunchScreen.storyboard */; };
+		B21356432124046000EDD991 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B21356422124046000EDD991 /* main.m */; };
+		B2135A7E2124058300EDD991 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A7D2124058300EDD991 /* AVFoundation.framework */; };
+		B2135A802124059300EDD991 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A7F2124059300EDD991 /* AssetsLibrary.framework */; };
+		B2135A822124059C00EDD991 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A812124059C00EDD991 /* AudioToolbox.framework */; };
+		B2135A84212405AC00EDD991 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A83212405AC00EDD991 /* CFNetwork.framework */; };
+		B2135A86212405B800EDD991 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A85212405B800EDD991 /* CoreAudio.framework */; };
+		B2135A88212405C300EDD991 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A87212405C300EDD991 /* CoreGraphics.framework */; };
+		B2135A8A212405F300EDD991 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A89212405F300EDD991 /* CoreLocation.framework */; };
+		B2135A8C212405FA00EDD991 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A8B212405FA00EDD991 /* CoreMedia.framework */; };
+		B2135A8E2124065600EDD991 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A8D2124065600EDD991 /* CoreTelephony.framework */; };
+		B2135A902124066800EDD991 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A8F2124066800EDD991 /* CoreVideo.framework */; };
+		B2135A922124067200EDD991 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A912124067200EDD991 /* ImageIO.framework */; };
+		B2135A952124067F00EDD991 /* libc++abi.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A932124067F00EDD991 /* libc++abi.tbd */; };
+		B2135A962124067F00EDD991 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A942124067F00EDD991 /* libc++.tbd */; };
+		B2135A982124068900EDD991 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A972124068900EDD991 /* libsqlite3.tbd */; };
+		B2135A9A212406A000EDD991 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A99212406A000EDD991 /* libstdc++.tbd */; };
+		B2135A9C212406B000EDD991 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A9B212406B000EDD991 /* libxml2.tbd */; };
+		B2135A9E212406BB00EDD991 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A9D212406BB00EDD991 /* libz.tbd */; };
+		B2135AA0212406C200EDD991 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135A9F212406C200EDD991 /* MapKit.framework */; };
+		B2135AA2212406CC00EDD991 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135AA1212406CC00EDD991 /* OpenGLES.framework */; };
+		B2135AA4212406D500EDD991 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135AA3212406D500EDD991 /* QuartzCore.framework */; };
+		B2135AA6212406DD00EDD991 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135AA5212406DD00EDD991 /* SystemConfiguration.framework */; };
+		B2135AA8212406E800EDD991 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135AA7212406E800EDD991 /* UIKit.framework */; };
+		B2135AAA212406EF00EDD991 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135AA9212406EF00EDD991 /* Photos.framework */; };
+		B2135AAC212406F800EDD991 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2135AAB212406F800EDD991 /* SafariServices.framework */; };
+		B25A71EA21257A0500AA0AB9 /* bundlejs in Resources */ = {isa = PBXBuildFile; fileRef = B25A71E921257A0500AA0AB9 /* bundlejs */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B21356492124046000EDD991 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B21356282124045E00EDD991 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B213562F2124045E00EDD991;
+			remoteInfo = eeuiApp;
+		};
+		B21356542124046000EDD991 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B21356282124045E00EDD991 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B213562F2124045E00EDD991;
+			remoteInfo = eeuiApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		21618EA4FE8A980870624E1A /* libPods-eeuiAppUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-eeuiAppUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B7109449833C8668CA8EA08 /* Pods-eeuiApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eeuiApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-eeuiApp/Pods-eeuiApp.debug.xcconfig"; sourceTree = "<group>"; };
+		B21003132191CB27001F2CBA /* AlipaySDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = AlipaySDK.bundle; path = ../../../../../Downloads/AlipaySDK_No_UTDID/IOS/AlipaySDK.bundle; sourceTree = "<group>"; };
+		B21003142191CB27001F2CBA /* AlipaySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlipaySDK.framework; path = ../../../../../Downloads/AlipaySDK_No_UTDID/IOS/AlipaySDK.framework; sourceTree = "<group>"; };
+		B21003172191CBB3001F2CBA /* AlipaySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlipaySDK.framework; path = ../../../plugins/ios/AlipaySDK.framework; sourceTree = "<group>"; };
+		B21003192191D5D7001F2CBA /* AlipaySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlipaySDK.framework; path = eeuiApp/eeui/Utility/Alipay/AlipaySDK.framework; sourceTree = "<group>"; };
+		B210031B2191D6C5001F2CBA /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		B210031D2191D703001F2CBA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B210031F2191D727001F2CBA /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		B210034521924EEF001F2CBA /* libUMSPosPayOnly.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libUMSPosPayOnly.a; path = eeuiApp/eeui/Utility/Pay/Union/libUMSPosPayOnly.a; sourceTree = "<group>"; };
+		B21356302124045E00EDD991 /* eeuiApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eeuiApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B21356332124045E00EDD991 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		B21356342124045E00EDD991 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B21356362124045E00EDD991 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		B21356372124045E00EDD991 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		B213563A2124045E00EDD991 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B213563C2124046000EDD991 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B213563F2124046000EDD991 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B21356412124046000EDD991 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B21356422124046000EDD991 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B21356482124046000EDD991 /* eeuiAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eeuiAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B21356532124046000EDD991 /* eeuiAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = eeuiAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2135A7D2124058300EDD991 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B2135A7F2124059300EDD991 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		B2135A812124059C00EDD991 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		B2135A83212405AC00EDD991 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		B2135A85212405B800EDD991 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		B2135A87212405C300EDD991 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		B2135A89212405F300EDD991 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		B2135A8B212405FA00EDD991 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		B2135A8D2124065600EDD991 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		B2135A8F2124066800EDD991 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		B2135A912124067200EDD991 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		B2135A932124067F00EDD991 /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
+		B2135A942124067F00EDD991 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		B2135A972124068900EDD991 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		B2135A99212406A000EDD991 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
+		B2135A9B212406B000EDD991 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		B2135A9D212406BB00EDD991 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		B2135A9F212406C200EDD991 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		B2135AA1212406CC00EDD991 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		B2135AA3212406D500EDD991 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		B2135AA5212406DD00EDD991 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		B2135AA7212406E800EDD991 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		B2135AA9212406EF00EDD991 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		B2135AAB212406F800EDD991 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
+		B25A71E921257A0500AA0AB9 /* bundlejs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bundlejs; sourceTree = "<group>"; };
+		B2FF80F222290D1800DB1E47 /* eeuiApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = eeuiApp.entitlements; sourceTree = "<group>"; };
+		B3954AB0077F67222589658D /* libPods-eeuiAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-eeuiAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF4738D867E50FB2D943A92A /* libPods-eeuiApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-eeuiApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8F4A873379E80A140D7BD31 /* Pods-eeuiApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eeuiApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-eeuiApp/Pods-eeuiApp.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B213562D2124045E00EDD991 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B21003202191D727001F2CBA /* CoreMotion.framework in Frameworks */,
+				B210031E2191D703001F2CBA /* Foundation.framework in Frameworks */,
+				B2135A88212405C300EDD991 /* CoreGraphics.framework in Frameworks */,
+				B210031C2191D6C5001F2CBA /* CoreText.framework in Frameworks */,
+				B2135AAC212406F800EDD991 /* SafariServices.framework in Frameworks */,
+				B2135AAA212406EF00EDD991 /* Photos.framework in Frameworks */,
+				B2135AA8212406E800EDD991 /* UIKit.framework in Frameworks */,
+				B2135AA6212406DD00EDD991 /* SystemConfiguration.framework in Frameworks */,
+				B2135AA4212406D500EDD991 /* QuartzCore.framework in Frameworks */,
+				B2135AA2212406CC00EDD991 /* OpenGLES.framework in Frameworks */,
+				B2135AA0212406C200EDD991 /* MapKit.framework in Frameworks */,
+				B2135A9E212406BB00EDD991 /* libz.tbd in Frameworks */,
+				B2135A9C212406B000EDD991 /* libxml2.tbd in Frameworks */,
+				B2135A9A212406A000EDD991 /* libstdc++.tbd in Frameworks */,
+				B2135A982124068900EDD991 /* libsqlite3.tbd in Frameworks */,
+				B2135A952124067F00EDD991 /* libc++abi.tbd in Frameworks */,
+				B2135A962124067F00EDD991 /* libc++.tbd in Frameworks */,
+				B2135A922124067200EDD991 /* ImageIO.framework in Frameworks */,
+				B2135A902124066800EDD991 /* CoreVideo.framework in Frameworks */,
+				B2135A8E2124065600EDD991 /* CoreTelephony.framework in Frameworks */,
+				B2135A8C212405FA00EDD991 /* CoreMedia.framework in Frameworks */,
+				B2135A8A212405F300EDD991 /* CoreLocation.framework in Frameworks */,
+				B2135A86212405B800EDD991 /* CoreAudio.framework in Frameworks */,
+				B2135A84212405AC00EDD991 /* CFNetwork.framework in Frameworks */,
+				B2135A822124059C00EDD991 /* AudioToolbox.framework in Frameworks */,
+				B2135A802124059300EDD991 /* AssetsLibrary.framework in Frameworks */,
+				B2135A7E2124058300EDD991 /* AVFoundation.framework in Frameworks */,
+				532E406F594B06E77A17129D /* libPods-eeuiApp.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B21356452124046000EDD991 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B21356502124046000EDD991 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AE4D0F9343A758F3C54EA5E0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				5B7109449833C8668CA8EA08 /* Pods-eeuiApp.debug.xcconfig */,
+				D8F4A873379E80A140D7BD31 /* Pods-eeuiApp.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		B21356272124045E00EDD991 = {
+			isa = PBXGroup;
+			children = (
+				B21356322124045E00EDD991 /* eeuiApp */,
+				AE4D0F9343A758F3C54EA5E0 /* Pods */,
+				B21356312124045E00EDD991 /* Products */,
+				B25A71EB21257A0900AA0AB9 /* resource */,
+				BEB6946D3D54EEE58CEAD551 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B21356312124045E00EDD991 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B21356302124045E00EDD991 /* eeuiApp.app */,
+				B21356482124046000EDD991 /* eeuiAppTests.xctest */,
+				B21356532124046000EDD991 /* eeuiAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B21356322124045E00EDD991 /* eeuiApp */ = {
+			isa = PBXGroup;
+			children = (
+				B21356332124045E00EDD991 /* AppDelegate.h */,
+				B21356342124045E00EDD991 /* AppDelegate.m */,
+				B213563C2124046000EDD991 /* Assets.xcassets */,
+				B2FF80F222290D1800DB1E47 /* eeuiApp.entitlements */,
+				B21356412124046000EDD991 /* Info.plist */,
+				B213563E2124046000EDD991 /* LaunchScreen.storyboard */,
+				B21356422124046000EDD991 /* main.m */,
+				B21356392124045E00EDD991 /* Main.storyboard */,
+				B21356362124045E00EDD991 /* ViewController.h */,
+				B21356372124045E00EDD991 /* ViewController.m */,
+			);
+			path = eeuiApp;
+			sourceTree = "<group>";
+		};
+		B25A71EB21257A0900AA0AB9 /* resource */ = {
+			isa = PBXGroup;
+			children = (
+				B25A71E921257A0500AA0AB9 /* bundlejs */,
+			);
+			name = resource;
+			sourceTree = "<group>";
+		};
+		BEB6946D3D54EEE58CEAD551 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B210034521924EEF001F2CBA /* libUMSPosPayOnly.a */,
+				B210031F2191D727001F2CBA /* CoreMotion.framework */,
+				B210031D2191D703001F2CBA /* Foundation.framework */,
+				B210031B2191D6C5001F2CBA /* CoreText.framework */,
+				B21003172191CBB3001F2CBA /* AlipaySDK.framework */,
+				B21003192191D5D7001F2CBA /* AlipaySDK.framework */,
+				B21003132191CB27001F2CBA /* AlipaySDK.bundle */,
+				B21003142191CB27001F2CBA /* AlipaySDK.framework */,
+				B2135AAB212406F800EDD991 /* SafariServices.framework */,
+				B2135AA9212406EF00EDD991 /* Photos.framework */,
+				B2135AA7212406E800EDD991 /* UIKit.framework */,
+				B2135AA5212406DD00EDD991 /* SystemConfiguration.framework */,
+				B2135AA3212406D500EDD991 /* QuartzCore.framework */,
+				B2135AA1212406CC00EDD991 /* OpenGLES.framework */,
+				B2135A9F212406C200EDD991 /* MapKit.framework */,
+				B2135A9D212406BB00EDD991 /* libz.tbd */,
+				B2135A9B212406B000EDD991 /* libxml2.tbd */,
+				B2135A99212406A000EDD991 /* libstdc++.tbd */,
+				B2135A972124068900EDD991 /* libsqlite3.tbd */,
+				B2135A942124067F00EDD991 /* libc++.tbd */,
+				B2135A932124067F00EDD991 /* libc++abi.tbd */,
+				B2135A912124067200EDD991 /* ImageIO.framework */,
+				B2135A8F2124066800EDD991 /* CoreVideo.framework */,
+				B2135A8D2124065600EDD991 /* CoreTelephony.framework */,
+				B2135A8B212405FA00EDD991 /* CoreMedia.framework */,
+				B2135A89212405F300EDD991 /* CoreLocation.framework */,
+				B2135A87212405C300EDD991 /* CoreGraphics.framework */,
+				B2135A85212405B800EDD991 /* CoreAudio.framework */,
+				B2135A83212405AC00EDD991 /* CFNetwork.framework */,
+				B2135A812124059C00EDD991 /* AudioToolbox.framework */,
+				B2135A7F2124059300EDD991 /* AssetsLibrary.framework */,
+				B2135A7D2124058300EDD991 /* AVFoundation.framework */,
+				BF4738D867E50FB2D943A92A /* libPods-eeuiApp.a */,
+				B3954AB0077F67222589658D /* libPods-eeuiAppTests.a */,
+				21618EA4FE8A980870624E1A /* libPods-eeuiAppUITests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B213562F2124045E00EDD991 /* eeuiApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B213565C2124046000EDD991 /* Build configuration list for PBXNativeTarget "eeuiApp" */;
+			buildPhases = (
+				6CBDE484C89DF9ADF06C0F90 /* [CP] Check Pods Manifest.lock */,
+				B213562C2124045E00EDD991 /* Sources */,
+				B213562D2124045E00EDD991 /* Frameworks */,
+				B213562E2124045E00EDD991 /* Resources */,
+				374DF61A5C3036B8016C4D2D /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = eeuiApp;
+			productName = eeuiApp;
+			productReference = B21356302124045E00EDD991 /* eeuiApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B21356472124046000EDD991 /* eeuiAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B213565F2124046000EDD991 /* Build configuration list for PBXNativeTarget "eeuiAppTests" */;
+			buildPhases = (
+				B21356442124046000EDD991 /* Sources */,
+				B21356452124046000EDD991 /* Frameworks */,
+				B21356462124046000EDD991 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B213564A2124046000EDD991 /* PBXTargetDependency */,
+			);
+			name = eeuiAppTests;
+			productName = eeuiAppTests;
+			productReference = B21356482124046000EDD991 /* eeuiAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B21356522124046000EDD991 /* eeuiAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B21356622124046000EDD991 /* Build configuration list for PBXNativeTarget "eeuiAppUITests" */;
+			buildPhases = (
+				B213564F2124046000EDD991 /* Sources */,
+				B21356502124046000EDD991 /* Frameworks */,
+				B21356512124046000EDD991 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B21356552124046000EDD991 /* PBXTargetDependency */,
+			);
+			name = eeuiAppUITests;
+			productName = eeuiAppUITests;
+			productReference = B21356532124046000EDD991 /* eeuiAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B21356282124045E00EDD991 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0940;
+				TargetAttributes = {
+					B213562F2124045E00EDD991 = {
+						CreatedOnToolsVersion = 9.4.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+							com.apple.Push = {
+								enabled = 0;
+							};
+						};
+					};
+					B21356472124046000EDD991 = {
+						CreatedOnToolsVersion = 9.4.1;
+						TestTargetID = B213562F2124045E00EDD991;
+					};
+					B21356522124046000EDD991 = {
+						CreatedOnToolsVersion = 9.4.1;
+						TestTargetID = B213562F2124045E00EDD991;
+					};
+				};
+			};
+			buildConfigurationList = B213562B2124045E00EDD991 /* Build configuration list for PBXProject "eeuiApp" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B21356272124045E00EDD991;
+			productRefGroup = B21356312124045E00EDD991 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B213562F2124045E00EDD991 /* eeuiApp */,
+				B21356472124046000EDD991 /* eeuiAppTests */,
+				B21356522124046000EDD991 /* eeuiAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B213562E2124045E00EDD991 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B25A71EA21257A0500AA0AB9 /* bundlejs in Resources */,
+				B21356402124046000EDD991 /* LaunchScreen.storyboard in Resources */,
+				B213563D2124046000EDD991 /* Assets.xcassets in Resources */,
+				B213563B2124045E00EDD991 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B21356462124046000EDD991 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B21356512124046000EDD991 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		374DF61A5C3036B8016C4D2D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-eeuiApp/Pods-eeuiApp-resources.sh",
+				"${PODS_ROOT}/../../../../plugins/ios/WeexSDK/pre-build/native-bundle-main.js",
+				"${PODS_ROOT}/../../../../plugins/ios/WeexSDK/pre-build/weex-main-jsfm.js",
+				"${PODS_ROOT}/../../../../plugins/ios/WeexSDK/pre-build/weex-polyfill.js",
+				"${PODS_ROOT}/../../../../plugins/ios/WeexSDK/pre-build/weex-rax-api.js",
+				"${PODS_ROOT}/../../../../plugins/ios/WeexSDK/ios/sdk/WeexSDK/Resources/wx_load_error@3x.png",
+				"${PODS_ROOT}/../../../../plugins/ios/eeui/eeui/Source/eeuiicon.ttf",
+				"${PODS_ROOT}/../../../../plugins/ios/eeui/eeui/Source/swipecaptcha_bg@2x.png",
+				"${PODS_ROOT}/../../../../plugins/ios/eeui/eeui/Utility/CCNScan/CodeScan.bundle",
+				"${PODS_ROOT}/../../../../plugins/ios/eeui/eeui/Utility/MJRefresh/MJRefresh.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/native-bundle-main.js",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/weex-main-jsfm.js",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/weex-polyfill.js",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/weex-rax-api.js",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/wx_load_error@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/eeuiicon.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/swipecaptcha_bg@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/CodeScan.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MJRefresh.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-eeuiApp/Pods-eeuiApp-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6CBDE484C89DF9ADF06C0F90 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-eeuiApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B213562C2124045E00EDD991 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B21356382124045E00EDD991 /* ViewController.m in Sources */,
+				B21356432124046000EDD991 /* main.m in Sources */,
+				B21356352124045E00EDD991 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B21356442124046000EDD991 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B213564F2124046000EDD991 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B213564A2124046000EDD991 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B213562F2124045E00EDD991 /* eeuiApp */;
+			targetProxy = B21356492124046000EDD991 /* PBXContainerItemProxy */;
+		};
+		B21356552124046000EDD991 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B213562F2124045E00EDD991 /* eeuiApp */;
+			targetProxy = B21356542124046000EDD991 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		B21356392124045E00EDD991 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B213563A2124045E00EDD991 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		B213563E2124046000EDD991 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B213563F2124046000EDD991 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B213565A2124046000EDD991 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		B213565B2124046000EDD991 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B213565D2124046000EDD991 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5B7109449833C8668CA8EA08 /* Pods-eeuiApp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CRXHYJW3S;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Alipay",
+					"\"$(SRCROOT)/eeuiApp/eeui/Utility/Pay/Alipay/AlipaySDK.framework\"",
+				);
+				INFOPLIST_FILE = eeuiApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Union/Chinaums",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Union/UPPaymentControl",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Union/WeChat",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.eeui.playground;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B213565E2124046000EDD991 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D8F4A873379E80A140D7BD31 /* Pods-eeuiApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CRXHYJW3S;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Alipay",
+					"\"$(SRCROOT)/eeuiApp/eeui/Utility/Pay/Alipay/AlipaySDK.framework\"",
+				);
+				INFOPLIST_FILE = eeuiApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Union/Chinaums",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Union/UPPaymentControl",
+					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Union/WeChat",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.eeui.playground;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B21356602124046000EDD991 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4829D55G53;
+				INFOPLIST_FILE = eeuiAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.eeui.eeuiAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/eeuiApp.app/eeuiApp";
+			};
+			name = Debug;
+		};
+		B21356612124046000EDD991 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4829D55G53;
+				INFOPLIST_FILE = eeuiAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.eeui.eeuiAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/eeuiApp.app/eeuiApp";
+			};
+			name = Release;
+		};
+		B21356632124046000EDD991 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4829D55G53;
+				INFOPLIST_FILE = eeuiAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.eeui.eeuiAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = eeuiApp;
+			};
+			name = Debug;
+		};
+		B21356642124046000EDD991 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 4829D55G53;
+				INFOPLIST_FILE = eeuiAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.eeui.eeuiAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = eeuiApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B213562B2124045E00EDD991 /* Build configuration list for PBXProject "eeuiApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B213565A2124046000EDD991 /* Debug */,
+				B213565B2124046000EDD991 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B213565C2124046000EDD991 /* Build configuration list for PBXNativeTarget "eeuiApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B213565D2124046000EDD991 /* Debug */,
+				B213565E2124046000EDD991 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B213565F2124046000EDD991 /* Build configuration list for PBXNativeTarget "eeuiAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B21356602124046000EDD991 /* Debug */,
+				B21356612124046000EDD991 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B21356622124046000EDD991 /* Build configuration list for PBXNativeTarget "eeuiAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B21356632124046000EDD991 /* Debug */,
+				B21356642124046000EDD991 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B21356282124045E00EDD991 /* Project object */;
+}

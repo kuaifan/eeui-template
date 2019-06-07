@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/v_body"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/eeui_transparent">
+
+    <!-- titleBar -->
+    <LinearLayout
+        android:id="@+id/titleBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/eeui_navbar"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/titleBarLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|start">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/titleBarMiddle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <app.eeui.framework.extend.view.FocusedTextView
+                android:id="@+id/titleBarTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textColor="@color/eeui_242424"
+                android:textSize="16sp" />
+
+            <app.eeui.framework.extend.view.FocusedTextView
+                android:id="@+id/titleBarSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textColor="@color/eeui_242424"
+                android:textSize="12sp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/titleBarRight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|end">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- weex -->
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/v_weexswiperefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/titleBar"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:id="@+id/v_weexview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <FrameLayout
+        android:id="@+id/v_weexprogress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/titleBar"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/v_weexprogressbg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="36dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:scaleType="fitStart"
+            android:background="@color/eeui_background"
+            android:src="@drawable/load_page"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
+        <ProgressBar
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
+    <!-- 网页 -->
+    <FrameLayout
+        android:id="@+id/v_web"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/titleBar"
+        android:visibility="gone">
+
+    </FrameLayout>
+
+    <!-- auto -->
+    <RelativeLayout
+        android:id="@+id/v_auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/titleBar"
+        android:background="@color/eeui_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+    <!-- 错误提示 -->
+    <include layout="@layout/activity_page_error"/>
+
+</RelativeLayout>

@@ -1,0 +1,4 @@
+include ':app'
+
+include ":eeui"
+project (':eeui').projectDir = new File("../../../plugins/android/eeui")

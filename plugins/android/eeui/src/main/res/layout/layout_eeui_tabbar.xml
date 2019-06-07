@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tl="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:adjustViewBounds="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <app.eeui.framework.extend.view.tablayout.CommonTabLayout
+            android:id="@+id/navigation_top"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/eeui_navbar"
+            android:visibility="gone"
+            tl:tl_iconVisible="false"
+            tl:tl_indicator_color="#ffffff"
+            tl:tl_textSelectColor="#ffffff"
+            tl:tl_textUnselectColor="#eeeeee" />
+
+        <app.eeui.framework.extend.view.tablayout.SlidingTabLayout
+            android:id="@+id/navigation_sliding_top"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/eeui_navbar"
+            android:visibility="gone"
+            tl:tl_indicator_color="#ffffff"
+            tl:tl_textSelectColor="#ffffff"
+            tl:tl_textUnselectColor="#eeeeee" />
+
+    </LinearLayout>
+
+    <app.eeui.framework.extend.view.NoAnimationViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <app.eeui.framework.extend.view.tablayout.CommonTabLayout
+            android:id="@+id/navigation_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:background="@color/eeui_white"
+            android:visibility="gone"
+            tl:tl_indicator_color="#ffffff"
+            tl:tl_textSelectColor="#2C97DE"
+            tl:tl_textUnselectColor="#333333" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,13 @@
+<resources>
+
+    <string name="app_name" translatable="false">eeuiApp</string>
+
+    <string name="welcome_content" translatable="false">欢迎您的到来</string>
+
+    <string name="scan_qr_code" translatable="false">扫码</string>
+
+    <string name="page_refresh" translatable="false">刷新</string>
+
+    <string name="loading" translatable="false">loading....</string>
+
+</resources>

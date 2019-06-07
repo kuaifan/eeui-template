@@ -1,0 +1,35 @@
+//
+//  eeuiNavigator.m
+//  Pods
+//
+//  Created by 高一 on 2019/3/10.
+//
+
+#import "eeuiNavigator.h"
+#import "eeuiNewPageManager.h"
+#import "eeuiViewController.h"
+#import "DeviceUtil.h"
+
+@implementation eeuiNavigator
+
+@synthesize weexInstance;
+
+WX_EXPORT_METHOD(@selector(push:callback:))
+WX_EXPORT_METHOD(@selector(pop:callback:))
+
+- (void)push:(NSDictionary*)params callback:(WXModuleKeepAliveCallback)callback
+{
+    [eeuiNewPageManager sharedIntstance].weexInstance = weexInstance;
+    [[eeuiNewPageManager sharedIntstance] openPage:params callback:callback];
+}
+
+- (void)pop:(NSMutableDictionary*)params callback:(WXModuleKeepAliveCallback)callback
+{
+    NSString *pageName = [WXConvert NSString:params[@"pageName"]];
+    if (pageName.length == 0) {
+        params[@"pageName"] = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+    }
+    [[eeuiNewPageManager sharedIntstance] closePage:params];
+}
+
+@end
