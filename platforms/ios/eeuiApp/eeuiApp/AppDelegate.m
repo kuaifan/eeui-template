@@ -468,6 +468,14 @@ NSDictionary *mLaunchOptions;
         });
     }else if ([msg hasPrefix:@"HOMEPAGEBACK:"]) {
         [mController loadUrl:[msg substringFromIndex:13]];
+    }else if ([msg hasPrefix:@"RECONNECT:"]) {
+        NSURL *url = [NSURL URLWithString:[msg substringFromIndex:10]];
+        NSURL *nowUrl = [NSURL URLWithString:[(eeuiViewController*)[DeviceUtil getTopviewControler] url]];
+        NSString *urlHost = [NSString stringWithFormat:@"%@:%ld", [url host], (long)[[url port] integerValue]];
+        NSString *nowHost = [NSString stringWithFormat:@"%@:%ld", [nowUrl host], (long)[[nowUrl port] integerValue]];
+        if (![nowHost isEqualToString:urlHost]) {
+            [self webSocket:webSocket didReceiveMessage:[NSString stringWithFormat:@"HOMEPAGE:%@", [url absoluteString]]];
+        }
     }else if ([msg hasPrefix:@"RELOADPAGE:"]) {
         NSString *url = [msg substringFromIndex:11];
         NSString *nowUrl = [(eeuiViewController*)[DeviceUtil getTopviewControler] url];

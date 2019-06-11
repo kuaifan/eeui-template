@@ -91,6 +91,8 @@ import com.taobao.weex.ui.component.WXComponent;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -2042,79 +2044,7 @@ public class PageActivity extends AppCompatActivity {
         @Override
         public void onMessage(String text) {
             super.onMessage(text);
-            Log.d("[socket]", "onMessage: " + text);
-            //
-            if (text.startsWith("HOMEPAGE:")) {
-                List<Activity> activityList = eeui.getActivityList();
-                if (activityList.size() >= 2 && activityList.get(0).getClass().getName().endsWith(".WelcomeActivity")) {
-                    activityList.remove(0);
-                }
-                for (int i = activityList.size() - 1; i >= 0; --i) {
-                    Activity activity = activityList.get(i);
-                    if (i == 0) {
-                        if (activity instanceof PageActivity) {
-                            PageActivity mActivity = ((PageActivity) activity);
-                            String homePage = eeuiCommon.getCachesString(PageActivity.this, "__deBugSocket", "homePage");
-                            String mHomePage = text.substring(9);
-                            if (!homePage.equals(mHomePage))  {
-                                eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", mHomePage, 2);
-                                mHandler.postDelayed(()-> {
-                                    mActivity.mPageInfo.setUrl(mHomePage);
-                                    mActivity.reload();
-                                    BGAKeyboardUtil.closeKeyboard(PageActivity.this);
-                                }, 300);
-                            }
-                        }
-                    }else{
-                        activity.finish();
-                    }
-                }
-            }else if (text.startsWith("HOMEPAGEBACK:")) {
-                List<Activity> activityList = eeui.getActivityList();
-                Activity activity = activityList.get(0);
-                if (activity instanceof PageActivity) {
-                    PageActivity mActivity = ((PageActivity) activity);
-                    String mHomePage = text.substring(13);
-                    eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", mHomePage, 2);
-                    mActivity.mPageInfo.setUrl(mHomePage);
-                    mActivity.reload();
-                    BGAKeyboardUtil.closeKeyboard(PageActivity.this);
-                }
-            }else if (text.startsWith("RELOADPAGE:")) {
-                String url = text.substring(11);
-                List<Activity> activityList = eeui.getActivityList();
-                boolean already = false;
-                int size = activityList.size() - 1;
-                for (int i = size; i >= 0; --i) {
-                    Activity activity = activityList.get(i);
-                    if (activity instanceof PageActivity) {
-                        PageActivity mActivity = ((PageActivity) activity);
-                        if (eeuiPage.realUrl(mActivity.mPageInfo.getUrl()).startsWith(url)) {
-                            if (i == size) {
-                                mActivity.reload();
-                                BGAKeyboardUtil.closeKeyboard(PageActivity.this);
-                            }else{
-                                mActivity.getPageInfo().setResumeUrl(url);
-                            }
-                            already = true;
-                        }
-                    }
-                }
-                if (!already) {
-                    for (int i = 0; i < tabViewDebug.size(); i++) {
-                        ResultCallback<String> call = tabViewDebug.get(i);
-                        if (call != null) {
-                            call.onReceiveResult(url);
-                        }
-                    }
-                }
-            }else if (text.contentEquals("REFRESH")) {
-                Activity activity = eeui.getActivityList().getLast();
-                if (activity instanceof PageActivity) {
-                    PageActivity mActivity = ((PageActivity) activity);
-                    mActivity.reload();
-                }
-            }
+            handleMessage(text);
         }
 
         @Override
@@ -2154,6 +2084,105 @@ public class PageActivity extends AppCompatActivity {
                     ((PageActivity) activity).deBugButtonRefresh(2);
                 }
             }
+        }
+
+        private void handleMessage(String text) {
+            Log.d("[socket]", "onMessage: " + text);
+            //
+            if (text.startsWith("HOMEPAGE:")) {
+                List<Activity> activityList = eeui.getActivityList();
+                if (activityList.size() >= 2 && activityList.get(0).getClass().getName().endsWith(".WelcomeActivity")) {
+                    activityList.remove(0);
+                }
+                for (int i = activityList.size() - 1; i >= 0; --i) {
+                    Activity activity = activityList.get(i);
+                    if (i == 0) {
+                        if (activity instanceof PageActivity) {
+                            PageActivity mActivity = ((PageActivity) activity);
+                            String homePage = eeuiCommon.getCachesString(PageActivity.this, "__deBugSocket", "homePage");
+                            String mHomePage = text.substring(9);
+                            if (!homePage.equals(mHomePage))  {
+                                eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", mHomePage, 2);
+                                mHandler.postDelayed(()-> {
+                                    mActivity.mPageInfo.setUrl(mHomePage);
+                                    mActivity.reload();
+                                    BGAKeyboardUtil.closeKeyboard(PageActivity.this);
+                                }, 300);
+                            }
+                        }
+                    }else{
+                        activity.finish();
+                    }
+                }
+            }else if (text.startsWith("HOMEPAGEBACK:")) {
+                List<Activity> activityList = eeui.getActivityList();
+                Activity activity = activityList.get(0);
+                if (activity instanceof PageActivity) {
+                    PageActivity mActivity = ((PageActivity) activity);
+                    String mHomePage = text.substring(13);
+                    eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", mHomePage, 2);
+                    mActivity.mPageInfo.setUrl(mHomePage);
+                    mActivity.reload();
+                    BGAKeyboardUtil.closeKeyboard(PageActivity.this);
+                }
+            }else if (text.startsWith("RECONNECT:")) {
+                String urlHost = getHostPort(text.substring(10));
+                String nowHost = "";
+                Activity activity = eeui.getActivityList().getLast();
+                if (activity instanceof PageActivity) {
+                    PageActivity mActivity = ((PageActivity) activity);
+                    nowHost = getHostPort(mActivity.getPageInfo().getUrl());
+                }
+                if (!urlHost.equals(nowHost)) {
+                    handleMessage("HOMEPAGE:" + text.substring(10));
+                }
+            }else if (text.startsWith("RELOADPAGE:")) {
+                String url = text.substring(11);
+                List<Activity> activityList = eeui.getActivityList();
+                boolean already = false;
+                int size = activityList.size() - 1;
+                for (int i = size; i >= 0; --i) {
+                    Activity activity = activityList.get(i);
+                    if (activity instanceof PageActivity) {
+                        PageActivity mActivity = ((PageActivity) activity);
+                        if (eeuiPage.realUrl(mActivity.mPageInfo.getUrl()).startsWith(url)) {
+                            if (i == size) {
+                                mActivity.reload();
+                                BGAKeyboardUtil.closeKeyboard(PageActivity.this);
+                            }else{
+                                mActivity.getPageInfo().setResumeUrl(url);
+                            }
+                            already = true;
+                        }
+                    }
+                }
+                if (!already) {
+                    for (int i = 0; i < tabViewDebug.size(); i++) {
+                        ResultCallback<String> call = tabViewDebug.get(i);
+                        if (call != null) {
+                            call.onReceiveResult(url);
+                        }
+                    }
+                }
+            }else if (text.contentEquals("REFRESH")) {
+                Activity activity = eeui.getActivityList().getLast();
+                if (activity instanceof PageActivity) {
+                    PageActivity mActivity = ((PageActivity) activity);
+                    mActivity.reload();
+                }
+            }
+        }
+
+        private String getHostPort(String url) {
+            try {
+                URL tmp = new URL(url);
+                String host = tmp.getHost();
+                host+= (tmp.getPort() > -1 && tmp.getPort() != 80) ? (":" + tmp.getPort()) : "";
+                return host;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            return "";
         }
     };
 
