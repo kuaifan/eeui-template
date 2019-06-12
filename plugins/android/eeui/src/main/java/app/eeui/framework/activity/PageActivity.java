@@ -1857,7 +1857,7 @@ public class PageActivity extends AppCompatActivity {
                                 String host = eeuiCommon.getVariateStr("__deBugSocket:Host");
                                 String port = eeuiCommon.getVariateStr("__deBugSocket:Port");
                                 String inputObject = "{title:\"WiFi真机同步配置\",message:\"配置成功后，可实现真机同步实时预览\",buttons:[\"取消\",\"连接\"],inputs:[{type:'text',placeholder:'请输入IP地址',value:'" + host + "',autoFocus:true},{type:'number',placeholder:'请输入端口号',value:'" + port + "'}]}";
-                                eeuiAlertDialog.input(PageActivity.this, inputObject, new JSCallback() {
+                                eeuiAlertDialog.input(PageActivity.this, eeuiJson.parseObject(inputObject), new JSCallback() {
                                     @Override
                                     public void invoke(Object data) {
                                         Map<String, Object> retData = eeuiMap.objectToMap(data);
