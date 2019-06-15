@@ -40,7 +40,9 @@ import app.eeui.framework.extend.integration.glide.request.target.Target;
 import app.eeui.framework.extend.integration.iconify.widget.IconTextView;
 
 import app.eeui.framework.R;
+import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiColorUtils;
+import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.view.tablayout.listener.CustomTabEntity;
 import app.eeui.framework.extend.view.tablayout.listener.OnTabSelectListener;
@@ -1041,7 +1043,7 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
                 return;
             }
             String finalIconUrl = iconUrl;
-            Glide.with(icon.getContext()).load(iconUrl).apply(myOptions).listener(new RequestListener<Drawable>() {
+            Glide.with(icon.getContext()).load(eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(mContext, iconUrl))).apply(myOptions).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     return false;
@@ -1067,6 +1069,10 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
     }
 
     private boolean isFontIcon(String var) {
-        return var != null && !var.contains("//") && !var.startsWith("data:");
+        if (var == null) {
+            return false;
+        }
+        String val = var.toLowerCase();
+        return !val.contains("//") && !val.startsWith("data:") && !val.endsWith(".png") && !val.endsWith(".jpg") && !val.endsWith(".jpeg") && !val.endsWith(".gif");
     }
 }

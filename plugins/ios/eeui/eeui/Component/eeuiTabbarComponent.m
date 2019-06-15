@@ -18,6 +18,7 @@
 #import "UIButton+WebCache.h"
 #import "SGEasyButton.h"
 #import "FDFullscreenScrollView.h"
+#import "Config.h"
 
 #define TabItemBtnTag 1000
 #define TabItemMessageTag 2000
@@ -535,9 +536,10 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
             }
 
             //图片
-            if ([unSelectedIcon containsString:@"//"]) {
+            if (![self isFontIcon:unSelectedIcon]) {
                 [btn setImage:[DeviceUtil imageResize:nil andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:nil] forState:UIControlStateNormal];
-                [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:unSelectedIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                NSString *tmpIcon = [Config verifyFile:[DeviceUtil rewriteUrl:unSelectedIcon]];
+                [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:tmpIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
                             [btn setImage:[DeviceUtil imageResize:image andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:nil] forState:UIControlStateNormal];
@@ -555,8 +557,9 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
                 [btn setImage:[DeviceUtil imageResize:[DeviceUtil getIconText:unSelectedIcon font:0 color:@"#242424"] andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:unSelectedIcon] forState:UIControlStateNormal];
             }
 
-            if ([selectedIcon containsString:@"//"]) {
-                [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:selectedIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+            if (![self isFontIcon:selectedIcon]) {
+                NSString *tmpIcon = [Config verifyFile:[DeviceUtil rewriteUrl:selectedIcon]];
+                [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:tmpIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
                             [btn setImage:[DeviceUtil imageResize:image andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:nil] forState:UIControlStateSelected];
@@ -659,6 +662,19 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
             UIScrollView *scoView = (UIScrollView*)[self.bodyView viewWithTag:TabBgScrollTag + i];
             scoView.frame = CGRectMake(i * self.bodyView.frame.size.width, 0, self.bodyView.frame.size.width, self.bodyView.frame.size.height);
         }
+    }
+}
+
+- (BOOL)isFontIcon:(NSString*)var
+{
+    if (var == nil) {
+        return NO;
+    }
+    NSString *val = [var lowercaseString];
+    if ([val containsString:@"//"] || [val hasPrefix:@"data:"] || [val hasSuffix:@".png"] || [val hasSuffix:@".jpg"] || [val hasSuffix:@".jpeg"] || [val hasSuffix:@".gif"]) {
+        return NO;
+    }else{
+        return YES;
     }
 }
 
