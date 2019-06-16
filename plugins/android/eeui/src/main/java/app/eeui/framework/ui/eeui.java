@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -47,9 +46,7 @@ import java.util.Map;
 
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
 import app.eeui.framework.extend.integration.swipebacklayout.BGASwipeBackHelper;
-import app.eeui.framework.extend.integration.xutils.x;
 import app.eeui.framework.extend.module.rxtools.rxtoolsModule;
-import app.eeui.framework.extend.module.rxtools.tool.RxEncryptTool;
 import app.eeui.framework.extend.module.utilcode.util.DeviceUtils;
 import app.eeui.framework.extend.module.utilcode.util.FileUtils;
 import app.eeui.framework.extend.module.utilcode.utilcodeModule;
@@ -83,6 +80,7 @@ import app.eeui.framework.ui.component.sidePanel.SidePanelMenu;
 import app.eeui.framework.ui.component.tabbar.Tabbar;
 import app.eeui.framework.ui.component.tabbar.TabbarPage;
 import app.eeui.framework.ui.component.webView.WebView;
+import app.eeui.framework.ui.module.WeexDebugModule;
 import app.eeui.framework.ui.module.WeexEventModule;
 import app.eeui.framework.ui.module.WeexModule;
 import app.eeui.framework.ui.module.WeexNavigationBarModule;
@@ -157,6 +155,7 @@ public class eeui {
 
         try {
             WXSDKEngine.registerModule("eeui", WeexModule.class);
+            WXSDKEngine.registerModule("debug", WeexDebugModule.class);
             WXSDKEngine.registerModule("navigator", WeexNavigatorModule.class);
             WXSDKEngine.registerModule("navigationBar", WeexNavigationBarModule.class);
             //

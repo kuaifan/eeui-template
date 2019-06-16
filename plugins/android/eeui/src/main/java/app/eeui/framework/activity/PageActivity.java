@@ -154,6 +154,7 @@ public class PageActivity extends AppCompatActivity {
     private BGASwipeBackHelper mSwipeBackHelper;
     private String mErrorMsg;
     private View mPageInfoView;
+    private View mPageLogView;
 
     //申请权限部分
     private PermissionUtils mPermissionInstance;
@@ -512,8 +513,11 @@ public class PageActivity extends AppCompatActivity {
                 KeyboardUtils.unregisterSoftInputChangedListener(this);
             }
         }
-        if (PageActivity.hideDev && BuildConfig.DEBUG && eeui.getActivityList().size() == 1) {
-            PageActivity.hideDev = false;
+        if (BuildConfig.DEBUG) {
+            if (PageActivity.hideDev && eeui.getActivityList().size() == 1) {
+                PageActivity.hideDev = false;
+            }
+            closeConsole();
         }
         identify = "";
         invoke("destroy", null);
@@ -1834,10 +1838,11 @@ public class PageActivity extends AppCompatActivity {
         mActionItem.add(new ActionItem(3, "页面信息"));
         mActionItem.add(new ActionItem(4, "扫一扫"));
         mActionItem.add(new ActionItem(5, "刷新"));
-        mActionItem.add(new ActionItem(6, "隐藏DEV"));
-        mActionItem.add(new ActionItem(7, "重启APP"));
+        mActionItem.add(new ActionItem(6, "Console"));
+        mActionItem.add(new ActionItem(7, "隐藏DEV"));
+        mActionItem.add(new ActionItem(8, "重启APP"));
         if (eeuiBase.config.verifyIsUpdate()) {
-            mActionItem.add(new ActionItem(8, "清除热更新数据"));
+            mActionItem.add(new ActionItem(9, "清除热更新数据"));
         }
         ActionSheet.createBuilder(this, getSupportFragmentManager())
                 .setSubTitle("开发工具菜单")
@@ -1946,6 +1951,10 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 5: {
+                                showConsole();
+                                break;
+                            }
+                            case 6: {
                                 JSONObject newJson = new JSONObject();
                                 newJson.put("title", "隐藏DEV");
                                 newJson.put("message", "确定要隐藏DEV漂浮按钮吗？\n隐藏按钮将在下次启动APP时显示。");
@@ -1972,7 +1981,7 @@ public class PageActivity extends AppCompatActivity {
                                 });
                                 break;
                             }
-                            case 6: {
+                            case 7: {
                                 JSONObject newJson = new JSONObject();
                                 newJson.put("title", "热重启APP");
                                 newJson.put("message", "确认要关闭所有页面热重启APP吗？");
@@ -1992,7 +2001,7 @@ public class PageActivity extends AppCompatActivity {
                                 });
                                 break;
                             }
-                            case 7: {
+                            case 8: {
                                 eeuiBase.cloud.clearUpdate();
                                 break;
                             }
@@ -2206,5 +2215,55 @@ public class PageActivity extends AppCompatActivity {
             mPageInfoView = null;
         });
         mBody.addView(mPageInfoView);
+    }
+
+    /**
+     * 显示日志查看
+     */
+    public void showConsole() {
+        if (mPageLogView != null) {
+            return;
+        }
+        mPageLogView = PageActivity.this.getLayoutInflater().inflate(R.layout.activity_page_console, null);
+        if ("immersion".equals(mPageInfo.getStatusBarType())) {
+            mPageLogView.setPadding(0, eeuiCommon.getStatusBarHeight(PageActivity.this), 0, 0);
+        } else {
+            mPageLogView.setPadding(0, 0, 0, 0);
+        }
+        mPageLogView.findViewById(R.id.v_space).setOnClickListener(v -> closeConsole());
+        FrameLayout mLayout = mPageLogView.findViewById(R.id.v_view);
+        WXSDKInstance mInstance = new WXSDKInstance(this);
+        mInstance.registerRenderListener(new IWXRenderListener() {
+            @Override
+            public void onViewCreated(WXSDKInstance instance, View view) {
+                mLayout.removeAllViews();
+                mLayout.addView(view);
+            }
+            @Override
+            public void onRenderSuccess(WXSDKInstance instance, int width, int height) {
+
+            }
+            @Override
+            public void onRefreshSuccess(WXSDKInstance instance, int width, int height) {
+
+            }
+            @Override
+            public void onException(WXSDKInstance instance, String errCode, String msg) {
+
+            }
+        });
+        mInstance.renderByUrl("Console::" + mPageInfo.getPageName(), "file://assets/main-console.js", null, null, WXRenderStrategy.APPEND_ASYNC);
+        mBody.addView(mPageLogView);
+    }
+
+    /**
+     * 关闭日志查看
+     */
+    public void closeConsole() {
+        if (mPageLogView == null) {
+            return;
+        }
+        mBody.removeView(mPageLogView);
+        mPageLogView = null;
     }
 }

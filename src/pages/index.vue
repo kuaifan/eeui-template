@@ -8,7 +8,10 @@
             </navbar-item>
 
             <navbar-item type="title">
-                <text class="navbar-title">EEUI</text>
+                <div class="navbar-main">
+                    <image class="navbar-logo" src="logo-white.png"></image>
+                    <text class="navbar-title">EEUI</text>
+                </div>
             </navbar-item>
 
             <navbar-item type="right" @click="refresh">
@@ -113,6 +116,17 @@
     .navbar {
         width: 750px;
         height: 100px;
+    }
+
+    .navbar-main {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .navbar-logo {
+        width: 36px;
+        height: 36px;
+        margin-right: 18px;
     }
 
     .navbar-title {

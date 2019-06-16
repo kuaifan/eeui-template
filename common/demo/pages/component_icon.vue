@@ -89,6 +89,7 @@
         flex: 1;
         height: 68px;
         line-height: 68px;
+        font-size: 30px;
         color: #333333;
         text-align: center;
     }

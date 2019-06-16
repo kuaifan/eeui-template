@@ -10,7 +10,7 @@
 #import <WebKit/WKWebView.h>
 #import "JSCallCommon.h"
 
-static NSMutableArray *init_lists;
+static NSMutableArray * _Nullable init_lists;
 
 
 #ifndef __EEUI_WEEX_PLUGIN_MACRO_H__

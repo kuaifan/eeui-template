@@ -240,34 +240,16 @@ NSDictionary *mLaunchOptions;
         }
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"页面信息" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        if ([[DeviceUtil getTopviewControler] isKindOfClass:[eeuiViewController class]]) {
-            eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-            NSDictionary *info = [[eeuiNewPageManager sharedIntstance] getPageInfo:vc.pageName];
-            NSError *error;
-            NSData *data = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:&error];
-            if(data && !error){
-                NSString *infoString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                infoString = [infoString stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"];
-                [vc showFixedInfo:infoString];
-                return;
-            }
-        }
-        UIAlertController * alertController = [UIAlertController
-                                               alertControllerWithTitle: @"页面信息"
-                                               message: @"当前页面不支持。"
-                                               preferredStyle:UIAlertControllerStyleAlert];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:nil]];
-        UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        alertWindow.rootViewController = [[UIViewController alloc] init];
-        alertWindow.windowLevel = UIWindowLevelAlert + 1;
-        [alertWindow makeKeyAndVisible];
-        [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+        [self pageInfo];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"扫一扫" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self openScan];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"刷新" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self refresh];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Console" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self console];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"隐藏DEV" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self hideDev];
@@ -321,6 +303,32 @@ NSDictionary *mLaunchOptions;
         [self setSocketConnect:@"initialize"];
     }]];
 
+    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    alertWindow.rootViewController = [[UIViewController alloc] init];
+    alertWindow.windowLevel = UIWindowLevelAlert + 1;
+    [alertWindow makeKeyAndVisible];
+    [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+}
+
+//查看日志
+- (void) pageInfo {
+    if ([[DeviceUtil getTopviewControler] isKindOfClass:[eeuiViewController class]]) {
+        eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+        NSDictionary *info = [[eeuiNewPageManager sharedIntstance] getPageInfo:vc.pageName];
+        NSError *error;
+        NSData *data = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:&error];
+        if(data && !error){
+            NSString *infoString = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+            infoString = [infoString stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"];
+            [vc showFixedInfo:infoString];
+            return;
+        }
+    }
+    UIAlertController * alertController = [UIAlertController
+                                           alertControllerWithTitle: @"页面信息"
+                                           message: @"当前页面不支持。"
+                                           preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:nil]];
     UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     alertWindow.rootViewController = [[UIViewController alloc] init];
     alertWindow.windowLevel = UIWindowLevelAlert + 1;
@@ -383,6 +391,26 @@ NSDictionary *mLaunchOptions;
     [alertWindow makeKeyAndVisible];
     [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
+
+//查看日志
+- (void) console {
+    if ([[DeviceUtil getTopviewControler] isKindOfClass:[eeuiViewController class]]) {
+        eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+        [vc showFixedConsole];
+        return;
+    }
+    UIAlertController * alertController = [UIAlertController
+                                           alertControllerWithTitle: @"Console"
+                                           message: @"当前页面不支持。"
+                                           preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:nil]];
+    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    alertWindow.rootViewController = [[UIViewController alloc] init];
+    alertWindow.windowLevel = UIWindowLevelAlert + 1;
+    [alertWindow makeKeyAndVisible];
+    [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+}
+
 
 //确认重启APP
 - (void) rebootConfirm {

@@ -5,6 +5,7 @@ def common
     pod 'WeexSDK', :path => '../../../plugins/ios/WeexSDK'
     pod 'eeui', :path => '../../../plugins/ios/eeui'
     pod 'SocketRocket', '0.4.2'
+    pod 'BindingX', '~> 1.0.3'
 end
 
 target 'eeuiApp' do

@@ -4,7 +4,7 @@ let eeui = app.requireModule('eeui');
 
 let common = {
 
-    jshome: 'https://eeui.app/dist/1.0.0/pages/',
+    jshome: 'https://eeui.app/dist/1.0.0-2/pages/',
 
     openViewCode(str) {
         common.openViewUrl("https://eeui.app/" + str + ".html");

@@ -244,6 +244,10 @@ public class eeuiAlertDialog {
             localBuilder.setView(mView);
         }
         //
+        JSONArray butTypes = new JSONArray();
+        butTypes.add("positive");
+        butTypes.add("negative");
+        butTypes.add("neutral");
         int j = 0;
         for (int i = 0; i < buttons.size(); i++) {
             JSONObject temp = eeuiJson.parseObject(buttons.get(i));
@@ -290,6 +294,10 @@ public class eeuiAlertDialog {
                     if (j == 2) {
                         btnType = "neutral";
                     }
+                    if (butTypes.indexOf(btnType.toLowerCase())  == -1) {
+                        btnType = eeuiParse.parseStr(butTypes.get(0));
+                    }
+                    butTypes.remove(btnType);
                     switch (btnType.toLowerCase()) {
                         case "positive":
                             localBuilder.setPositiveButton(btnTitle, mOnClickListener);

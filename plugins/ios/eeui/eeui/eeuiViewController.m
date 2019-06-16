@@ -46,6 +46,9 @@ static int easyNavigationButtonTag = 8000;
 @property (nonatomic, strong) NSString *errorContent;
 @property (nonatomic, strong) UIColor *navigationBarBarTintColor;
 
+@property (nonatomic, strong) UIView *consoleView;
+@property (nonatomic, strong) UIView *consoleWeexView;
+
 @end
 
 @implementation eeuiViewController
@@ -470,6 +473,9 @@ static int easyNavigationButtonTag = 8000;
         weakSelf.weexView = view;
         [weakSelf.view addSubview:weakSelf.weexView];
         UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, weakSelf.weexView);
+        if (weakSelf.consoleView != nil) {
+            [weakSelf.view bringSubviewToFront:weakSelf.consoleView];
+        }
 
         [weakSelf updateStatus:@"viewCreated"];
     };
@@ -616,6 +622,11 @@ static int easyNavigationButtonTag = 8000;
             [self.errorInfoView removeFromSuperview];
             self.errorInfoView = nil;
         }
+    }else if (tapGesture.view.tag == 1002) {
+        if (self.consoleView != nil) {
+            [self.consoleView removeFromSuperview];
+            self.consoleView = nil;
+        }
     }else if (tapGesture.view.tag == 2000) {
         [self refreshPage];
     }else if (tapGesture.view.tag == 3000) {
@@ -650,6 +661,50 @@ static int easyNavigationButtonTag = 8000;
         [self.view addSubview:self.errorInfoView];
     }else{
         [self.view bringSubviewToFront:self.errorInfoView];
+    }
+}
+
+- (void)showFixedConsole
+{
+    if (self.consoleView == nil) {
+        UIEdgeInsets safeArea = UIEdgeInsetsZero;
+        self.consoleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        self.consoleView.tag = 1002;
+        if (@available(iOS 11.0, *)) {
+            safeArea = self.view.safeAreaInsets;
+        }
+        [self.consoleView setBackgroundColor:[[UIColor blackColor] colorWithAlphaComponent:0.75f]];
+        CGFloat viewY = self.view.frame.size.height / 5.5;
+        UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(0, viewY, self.view.frame.size.width, self.view.frame.size.height - viewY)];
+        myView.backgroundColor = [WXConvert UIColor:@"#FFFFFF"];
+        CGRect temp = myView.frame;
+        temp.origin.y+= safeArea.top;
+        temp.size.height-= safeArea.top;
+        [myView setFrame:temp];
+        [self.consoleView addSubview:myView];
+        [self.consoleView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(errorTabGesture:)]];
+        [self.view addSubview:self.consoleView];
+        
+        WXSDKInstance *instance = [[WXSDKInstance alloc] init];
+        instance.frame = CGRectMake(0, 0, temp.size.width, temp.size.height - safeArea.bottom);
+        instance.onCreate = ^(UIView *view) {
+            [self->_consoleWeexView removeFromSuperview];
+            self->_consoleWeexView = view;
+            [myView addSubview:self->_consoleWeexView];
+            UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, self->_consoleWeexView);
+        };
+        NSString *consoleUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs/main-console.js"]];
+        [instance renderWithURL:[NSURL URLWithString:consoleUrl] options:nil data:nil];
+    }else{
+        [self.view bringSubviewToFront:self.consoleView];
+    }
+}
+
+- (void)hideFixedConsole
+{
+    if (self.consoleView != nil) {
+        [self.consoleView removeFromSuperview];
+        self.consoleView = nil;
     }
 }
 

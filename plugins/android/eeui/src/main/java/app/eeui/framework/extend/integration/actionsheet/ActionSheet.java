@@ -305,6 +305,7 @@ public class ActionSheet extends Fragment implements View.OnClickListener {
                     createBottomLine();
                 }
                 Button bt = new Button(getActivity());
+                bt.setAllCaps(false);
                 bt.setId(CANCEL_BUTTON_ID + i + 1);
                 bt.setOnClickListener(this);
                 bt.setBackground(getActionButtonBg(actionItems, i, isTitleEmpty));
