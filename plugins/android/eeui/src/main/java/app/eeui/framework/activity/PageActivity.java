@@ -133,7 +133,7 @@ public class PageActivity extends AppCompatActivity {
     private PageBean mPageInfo;
     private String lifecycleLastStatus;
 
-    private OnBackPressed mOnBackPressed;
+    private Map<String, OnBackPressed> mOnBackPresseds = new HashMap<>();
     public interface OnBackPressed { boolean onBackPressed(); }
 
     private OnRefreshListener mOnRefreshListener;
@@ -546,9 +546,12 @@ public class PageActivity extends AppCompatActivity {
         if (!mPageInfo.isBackPressedClose()) {
             return;
         }
-        if (mOnBackPressed != null) {
-            if (mOnBackPressed.onBackPressed()) {
-                return;
+        if (mOnBackPresseds != null) {
+            for (String name : mOnBackPresseds.keySet()) {
+                OnBackPressed pressed = mOnBackPresseds.get(name);
+                if (pressed != null && pressed.onBackPressed()) {
+                    return;
+                }
             }
         }
         BGAKeyboardUtil.closeKeyboard(this);
@@ -1374,10 +1377,11 @@ public class PageActivity extends AppCompatActivity {
 
     /**
      * 拦截返回按键事件
+     * @param key
      * @param mOnBackPressed
      */
-    public void setOnBackPressed(OnBackPressed mOnBackPressed) {
-        this.mOnBackPressed = mOnBackPressed;
+    public void setOnBackPressed(String key, OnBackPressed mOnBackPressed) {
+        this.mOnBackPresseds.put(key, mOnBackPressed);
     }
 
     /**

@@ -166,7 +166,7 @@ public class eeuiAdDialog {
                                         tmpClose.setOnClickListener(view -> close(dialogName));
                                     }
                                     if (mActivity instanceof PageActivity) {
-                                        ((PageActivity) mActivity).setOnBackPressed(() -> !backClose || close(dialogName));
+                                        ((PageActivity) mActivity).setOnBackPressed("eeuiAdDialog", () -> !backClose || close(dialogName));
                                     }
                                     //
                                     DialogBean tmpBean = new DialogBean();

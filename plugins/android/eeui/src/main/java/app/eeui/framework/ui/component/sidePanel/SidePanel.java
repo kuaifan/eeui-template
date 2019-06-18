@@ -157,7 +157,7 @@ public class SidePanel extends WXVContainer<ViewGroup> {
         });
         //
         if (getContext() instanceof PageActivity) {
-            ((PageActivity) getContext()).setOnBackPressed(() -> {
+            ((PageActivity) getContext()).setOnBackPressed("SidePanel", () -> {
                 if (getMenuShow()) {
                     menuHide();
                     return true;

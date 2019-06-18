@@ -654,9 +654,9 @@ public class eeui {
         }
         PageActivity mPageActivity = ((PageActivity) mPageBean.getContext());
         if (callback == null) {
-            mPageActivity.setOnBackPressed(null);
+            mPageActivity.setOnBackPressed("eeui", () -> false);
         }else{
-            mPageActivity.setOnBackPressed(() -> {
+            mPageActivity.setOnBackPressed("eeui", () -> {
                 callback.invokeAndKeepAlive(null);
                 return true;
             });
