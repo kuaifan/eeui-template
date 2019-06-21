@@ -362,12 +362,21 @@ let global = {
                 theTime1 = parseInt(theTime1 % 60);
             }
         }
-        let result = parseInt(theTime) + "秒";
+        let result = global.zeroFill(parseInt(theTime), 2) + "秒";
         if (theTime1 > 0) {
-            result = parseInt(theTime1) + "分" + result;
+            result = global.zeroFill(parseInt(theTime1), 2) + "分" + result;
         }
         if (theTime2 > 0) {
-            result = parseInt(theTime2) + "小时" + result;
+            if (theTime2 > 72) {
+                let day = parseInt(theTime2 / 24);
+                theTime2 -= parseInt(day * 24);
+                result = day + "天" + global.zeroFill(parseInt(theTime2), 2) + "小时" + result;
+            }else{
+                result = global.zeroFill(parseInt(theTime2), 2) + "小时" + result;
+            }
+        }
+        if (theTime1 === 0 && theTime2 === 0) {
+            result = "00分" + result;
         }
         return result;
     },
@@ -466,6 +475,23 @@ let global = {
             return '0 B';
         }
         return global.runNum((bytes / Math.pow(k, i)), 2) + ' ' + sizes[i];
+    },
+
+    /**
+     * 数组是否包含
+     * @param value
+     * @param array
+     * @returns {boolean}
+     */
+    inArray(value, array) {
+        if (global.likeArray(array)) {
+            for (let i = 0; i < array.length; i++) {
+                if (value === array[i]) {
+                    return true;
+                }
+            }
+        }
+        return false;
     },
 };
 
