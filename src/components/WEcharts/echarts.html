@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html style="height: 100%">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
@@ -8,12 +8,25 @@
             margin: 0;
             padding: 0;
         }
+        #loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 14px;
+            color: #999;
+        }
+        html, body, #container {
+            height: 100%;
+        }
     </style>
     <script type="text/javascript" src="./echarts.min.js"></script>
     <script type="text/javascript" src="./bmap.min.js"></script>
 </head>
-<body style="height: 100%">
-    <div id="container" style="height:100%"></div>
+<body>
+    <div id="loading">Loading...</div>
+    <div id="container"></div>
     <script type="text/javascript">
         let eeui = null;
         let myChart = null;
@@ -60,6 +73,14 @@
                 window.onresize = function(){
                     myChart.resize();
                 }
+            });
+            //
+            var timeout = setTimeout(function() {
+                document.getElementById("loading").style.display = "block";
+            }, 300);
+            myChart.on('rendered', function () {
+                clearInterval(timeout);
+                document.getElementById("loading").style.display = "none";
             });
         }
     </script>
