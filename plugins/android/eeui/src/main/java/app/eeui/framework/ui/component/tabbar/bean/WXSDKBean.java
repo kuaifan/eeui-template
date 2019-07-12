@@ -4,7 +4,6 @@ package app.eeui.framework.ui.component.tabbar.bean;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.taobao.weex.WXSDKInstance;
@@ -12,10 +11,6 @@ import com.taobao.weex.WXSDKInstance;
 public class WXSDKBean {
 
     private boolean loaded;
-
-    private SwipeRefreshLayout swipeRefresh;
-
-    private boolean swipeRefreshEnable;
 
     private FrameLayout container;
     private View progress;
@@ -38,22 +33,6 @@ public class WXSDKBean {
 
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
-    }
-
-    public SwipeRefreshLayout getSwipeRefresh() {
-        return swipeRefresh;
-    }
-
-    public void setSwipeRefresh(SwipeRefreshLayout swipeRefresh) {
-        this.swipeRefresh = swipeRefresh;
-    }
-
-    public boolean getSwipeRefreshEnable() {
-        return swipeRefreshEnable;
-    }
-
-    public void setSwipeRefreshEnable(boolean swipeRefreshEnable) {
-        this.swipeRefreshEnable = swipeRefreshEnable;
     }
 
     public FrameLayout getContainer() {

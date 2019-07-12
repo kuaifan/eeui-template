@@ -12,20 +12,13 @@
         android:layout_height="0dp"
         android:visibility="gone"/>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/v_swipeRefresh"
+    <FrameLayout
+        android:id="@+id/v_container"
         android:layout_below="@+id/v_statusBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/v_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </FrameLayout>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/v_progress"

@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,6 @@ import app.eeui.framework.extend.view.NoAnimationViewPager;
 import app.eeui.framework.ui.component.tabbar.bean.TabbarBean;
 import app.eeui.framework.ui.component.tabbar.bean.WXSDKBean;
 import app.eeui.framework.ui.component.tabbar.entity.TabbarEntity;
-import app.eeui.framework.ui.eeui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -163,7 +161,17 @@ public class Tabbar extends WXVContainer<ViewGroup> {
         if (view instanceof TabbarPageView) {
             setFirstDraw(true);
             TabbarPageView newView = (TabbarPageView) view;
-            TabbarBean barBean = newView.getBarBean();
+            TabbarBean barBean = new TabbarBean();
+            barBean.setCache(newView.getBarBean().getCache());
+            barBean.setDot(newView.getBarBean().isDot());
+            barBean.setMessage(newView.getBarBean().getMessage());
+            barBean.setParams(newView.getBarBean().getParams());
+            barBean.setSelectedIcon(newView.getBarBean().getSelectedIcon());
+            barBean.setStatusBarColor(newView.getBarBean().getStatusBarColor());
+            barBean.setTabName(newView.getBarBean().getTabName());
+            barBean.setTitle(newView.getBarBean().getTitle());
+            barBean.setUnSelectedIcon(newView.getBarBean().getUnSelectedIcon());
+            barBean.setUrl(newView.getBarBean().getUrl());
             barBean.setView(newView);
             addPageView(barBean);
             setTabData();
@@ -174,10 +182,10 @@ public class Tabbar extends WXVContainer<ViewGroup> {
     public ViewGroup.LayoutParams getChildLayoutParams(WXComponent child, View childView, int width, int height, int left, int right, int top, int bottom) {
         ViewGroup.LayoutParams lp = childView == null ? null : childView.getLayoutParams();
         if (lp == null) {
-            lp = new FrameLayout.LayoutParams(width, height);
+            lp = new FrameLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT);
         } else {
             lp.width = width;
-            lp.height = height;
+            lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
         }
         if (lp instanceof ViewGroup.MarginLayoutParams) {
             left = eeuiScreenUtils.weexDp2px(getInstance(), child.getMargin().get(CSSShorthand.EDGE.LEFT));
@@ -508,7 +516,6 @@ public class Tabbar extends WXVContainer<ViewGroup> {
         View view = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.layout_eeui_tabbar_page, null);
         //
         WXSDKBean sdkBean = new WXSDKBean();
-        sdkBean.setSwipeRefresh(view.findViewById(R.id.v_swipeRefresh));
         sdkBean.setContainer(view.findViewById(R.id.v_container));
         sdkBean.setProgress(view.findViewById(R.id.v_progress));
         sdkBean.setErrorView(view.findViewById(R.id.v_error));
@@ -545,20 +552,6 @@ public class Tabbar extends WXVContainer<ViewGroup> {
             });
         }else{
             errorInfo.setText("抱歉！页面出现错误了");
-        }
-        //
-        if (getEvents().contains(eeuiConstants.Event.REFRESH_LISTENER)) {
-            sdkBean.getSwipeRefresh().setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
-            sdkBean.getSwipeRefresh().setOnRefreshListener(() -> {
-                Map<String, Object> data = new HashMap<>();
-                data.put("tabName", barBean.getTabName());
-                data.put("position", getTabPosition(barBean.getTabName()));
-                fireEvent(eeuiConstants.Event.REFRESH_LISTENER, data);
-            });
-            sdkBean.setSwipeRefreshEnable(true);
-        }else{
-            sdkBean.setSwipeRefreshEnable(false);
-            sdkBean.getSwipeRefresh().setEnabled(false);
         }
         //
         view.setTag(barBean.getTitle());
@@ -692,37 +685,10 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                     data.put("newState", newState);
                     fireEvent(eeuiConstants.Event.SCROLL_STATE_CHANGED, data);
                 }
-                if (sdkBean.getSwipeRefreshEnable()) {
-                    if (y == 0) {
-                        sdkBean.getSwipeRefresh().setEnabled(true);
-                    }else{
-                        sdkBean.getSwipeRefresh().setEnabled(false);
-                    }
-                }
             }
         });
         //
-        long cache = sdkBean.getCache();
-        if (url.startsWith("file://")) {
-            cache = 0;
-        }
-        eeuiPage.cachePage(url, cache, sdkBean.getParams(), new eeuiPage.OnCachePageCallback() {
-            @Override
-            public void success(Map<String, Object> resParams, String resData) {
-                sdkBean.getInstance().render(tabName, resData, resParams, null, WXRenderStrategy.APPEND_ASYNC);
-            }
-
-            @Override
-            public void error(Map<String, Object> resParams) {
-                String tempUrl = eeuiBase.config.verifyFile(url);
-                sdkBean.getInstance().renderByUrl("Tabbar:" + tabName, tempUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
-            }
-
-            @Override
-            public void complete(Map<String, Object> resParams) {
-
-            }
-        });
+        eeuiPage.cachePage(getContext(), eeuiBase.config.verifyFile(url), sdkBean.getCache(), sdkBean.getParams(), (resParams, newUrl) -> sdkBean.getInstance().renderByUrl("Tabbar:" + tabName, newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC));
     }
 
     /**
@@ -913,22 +879,6 @@ public class Tabbar extends WXVContainer<ViewGroup> {
         int position = getTabPosition(tabName);
         if (position > -1) {
             mViewPager.setCurrentItem(position);
-        }
-    }
-
-    /**
-     * 设置下拉刷新状态
-     * @param tabName
-     * @param refreshing
-     */
-    @JSMethod
-    public void setRefreshing(String tabName, boolean refreshing){
-        if (mViewPager == null) {
-            return;
-        }
-        WXSDKBean temp = mViewPager.WXSDKList.get(tabName);
-        if (temp != null) {
-            temp.getSwipeRefresh().setRefreshing(refreshing);
         }
     }
 

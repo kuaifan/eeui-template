@@ -29,6 +29,7 @@ import com.taobao.weex.adapter.IWXImgLoaderAdapter;
 import com.taobao.weex.common.WXImageStrategy;
 import com.taobao.weex.dom.WXImageQuality;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -82,6 +83,13 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
         }
         //
         String tempUrl = finalUrl;
+        File tempPath = view.getContext().getExternalFilesDir("Caches/pages");
+        if (tempPath != null) {
+            String cachePath = "file://" + tempPath.getPath() + "/";
+            if (tempUrl.startsWith(cachePath)) {
+                tempUrl = tempUrl.substring((cachePath).length());
+            }
+        }
         if (tempUrl.startsWith("//")) {
             tempUrl = "http:" + finalUrl;
         } else if (!tempUrl.startsWith("http") && !tempUrl.startsWith("ftp:") && !tempUrl.startsWith("file:") && !tempUrl.startsWith("data:image/")) {

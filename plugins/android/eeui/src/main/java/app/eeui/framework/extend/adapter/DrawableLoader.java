@@ -12,6 +12,7 @@ import com.taobao.weex.WXSDKManager;
 import com.taobao.weex.adapter.DrawableStrategy;
 import com.taobao.weex.adapter.IDrawableLoader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -43,6 +44,13 @@ public class DrawableLoader implements IDrawableLoader {
         WXSDKManager.getInstance().postOnUiThread(() -> {
 
             String tempUrl = finalUrl;
+            File tempPath = mContext.getExternalFilesDir("Caches/pages");
+            if (tempPath != null) {
+                String cachePath = "file://" + tempPath.getPath() + "/";
+                if (tempUrl.startsWith(cachePath)) {
+                    tempUrl = tempUrl.substring((cachePath).length());
+                }
+            }
             if (tempUrl.startsWith("//")) {
                 tempUrl = "http:" + finalUrl;
             } else if (!tempUrl.startsWith("http") && !tempUrl.startsWith("ftp:") && !tempUrl.startsWith("file:") && !tempUrl.startsWith("data:image/")) {

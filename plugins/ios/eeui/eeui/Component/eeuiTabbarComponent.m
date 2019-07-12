@@ -82,7 +82,6 @@
 @property (nonatomic, strong) NSMutableDictionary *lifeTabPages;
 @property (nonatomic, assign) CGFloat calculatedHeight;
 
-@property (nonatomic, assign) BOOL isRefreshListener;
 @property (nonatomic, assign) BOOL isRemoveObserver;
 
 @end
@@ -96,7 +95,6 @@ WX_EXPORT_METHOD(@selector(showDot:))
 WX_EXPORT_METHOD(@selector(hideMsg:))
 WX_EXPORT_METHOD(@selector(removePageAt:))
 WX_EXPORT_METHOD(@selector(setCurrentItem:))
-WX_EXPORT_METHOD(@selector(setRefreshing:refresh:))
 WX_EXPORT_METHOD(@selector(goUrl:url:))
 WX_EXPORT_METHOD(@selector(reload:))
 WX_EXPORT_METHOD(@selector(setTabType:))
@@ -195,8 +193,6 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
         if ([_ktabType isEqualToString:@"slidingTop"]) {
             _iconVisible = NO;
         }
-
-        _isRefreshListener = [events containsObject:@"refreshListener"];
     }
     return self;
 }
@@ -867,17 +863,6 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
         }
         vc.view.frame = frame;
 
-        //下拉刷新
-        if (_isRefreshListener) {
-            scoView.contentSize = CGSizeMake(0, scoView.frame.size.height + 0.1);
-
-            __weak typeof(self) ws = self;
-            scoView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-                NSDictionary *data = @{@"tabName":tabName, @"position":@(ws.selectedIndex)};
-                [ws fireEvent:@"refreshListener" params:data];
-            }];
-        }
-
         //标记已加载过该视图
         [_childPageList addObject:dic];
 
@@ -906,13 +891,9 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
         scoView.contentSize = CGSizeMake(0, com.calculatedFrame.size.height);
 
         //下拉刷新
-        if (_isRefreshListener) {
-            scoView.contentSize = CGSizeMake(0, scoView.frame.size.height + 0.1);
-
-            __weak typeof(eeuiTabbarComponent) *ws = self;
+        if (com.isRefreshListener) {
             scoView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-                NSDictionary *data = @{@"tabName":com.tabName, @"position":@(ws.selectedIndex)};
-                [ws fireEvent:@"refreshListener" params:data];
+                [com setRefreshListener:scoView.mj_header];
             }];
         }
 
@@ -1133,25 +1114,6 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
     }
 }
 
-- (void)setRefreshing:(NSString*)tabName refresh:(BOOL)refresh
-{
-    for (int i = 0; i < _tabNameList.count; i++) {
-        NSDictionary *dic = self.tabNameList[i];
-        if (dic) {
-            NSString *name = dic[@"tabName"];
-            if ([name isEqualToString:tabName]) {
-                UIScrollView *scoView = (UIScrollView*)[self.bodyView viewWithTag:TabBgScrollTag + i];
-                if (refresh) {
-                    [scoView.mj_header beginRefreshing];
-                } else {
-                    [scoView.mj_header endRefreshing];
-                }
-                break;
-            }
-        }
-    }
-}
-
 - (void)goUrl:(NSString*)tabName url:(NSString*)url
 {
     for (int i = 0; i < _tabNameList.count; i++) {
@@ -1221,16 +1183,6 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
                     frame = CGRectMake(0, 0, scoView.frame.size.width, scoView.frame.size.height - safeArea.bottom);
                 }
                 vc.view.frame = frame;
-
-                //下拉刷新
-                if (_isRefreshListener) {
-                    scoView.contentSize = CGSizeMake(0, scoView.frame.size.height + 0.1);
-                    __weak typeof(eeuiTabbarComponent) *ws = self;
-                    scoView.mj_header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
-                        NSDictionary *data = @{@"tabName":tabName, @"position":@(ws.selectedIndex)};
-                        [ws fireEvent:@"refreshListener" params:data];
-                    }];
-                }
             }
             break;
         }

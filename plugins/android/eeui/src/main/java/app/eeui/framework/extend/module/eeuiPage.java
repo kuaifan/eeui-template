@@ -10,6 +10,9 @@ import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.WXSDKInstance;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -20,6 +23,8 @@ import app.eeui.framework.activity.PageActivityNoTransparent;
 import app.eeui.framework.activity.PageActivityTransparent;
 import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
+import app.eeui.framework.extend.module.rxtools.tool.RxFileTool;
+import app.eeui.framework.extend.module.utilcode.util.TimeUtils;
 
 /**
  * Created by WDM on 2018/3/25.
@@ -32,6 +37,8 @@ public class eeuiPage {
     private static Map<String, PageBean> mPageBean = new HashMap<>();
 
     private static Map<String, Long> openTime = new HashMap<>();
+
+    public static Map<String, String> mAppboardContent = new HashMap<>();
 
     public static void setPageBean(String key, PageBean var) {
         mPageBean.put(key, var);
@@ -275,57 +282,134 @@ public class eeuiPage {
     }
 
     /**
+     * 获取Appboard内容
+     * @param context
+     * @return
+     */
+    public static String getAppboardContent(Context context) {
+        try {
+            String[] files = context.getAssets().list("eeui/appboard");
+            if (files != null) {
+                for (String file : files) {
+                    if (!TextUtils.isEmpty(file) && file.endsWith(".js")) {
+                        String key = "appboard/" + file;
+                        String temp = mAppboardContent.get(key);
+                        if (temp == null) {
+                            temp = eeuiBase.config.verifyAssets(context, "file://assets/eeui/appboard/" + file);
+                            mAppboardContent.put(key, temp);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        StringBuilder appboard = new StringBuilder();
+        for (Map.Entry<String, String> entry : mAppboardContent.entrySet()) {
+            if (!TextUtils.isEmpty(entry.getValue())) {
+                appboard.append(entry.getValue());
+                appboard.append(";");
+            }
+        }
+        if (TextUtils.isEmpty(appboard)) {
+            return "";
+        }
+        if (!appboard.toString().startsWith("// { \"framework\": \"Vue\"}")) {
+            appboard.insert(0, "// { \"framework\": \"Vue\"}\nif(typeof app==\"undefined\"){app=weex}\n");
+        }
+        return appboard.toString();
+    }
+
+    /**
      * 缓存页面
+     * @param context   上下文
      * @param url       缓存地址
      * @param cache     缓存时长，单位：毫秒
      * @param params    传递参数
      * @param mOnCachePageCallback
      */
-    public static void cachePage(String url, long cache, Object params, OnCachePageCallback mOnCachePageCallback) {
+    public static void cachePage(Context context, String url, long cache, Object params, OnCachePageCallback mOnCachePageCallback) {
         if (url == null || mOnCachePageCallback == null) {
             return;
+        }
+        if (url.startsWith("file://")) {
+            cache = 0;
         }
         Map<String, Object> resParams = new HashMap<>();
         resParams.put(WXSDKInstance.BUNDLE_URL, url);
         resParams.put("params", params);
         //
-        if (cache < 1000) {
+        String appboard = eeuiPage.getAppboardContent(context);
+        if (cache >= 1000 || !TextUtils.isEmpty(appboard)) {
+            if (url.startsWith("file://")) {
+                String tempUrl = saveCachePage(context, eeuiCommon.md5(url), appboard + eeuiCommon.getAssetsFile(context, url));
+                if (tempUrl == null) {
+                    Log.d(TAG, "cachePage assetsError: " + url);
+                    mOnCachePageCallback.success(resParams, url);
+                }else{
+                    Log.d(TAG, "cachePage assetsSuccess: " + url);
+                    mOnCachePageCallback.success(resParams, tempUrl);
+                }
+            }else{
+                Map<String, Object> data = new HashMap<>();
+                data.put(WXSDKInstance.BUNDLE_URL, url);
+                data.put("params", params);
+                data.put("setting:cache", cache);
+                data.put("setting:cacheLabel", "page");
+                eeuiIhttp.get("eeuiPage", url, data, new eeuiIhttp.ResultCallback() {
+                    @Override
+                    public void success(String resData, boolean isCache) {
+                        String tempUrl = saveCachePage(context, eeuiCommon.md5(url), appboard + resData);
+                        if (tempUrl == null) {
+                            Log.d(TAG, "cachePage errors: " + url);
+                            mOnCachePageCallback.success(resParams, url);
+                        }else{
+                            Log.d(TAG, "cachePage success: " + url);
+                            mOnCachePageCallback.success(resParams, tempUrl);
+                        }
+                    }
+
+                    @Override
+                    public void error(String error) {
+                        Log.d(TAG, "cachePage error: " + url);
+                        mOnCachePageCallback.success(resParams, url);
+                    }
+
+                    @Override
+                    public void complete() {
+
+                    }
+                });
+            }
+        }else{
             Log.d(TAG, "cachePage nocache: " + url);
-            mOnCachePageCallback.error(resParams);
-            return;
+            mOnCachePageCallback.success(resParams, url);
         }
-        //
-        Map<String, Object> data = new HashMap<>();
-        data.put(WXSDKInstance.BUNDLE_URL, url);
-        data.put("params", params);
-        data.put("setting:cache", cache);
-        data.put("setting:cacheLabel", "page");
-        eeuiIhttp.get("eeuiPage", url, data, new eeuiIhttp.ResultCallback() {
-            @Override
-            public void success(String resData, boolean isCache) {
-                Log.d(TAG, "cachePage success: " + isCache + ": " + url);
-                mOnCachePageCallback.success(resParams, resData);
-            }
+    }
 
-            @Override
-            public void error(String error) {
-                Log.d(TAG, "cachePage error: " + url);
-                mOnCachePageCallback.error(resParams);
-            }
-
-            @Override
-            public void complete() {
-                mOnCachePageCallback.complete(resParams);
-            }
-        });
+    /**
+     * 保存缓存页面
+     * @param context
+     * @param fileName
+     * @param string
+     * @return
+     */
+    private static String saveCachePage(Context context, String fileName, String string) {
+        File tempPath = context.getExternalFilesDir("Caches/pages");
+        if (tempPath == null) {
+            return null;
+        }
+        tempPath = new File(tempPath.getPath() + "/" + fileName);
+        if (!RxFileTool.writeFileFromString(tempPath, string, false)) {
+            return null;
+        }
+        return "file://" + tempPath.getPath();
     }
 
     /**
      * 缓存页面相应函数
      */
     public interface OnCachePageCallback {
-        void success(Map<String, Object> resParams, String resData);
-        void error(Map<String, Object> resParams);
-        void complete(Map<String, Object> resParams);
+        void success(Map<String, Object> resParams, String newUrl);
     }
 }

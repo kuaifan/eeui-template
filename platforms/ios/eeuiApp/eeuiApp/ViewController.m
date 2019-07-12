@@ -105,7 +105,6 @@ eeuiViewController *homeController;
 - (void) loadUrl:(NSString*) url {
     [WeexSDKManager sharedIntstance].weexUrl = url;
     [homeController setHomeUrl: url];
-    [homeController refreshPage];
 }
 
 - (BOOL) isReady {

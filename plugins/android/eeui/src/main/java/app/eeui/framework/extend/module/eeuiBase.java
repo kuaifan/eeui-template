@@ -1,6 +1,7 @@
 package app.eeui.framework.extend.module;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.widget.ProgressBar;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.bridge.JSCallback;
+import com.taobao.weex.utils.WXFileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,23 +69,7 @@ public class eeuiBase {
          */
         public static JSONObject get() {
             if (configData == null) {
-                String temp = "file://assets/eeui/config.json";
-                String vTemp = verifyFile(temp);
-                if (!temp.equals(vTemp)) {
-                    vTemp = vTemp.substring(7);
-                    try {
-                        FileInputStream fis = new FileInputStream(new File(vTemp));
-                        int length = fis.available();
-                        byte [] buffer = new byte[length];
-                        int read = fis.read(buffer);
-                        fis.close();
-                        if (read != -1) {
-                            configData = eeuiJson.parseObject(new String(buffer));
-                            return configData;
-                        }
-                    } catch (Exception ignored) { }
-                }
-                configData = eeuiJson.parseObject(eeuiCommon.getAssetsJson("eeui/config.json", eeui.getApplication()));
+                configData = eeuiJson.parseObject(verifyAssets(eeui.getApplication(), "file://assets/eeui/config.json"));
             }
             return configData;
         }
@@ -139,6 +125,24 @@ public class eeuiBase {
                 return defaultVal;
             }
             return eeuiJson.getString(params, key, defaultVal);
+        }
+
+        /**
+         * 转换修复Assets文件内容
+         * @param context
+         * @param originalUrl
+         * @return
+         */
+        public static String verifyAssets(Context context, String originalUrl) {
+            String temp = verifyFile(originalUrl);
+            if (!originalUrl.contentEquals(temp)) {
+                temp = temp.substring(7);
+                File file = new File(temp);
+                if (file.exists()) {
+                    return WXFileUtils.loadFileOrAsset(temp, context);
+                }
+            }
+            return eeuiCommon.getAssetsFile(context, originalUrl);
         }
 
         /**

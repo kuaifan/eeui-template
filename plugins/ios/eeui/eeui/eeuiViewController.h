@@ -54,6 +54,8 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 @property (nonatomic,assign) BOOL keyBoardlsVisible;
 @property (nonatomic,strong) NSString *identify;
 
+@property (nonatomic,assign) BOOL isCache;
+
 - (void)stopLoading;
 - (void)startLoading;
 - (void)refreshPage;

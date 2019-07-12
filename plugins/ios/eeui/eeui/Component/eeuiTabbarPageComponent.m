@@ -11,6 +11,9 @@
 
 @implementation eeuiTabbarPageComponent
 
+WX_EXPORT_METHOD(@selector(setRefresh))
+WX_EXPORT_METHOD(@selector(refreshEnd))
+
 - (instancetype)initWithRef:(NSString *)ref type:(NSString *)type styles:(NSDictionary *)styles attributes:(NSDictionary *)attributes events:(NSArray *)events weexInstance:(WXSDKInstance *)weexInstance
 {
     self = [super initWithRef:ref type:type styles:styles attributes:attributes events:events weexInstance:weexInstance];
@@ -28,6 +31,8 @@
         for (NSString *key in attributes.allKeys) {
             [self dataKey:key value:attributes[key] isUpdate:NO];
         }
+        
+        _isRefreshListener = [events containsObject:@"refreshListener"];
     }
     return self;
 }
@@ -78,5 +83,34 @@
         _dot = [WXConvert BOOL:value];
     }
 }
+
+- (void)setRefreshListener:(MJRefreshHeader*) scoView
+{
+    _scoView = scoView;
+    [self setRefresh];
+}
+
+- (void)setRefresh
+{
+    if (_scoView != nil) {
+        [_scoView beginRefreshing];
+        [self fireEvent:@"refreshListener" params:@{
+                                                    @"tabName": _tabName,
+                                                    @"message": @(_message),
+                                                    @"dot": @(_dot),
+                                                    @"selectedIcon": _selectedIcon,
+                                                    @"title": _title,
+                                                    @"unSelectedIcon": _unSelectedIcon,
+                                                    }];
+    }
+}
+
+- (void)refreshEnd
+{
+    if (_scoView != nil) {
+        [_scoView endRefreshing];
+    }
+}
+
 
 @end

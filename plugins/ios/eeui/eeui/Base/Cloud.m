@@ -260,7 +260,6 @@ static ClickWelcome myClickWelcome;
             if (vc.isFirstPage) {
                 [WeexSDKManager sharedIntstance].weexUrl = [Config getHome];
                 [vc setHomeUrl: [Config getHome]];
-                [vc refreshPage];
             }
         }
     }

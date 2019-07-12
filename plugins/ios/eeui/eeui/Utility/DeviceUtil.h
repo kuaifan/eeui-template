@@ -15,6 +15,8 @@
 
 #define ScreeScale [[UIScreen mainScreen]scale]
 
+static NSMutableDictionary * mAppboardContent;
+
 @interface DeviceUtil : NSObject
 
 + (CGFloat)scale:(NSInteger)value;
@@ -36,5 +38,11 @@
 + (NSString *)convertToCamelCaseFromSnakeCase:(NSString *)key;
 
 + (UIImage *)imageResize:(UIImage*)img andResizeTo:(CGSize)newSize icon:(NSString *)icon;
+
++ (NSString *)getAppboardContent;
+
++ (void)setAppboardContent:(NSString *)key content:(NSString *)content;
+
++ (void)downloadScript:(NSString *)url appboard:(NSString *)appboard cache:(NSInteger)cache callback:(void(^)(NSString* path))callback;
 
 @end

@@ -366,74 +366,31 @@ static int easyNavigationButtonTag = 8000;
 
 - (void)loadWeexPage
 {
-    //缓存文件
+    [self readyWeexPage:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self renderView];
+        });
+    }];
+}
+
+- (void)readyWeexPage:(void(^)(void))callback
+{
     NSInteger cache = self.cache;
     if ([_url hasPrefix:@"file://"]) {
         cache = 0;
     }
-    if (cache > 0) {
-        BOOL isCache = NO;
-        if ([WeexSDKManager sharedIntstance].cacheData[_url]) {
-            //存在缓存文件，则判断是否过期
-            NSDictionary *data = [WeexSDKManager sharedIntstance].cacheData[_url];
-            NSInteger time = [data[kCacheTime] integerValue];
-            NSDate *date = [NSDate dateWithTimeIntervalSince1970:time];
-
-            if ([date compare:[NSDate date]] == NSOrderedDescending) {
-                NSString *cacheUrl = data[kCacheUrl];
-                //使用缓存文件
-                self.renderUrl = cacheUrl;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self renderView];
-                });
-                isCache = NO;
-            } else {
-                self.renderUrl = _url;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self renderView];
-                });
-                //重新下载
-                isCache = YES;
-            }
-        } else {
-            //不存在缓存文件，则下载并缓存
-            isCache = YES;
-        }
-
-        if (isCache) {
-            __weak typeof(self) ws = self;
-            NSString * urlStr = [_url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
-            NSURLSession *session = [NSURLSession sharedSession];
-            NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithRequest:request completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                if (!error) {
-                    NSFileManager *fileManager = [NSFileManager defaultManager];
-                    NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:kCachePath];
-                    if (![fileManager fileExistsAtPath:filePath]) {
-                        [fileManager createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
-                    }
-
-                    NSString *fullPath =  [filePath stringByAppendingPathComponent:response.suggestedFilename];
-
-                    [fileManager moveItemAtURL:location toURL:[NSURL fileURLWithPath:fullPath] error:nil];
-
-                    NSInteger time = [[NSDate date] timeIntervalSince1970] + ws.cache * 1.0f / 1000;
-                    NSDictionary *saveDic = @{kCacheUrl:fullPath, kCacheTime:@(time)};
-                    [[WeexSDKManager sharedIntstance].cacheData setObject:saveDic forKey:ws.url];
-
-                    ws.renderUrl = fullPath;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [ws renderView];
-                    });
-                }
-            }];
-            [downloadTask resume];
-        }
-    } else {
-        self.renderUrl = _url;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self renderView];
-        });
+    NSString *tempUrl = [Config verifyFile:_url];
+    NSString *appboard = [DeviceUtil getAppboardContent];
+    if (cache >= 1000 || appboard.length > 0) {
+        _isCache = YES;
+        [DeviceUtil downloadScript:tempUrl appboard:appboard cache:cache callback:^(NSString *path) {
+            self.renderUrl = path == nil ? tempUrl : path;
+            callback();
+        }];
+    }else{
+        _isCache = NO;
+        self.renderUrl = tempUrl;
+        callback();
     }
 }
 
@@ -532,7 +489,7 @@ static int easyNavigationButtonTag = 8000;
     }
     _instance.viewController = self;
 
-    [_instance renderWithURL:[NSURL URLWithString:[Config verifyFile:self.renderUrl]] options:@{@"params":_params?_params:@""} data:nil];
+    [_instance renderWithURL:[NSURL URLWithString:self.renderUrl] options:@{@"params":_params?_params:@""} data:nil];
 
     if (_didWillEnter == NO) {
         _didWillEnter = YES;
@@ -783,8 +740,8 @@ static int easyNavigationButtonTag = 8000;
 - (void)setHomeUrl:(NSString*)url
 {
     self.url = url;
-    self.renderUrl = self.url;
     [[eeuiNewPageManager sharedIntstance] setPageDataValue:self.pageName key:@"url" value:self.url];
+    [self refreshPage];
 }
 
 - (void)setResumeUrl:(NSString *)url
@@ -840,12 +797,21 @@ static int easyNavigationButtonTag = 8000;
 - (void)refreshPage
 {
     [self startLoading];
+    
+    if (_isCache) {
+        [self readyWeexPage:^{ [self refreshPageExecution]; }];
+    }else{
+        [self refreshPageExecution];
+    }
+}
 
+- (void)refreshPageExecution
+{
     self.identify = [NSString stringWithFormat: @"%d", arc4random() % 100000];
     self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.rightBarButtonItem = nil;
     [self hideNavigation];
-
+    
     if ([_pageType isEqualToString:@"web"]) {
         [self.webView reload];
     } else {

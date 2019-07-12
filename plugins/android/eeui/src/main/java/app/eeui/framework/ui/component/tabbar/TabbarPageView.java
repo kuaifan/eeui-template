@@ -1,8 +1,8 @@
 package app.eeui.framework.ui.component.tabbar;
 
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
 
 import app.eeui.framework.ui.component.tabbar.bean.TabbarBean;
 
@@ -10,7 +10,7 @@ import app.eeui.framework.ui.component.tabbar.bean.TabbarBean;
  * Created by WDM on 2018/3/9.
  */
 
-public class TabbarPageView extends FrameLayout {
+public class TabbarPageView extends SwipeRefreshLayout {
 
     private TabbarBean mTabbarBean = new TabbarBean();
 
@@ -22,9 +22,6 @@ public class TabbarPageView extends FrameLayout {
         super(context, attrs);
     }
 
-    public TabbarPageView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
 
     public void setBarBean(TabbarBean barBean) {
         mTabbarBean = barBean;

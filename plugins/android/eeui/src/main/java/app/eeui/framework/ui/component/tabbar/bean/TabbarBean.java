@@ -1,5 +1,8 @@
 package app.eeui.framework.ui.component.tabbar.bean;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import app.eeui.framework.extend.module.eeuiCommon;
 
 /**
@@ -19,6 +22,17 @@ public class TabbarBean {
     private boolean dot = false;
     private String statusBarColor = "";
     private Object view;
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("tabName", getTabName());
+        data.put("message", getMessage());
+        data.put("dot", isDot());
+        data.put("selectedIcon", getSelectedIcon());
+        data.put("title", getTitle());
+        data.put("unSelectedIcon", getUnSelectedIcon());
+        return data;
+    }
 
     public String getTabName() {
         return tabName;

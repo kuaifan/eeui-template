@@ -558,8 +558,8 @@ WX_EXPORT_METHOD(@selector(save:))
     NSString * newURL = [imageSrc copy];
     WX_REWRITE_URL(imageSrc, WXResourceTypeImage, self.weexInstance)
     __weak typeof(self) weakSelf = self;
-    weakSelf.imageOperation = [[weakSelf imageLoader] downloadImageWithURL:newURL imageFrame:weakSelf.calculatedFrame userInfo:userInfo completed:^(UIImage *image, NSError *error, BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        weakSelf.imageOperation = [[weakSelf imageLoader] downloadImageWithURL:newURL imageFrame:weakSelf.calculatedFrame userInfo:userInfo completed:^(UIImage *image, NSError *error, BOOL finished) {
             __strong typeof(self) strongSelf = weakSelf;
             
             if (strongSelf.imageLoadEvent) {
@@ -593,8 +593,8 @@ WX_EXPORT_METHOD(@selector(save:))
                 strongSelf->_image = image;
                 [strongSelf setNeedsDisplay];
             }
-        });
-    }];
+        }];
+    });
 }
 
 - (NSString*) _safeInstanceId

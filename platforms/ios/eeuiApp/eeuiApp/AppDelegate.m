@@ -532,6 +532,11 @@ NSDictionary *mLaunchOptions;
                 }
             }
         }
+    }else if ([msg hasPrefix:@"APPBOARDCONTENT:"]) {
+        NSArray *temp = [[msg substringFromIndex:16] componentsSeparatedByString:@"::"];
+        NSString *key = [WXConvert NSString:temp[0]];
+        [DeviceUtil setAppboardContent:key content:[msg substringFromIndex:16 + 2 + key.length]];
+        [self refresh];
     }else if ([msg isEqualToString:@"REFRESH"]) {
         [self refresh];
     }

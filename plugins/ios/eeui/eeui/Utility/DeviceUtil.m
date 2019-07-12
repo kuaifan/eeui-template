@@ -12,6 +12,7 @@
 #import "TBCityIconInfo.h"
 #import "TBCityIconFont.h"
 #import "eeuiViewController.h"
+#import "Config.h"
 
 @implementation DeviceUtil
 
@@ -194,6 +195,106 @@
     UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return newImage;
+}
+
+//获取Appboard内容
++ (NSString *)getAppboardContent
+{
+    if (mAppboardContent == nil) {
+        mAppboardContent = [NSMutableDictionary dictionary];
+    }
+    NSString *path = [Config getResourcePath:@"bundlejs/eeui/appboard"];
+    NSFileManager * fileManger = [NSFileManager defaultManager];
+    BOOL isDir = NO;
+    [fileManger fileExistsAtPath:path isDirectory:&isDir];
+    if (isDir) {
+        NSArray * dirArray = [fileManger contentsOfDirectoryAtPath:path error:nil];
+        NSString * subPath = nil;
+        for (NSString * str in dirArray) {
+            if ([str hasSuffix:@".js"]) {
+                NSString *key = [NSString stringWithFormat:@"appboard/%@", str];
+                NSString *temp = [mAppboardContent objectForKey:key];
+                if (temp.length == 0) {
+                    subPath  = [Config verifyFile:[path stringByAppendingPathComponent:str]];
+                    BOOL issubDir = NO;
+                    [fileManger fileExistsAtPath:subPath isDirectory:&issubDir];
+                    BOOL isExist = [fileManger fileExistsAtPath:subPath isDirectory:&isDir];
+                    if (isExist) {
+                        NSData *fileData = [[NSData alloc] initWithContentsOfFile:subPath];
+                        temp = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
+                        [mAppboardContent setValue:temp forKey:key];
+                    }
+                }
+            }
+        }
+    }
+    NSString *appboard = @"";
+    for (NSString *key in mAppboardContent) {
+        NSString *value = mAppboardContent[key];
+        if (value.length > 0) {
+            appboard = [NSString stringWithFormat:@"%@%@;", appboard, value];
+        }
+    }
+    if (appboard.length > 0) {
+        if (![appboard hasPrefix:@"// { \"framework\": \"Vue\"}"]) {
+            appboard = [NSString stringWithFormat:@"%@%@", @"// { \"framework\": \"Vue\"}\nif(typeof app==\"undefined\"){app=weex}\n", appboard];
+        }
+    }
+    return appboard;
+}
+
+//设置Appboard内容
++ (void)setAppboardContent:(NSString *)key content:(NSString *)content
+{
+    if (mAppboardContent == nil) {
+        mAppboardContent = [NSMutableDictionary dictionary];
+    }
+    [mAppboardContent setValue:content forKey:key];
+}
+
+//下载文件
++ (void)downloadScript:(NSString *)url appboard:(NSString *)appboard cache:(NSInteger)cache callback:(void(^)(NSString* path))callback
+{
+    NSDictionary *data = [WeexSDKManager sharedIntstance].cacheData[url];
+    if (data != nil) {
+        //存在缓存文件，则判断是否过期
+        NSDictionary *data = [WeexSDKManager sharedIntstance].cacheData[url];
+        NSInteger time = [data[@"cache_time"] integerValue];
+        NSDate *date = [NSDate dateWithTimeIntervalSince1970:time];
+        if ([date compare:[NSDate date]] == NSOrderedDescending) {
+            callback([NSString stringWithFormat:@"file://%@", data[@"cache_url"]]);
+            return;
+        }
+    }
+    NSString *urlStr = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet characterSetWithCharactersInString:@"`#%^{}\"[]|\\<> "].invertedSet];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlStr]];
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *downloadTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (!error) {
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:kCachePath];
+            if (![fileManager fileExistsAtPath:filePath]) {
+                [fileManager createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
+            }
+            NSString *fullPath = [filePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_%@", [Config MD5ForLower32Bate:url], response.suggestedFilename]];
+            NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            if (appboard.length > 0) {
+                content = [NSString stringWithFormat:@"%@%@", appboard, content];
+            }
+            [content writeToFile:fullPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            //
+            if (cache > 1000) {
+                NSInteger time = [[NSDate date] timeIntervalSince1970] + cache * 1.0f / 1000;
+                NSDictionary *saveDic = @{@"cache_url":fullPath, @"cache_time":@(time)};
+                [[WeexSDKManager sharedIntstance].cacheData setObject:saveDic forKey:url];
+            }
+            //
+            callback([NSString stringWithFormat:@"file://%@", fullPath]);
+        }else{
+            callback(nil);
+        }
+    }];
+    [downloadTask resume];
 }
 
 @end

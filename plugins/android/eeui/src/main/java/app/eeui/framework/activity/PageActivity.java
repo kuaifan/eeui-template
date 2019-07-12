@@ -34,7 +34,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -1063,7 +1062,7 @@ public class PageActivity extends AppCompatActivity {
         //
         weexCreateInstance();
         mWXSDKInstance.onActivityCreate();
-        weexRenderPage();
+        eeuiPage.cachePage(this, eeuiBase.config.verifyFile(mPageInfo.getUrl()), mPageInfo.getCache(), mPageInfo.getParams(), (resParams, newUrl) -> mWXSDKInstance.renderByUrl(mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC));
     }
 
     /**
@@ -1079,33 +1078,6 @@ public class PageActivity extends AppCompatActivity {
         mWXSDKInstance = new WXSDKInstance(this);
         mWXSDKInstance.registerRenderListener(weexIWXRenderListener());
         mWXSDKInstance.registerOnWXScrollListener(weexOnWXScrollListener());
-    }
-
-    /**
-     * Weex
-     */
-    private void weexRenderPage() {
-        long cache = mPageInfo.getCache();
-        if (mPageInfo.getUrl().startsWith("file://")) {
-            cache = 0;
-        }
-        eeuiPage.cachePage(mPageInfo.getUrl(), cache, mPageInfo.getParams(), new eeuiPage.OnCachePageCallback() {
-            @Override
-            public void success(Map<String, Object> resParams, String resData) {
-                mWXSDKInstance.render(mPageInfo.getPageName(), resData, resParams, null, WXRenderStrategy.APPEND_ASYNC);
-            }
-
-            @Override
-            public void error(Map<String, Object> resParams) {
-                String tempUrl = eeuiBase.config.verifyFile(mPageInfo.getUrl());
-                mWXSDKInstance.renderByUrl(mPageInfo.getPageName(), tempUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
-            }
-
-            @Override
-            public void complete(Map<String, Object> resParams) {
-
-            }
-        });
     }
 
     /**
@@ -1777,7 +1749,7 @@ public class PageActivity extends AppCompatActivity {
         if (eeuiCommon.getVariateInt("__deBugSocket:Init") == 0) {
             eeuiCommon.setVariate("__deBugSocket:Init", 1);
             //
-            JSONObject jsonData = eeuiJson.parseObject(eeuiCommon.getAssetsJson("eeui/config.json", this));
+            JSONObject jsonData = eeuiJson.parseObject(eeuiCommon.getAssetsFile(this, "file://assets/eeui/config.json"));
             eeuiCommon.setVariate("__deBugSocket:Host", eeuiJson.getString(jsonData, "socketHost"));
             eeuiCommon.setVariate("__deBugSocket:Port", eeuiJson.getString(jsonData, "socketPort"));
             if (PermissionUtils.isShowApply || PermissionUtils.isShowRationale || PermissionUtils.isShowOpenAppSetting) {
@@ -2176,6 +2148,15 @@ public class PageActivity extends AppCompatActivity {
                             call.onReceiveResult(url);
                         }
                     }
+                }
+            }else if (text.startsWith("APPBOARDCONTENT:")) {
+                String[] temp = text.substring(16).split("::");
+                eeuiPage.mAppboardContent.put(temp[0], text.substring(16 + 2 + temp[0].length()));
+                //
+                Activity activity = eeui.getActivityList().getLast();
+                if (activity instanceof PageActivity) {
+                    PageActivity mActivity = ((PageActivity) activity);
+                    mActivity.reload();
                 }
             }else if (text.contentEquals("REFRESH")) {
                 Activity activity = eeui.getActivityList().getLast();

@@ -6,6 +6,7 @@
 //  Copyright © 2018年 TomQin. All rights reserved.
 //
 
+#import "MJRefreshHeader.h"
 #import "WXComponent.h"
 #import "WeexSDK.h"
 
@@ -17,5 +18,10 @@
 @property (nonatomic, strong) NSString *selectedIcon;
 @property (nonatomic, assign) NSInteger message;
 @property (nonatomic, assign) BOOL dot;
+@property (nonatomic, assign) BOOL isRefreshListener;
+
+@property (nonatomic, strong) MJRefreshHeader *scoView;
+
+- (void)setRefreshListener:(MJRefreshHeader*) scoView;
 
 @end
