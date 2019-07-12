@@ -6,7 +6,7 @@
             <navbar-item type="title">
                 <text class="title">图片选择器</text>
             </navbar-item>
-            <navbar-item type="right" @click="viewCode('plugin/picture')">
+            <navbar-item type="right" @click="viewCode('markets/detail.html#picture')">
                 <icon content="md-code-working" class="iconr"></icon>
             </navbar-item>
         </navbar>
@@ -101,9 +101,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-    import {each} from "../../common/js/global";
-
     const eeui = app.requireModule('eeui');
     const picture = app.requireModule('picture');
 
@@ -115,14 +112,14 @@
         },
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
             sliceLists(data, slice) {
                 let lists = [];
                 let j = 0;
                 for (let i = 0, len = data.length; i < len; i += slice) {
                     let temp = [];
-                    each(data.slice(i, i + slice), (index, item) => {
+                    this.each(data.slice(i, i + slice), (index, item) => {
                         item.position = j;
                         temp.push(item);
                         j++;

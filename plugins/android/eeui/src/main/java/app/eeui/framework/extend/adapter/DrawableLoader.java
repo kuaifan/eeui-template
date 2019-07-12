@@ -68,10 +68,10 @@ public class DrawableLoader implements IDrawableLoader {
                 if (tempUrl.startsWith("file://assets/")) {
                     Bitmap myBitmap = getImageFromAssetsFile(mContext, tempUrl.substring(14));
                     myLoad = Glide.with(mContext).load(myBitmap);
-                }else if (tempUrl.startsWith("file:///assets/")) {
+                } else if (tempUrl.startsWith("file:///assets/")) {
                     Bitmap myBitmap = getImageFromAssetsFile(mContext, tempUrl.substring(15));
                     myLoad = Glide.with(mContext).load(myBitmap);
-                }else{
+                } else {
                     myLoad = Glide.with(mContext).load(tempUrl);
                 }
                 //
@@ -90,8 +90,7 @@ public class DrawableLoader implements IDrawableLoader {
         }, 0);
     }
 
-    private Bitmap getImageFromAssetsFile(Context context, String fileName)
-    {
+    private Bitmap getImageFromAssetsFile(Context context, String fileName) {
         Bitmap image = null;
         AssetManager am = context.getResources().getAssets();
         try {

@@ -6,7 +6,7 @@
             <navbar-item type="title">
                 <text class="title">组件截图</text>
             </navbar-item>
-            <navbar-item type="right" @click="viewCode('plugin/screenshots')">
+            <navbar-item type="right" @click="viewCode('markets/detail.html#screenshots')">
                 <icon content="md-code-working" class="iconr"></icon>
             </navbar-item>
         </navbar>
@@ -72,8 +72,6 @@
     }
 </style>
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
     const screenshots = app.requireModule('screenshots');
 
@@ -86,7 +84,7 @@
         },
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
 
             shots() {

@@ -67,17 +67,15 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
 
     export default {
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
             toAlert() {
-                eeui.alert('你使用eeui了吗？', function() {
+                eeui.alert('感谢你使用EEUI！', function() {
                     eeui.toast("点击了确定！")
                 });
 
@@ -85,13 +83,13 @@
             toAlert2() {
                 eeui.alert({
                     title: '温馨提示',
-                    message: '使用eeui真的很不错哦！',
+                    message: '感谢你使用EEUI！',
                 }, function() {
                     eeui.toast("点击了确定！")
                 });
             },
             toConfirm() {
-                eeui.confirm("你确定使用eeui了吗？", function(result) {
+                eeui.confirm("确定感谢你使用EEUI！", function(result) {
                     if (result.status == "click") {
                         eeui.toast("点击了：" + result.title)
                     }
@@ -100,7 +98,7 @@
             toConfirm2() {
                 eeui.confirm({
                     title: "温馨提示",
-                    message: "你确定使用eeui了吗？",
+                    message: "确定感谢你使用EEUI！",
                     buttons: ["取消", "确定", "第三个按钮"],
                 }, function(result) {
                     if (result.status == "click") {

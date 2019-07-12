@@ -17,7 +17,10 @@
  * under the License.
  */
 
+
 #include "core/bridge/platform/core_side_in_platform.h"
+
+#include "core/common/view_utils.h"
 #include "base/string_util.h"
 #include "base/log_defines.h"
 #include "core/config/core_environment.h"
@@ -30,6 +33,10 @@
 #include "core/render/page/render_page.h"
 #include "core/bridge/eagle_bridge.h"
 #include "third_party/json11/json11.hpp"
+#ifdef OS_ANDROID
+#include <android/utils/params_utils.h>
+#include <wson/wson.h>
+#endif
 
 namespace WeexCore {
 
@@ -164,7 +171,26 @@ void CoreSideInPlatform::MarkDirty(const std::string &instance_id,
 
 void CoreSideInPlatform::SetViewPortWidth(const std::string &instance_id,
                                           float width) {
-    RenderManager::GetInstance()->set_viewport_width(instance_id, width);
+  RenderManager::GetInstance()->set_viewport_width(instance_id, width);
+}
+    
+void CoreSideInPlatform::SetDeviceDisplayOfPage(const std::string &instance_id, float width, float height /* unused now */)  {
+  RenderManager::GetInstance()->setDeviceWidth(instance_id, width);
+}
+    
+void CoreSideInPlatform::SetPageArgument(const std::string &pageId, const std::string& key, const std::string& value){
+    RenderManager::GetInstance()->setPageArgument(pageId, key, value);
+}
+
+void CoreSideInPlatform::SetDeviceDisplay(const std::string &instance_id, float width, float height, float scale) {
+  RenderManager::GetInstance()->setDeviceWidth(instance_id, width);
+
+    /**
+     * also update global device with height and options
+     * */
+  WXCoreEnvironment::getInstance()->SetDeviceWidth(std::to_string(width));
+  WXCoreEnvironment::getInstance()->SetDeviceHeight(std::to_string(height));
+  WXCoreEnvironment::getInstance()->PutOption(SCALE, std::to_string(scale));
 }
 
 void CoreSideInPlatform::SetPageDirty(const std::string &instance_id) {
@@ -203,6 +229,10 @@ bool CoreSideInPlatform::NotifyLayout(const std::string &instance_id) {
     return ret ? true : false;
   }
   return false;
+}
+    
+bool CoreSideInPlatform::RelayoutUsingRawCssStyles(const std::string& instance_id) {
+  return RenderManager::GetInstance()->ReloadPageLayout(instance_id);
 }
 
 std::vector<int64_t> CoreSideInPlatform::GetFirstScreenRenderTime(
@@ -312,6 +342,7 @@ void CoreSideInPlatform::AddOption(const std::string &key,
 int CoreSideInPlatform::RefreshInstance(
     const char *instanceId, const char *nameSpace, const char *func,
     std::vector<VALUE_WITH_TYPE *> &params) {
+#ifdef OS_ANDROID
   if(params.size() < 2)
     return false;
 
@@ -322,9 +353,55 @@ int CoreSideInPlatform::RefreshInstance(
                                               params[1]->value.string->length);
   auto handler = EagleBridge::GetInstance()->data_render_handler();
   if (handler && handler->RefreshPage(instanceId, init_data)) {
+    std::vector<VALUE_WITH_TYPE*> msg;
+
+    VALUE_WITH_TYPE* event = getValueWithTypePtr();
+    event->type = ParamsType::BYTEARRAY;
+    auto buffer = wson_buffer_new();
+    wson_push_type_uint8_string(
+        buffer, reinterpret_cast<const uint8_t*>(instanceId), strlen(instanceId));
+    event->value.byteArray = genWeexByteArray(
+        static_cast<const char*>(buffer->data), buffer->position);
+    wson_buffer_free(buffer);
+    msg.push_back(event);
+
+    // args -> { method: 'fireEvent', args: [ref, "nodeEvent", args , domChanges, {params: [ {"templateId": templateId, "componentId": id, "type": type, "params" : [...]} ]}] }
+    VALUE_WITH_TYPE* args = getValueWithTypePtr();
+    args->type = ParamsType::JSONSTRING;
+    json11::Json final_json = json11::Json::array{
+        json11::Json::object{
+            {"method", "fireEvent"},
+            {"args",
+             json11::Json::array{
+                 "", "refresh", json11::Json::array{}, "",
+                 json11::Json::object{
+                     {"params",
+                      json11::Json::array{
+                          json11::Json::object{
+                              {"data", init_data}
+                          }
+                      }}
+                 }
+             }}
+        }
+    };
+
+    auto final_json_str = final_json.dump().c_str();
+    auto utf16_key = weex::base::to_utf16(const_cast<char*>(final_json_str),
+                                          strlen(final_json_str));
+    args->value.string = genWeexString(
+        reinterpret_cast<const uint16_t*>(utf16_key.c_str()), utf16_key.size());
+    msg.push_back(args);
+
+    WeexCore::WeexCoreManager::Instance()->script_bridge()->script_side()->ExecJS(
+        instanceId, "", "callJS", msg);
+    freeParams(msg);
     return true;
   }
   return ExecJS(instanceId, nameSpace, func, params);
+#else
+  return 0;
+#endif
 }
 
 int CoreSideInPlatform::InitFramework(
@@ -423,24 +500,24 @@ int CoreSideInPlatform::CreateInstance(const char *instanceId, const char *func,
                                        const char *render_strategy) {
   // First check about DATA_RENDER mode
   if (render_strategy != nullptr) {
-    std::function<void(const char *)> exec_js =
+    std::function<void(const char *, const char *)> exec_js =
         [instanceId = std::string(instanceId), func = std::string(func),
          opts = std::string(opts), initData = std::string(initData),
-         extendsApi = std::string(extendsApi)](const char *result) {
-          // FIXME Now only support vue, this should be fixed
+         extendsApi = std::string(extendsApi)](const char *result, const char *bundleType) {
           std::string error;
           auto opts_json = json11::Json::parse(opts, error);
           std::map<std::string, json11::Json> &opts_map =
               const_cast<std::map<std::string, json11::Json> &>(
                   opts_json.object_items());
-          opts_map["bundleType"] = "Vue";
+          opts_map["bundleType"] = bundleType;
           std::vector<INIT_FRAMEWORK_PARAMS*> params;
           WeexCoreManager::Instance()
               ->script_bridge()
               ->script_side()
               ->CreateInstance(instanceId.c_str(), func.c_str(), result,
                                opts_json.dump().c_str(), initData.c_str(),
-                               extendsApi.c_str(),params);
+                               strcmp("Rax", bundleType) ? "\0" : extendsApi.c_str(),
+                               params);
         };
     if (strcmp(render_strategy, "DATA_RENDER") == 0) {
         auto handler = EagleBridge::GetInstance()->data_render_handler();
@@ -448,7 +525,9 @@ int CoreSideInPlatform::CreateInstance(const char *instanceId, const char *func,
           handler->CreatePage(script, instanceId, render_strategy, initData, exec_js);
         }
         else{
-          LOGE("DATA_RENDER mode should not be used if there is no data_render_handler");
+          WeexCore::WeexCoreManager::Instance()->getPlatformBridge()->platform_side()->ReportException(
+            instanceId, "CreatePageWithContent", 
+            "There is no data_render_handler when createInstance with DATA_RENDER mode");
         }
 
       return true;
@@ -487,7 +566,9 @@ int CoreSideInPlatform::CreateInstance(const char *instanceId, const char *func,
         handler->CreatePage(script, static_cast<size_t>(script_length), instanceId, option, env_str, initData, exec_js);
       }
       else{
-        LOGE("DATA_RENDER_BINARY mode should not be used if there is no data_render_handler"); 
+        WeexCore::WeexCoreManager::Instance()->getPlatformBridge()->platform_side()->ReportException(
+          instanceId, "CreatePageWithContent", 
+          "There is no data_render_handler when createInstance with DATA_RENDER_BINARY mode");
       }
       return true;
     }
@@ -500,11 +581,11 @@ int CoreSideInPlatform::CreateInstance(const char *instanceId, const char *func,
 }
 
 std::unique_ptr<WeexJSResult> CoreSideInPlatform::ExecJSOnInstance(const char *instanceId,
-                                                 const char *script) {
+                                                 const char *script, int type) {
   return WeexCoreManager::Instance()
       ->script_bridge()
       ->script_side()
-      ->ExecJSOnInstance(instanceId, script);
+      ->ExecJSOnInstance(instanceId, script,type);
 }
 
 int CoreSideInPlatform::DestroyInstance(const char *instanceId) {
@@ -521,4 +602,15 @@ int CoreSideInPlatform::UpdateGlobalConfig(const char *config) {
       ->script_side()
       ->UpdateGlobalConfig(config);
 }
+
+
+int CoreSideInPlatform::UpdateInitFrameworkParams(const std::string &key, const std::string &value,
+                                                  const std::string &desc) {
+  return WeexCoreManager::Instance()
+          ->script_bridge()
+          ->script_side()
+          ->UpdateInitFrameworkParams(key, value, desc);
+}
+
+
 }  // namespace WeexCore

@@ -100,7 +100,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
     import WSwitch from "../components/WSwitch.vue";
 
     const eeui = app.requireModule('eeui');
@@ -122,7 +121,7 @@
         },
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
             openPage() {
                 eeui.openPage({

@@ -33,6 +33,7 @@
 #import "CustomWeexSDKManager.h"
 #define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
 
+
 @interface WXEditComponent()
 {
     CGFloat _upriseOffset; // additional space when edit is lifted by keyboard
@@ -116,11 +117,11 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         _value = [WXConvert NSString:attributes[@"value"]]?:@"";
         _placeholderString = [WXConvert NSString:attributes[@"placeholder"]]?:@"";
         _upriseOffset = 20; // 20 for better appearance
-
+        
         if (attributes[@"upriseOffset"]) {
             _upriseOffset = [WXConvert CGFloat:attributes[@"upriseOffset"]];
         }
-
+        
         if(attributes[@"type"]) {
             _inputType = [WXConvert NSString:attributes[@"type"]];
             _attr = attributes;
@@ -136,14 +137,14 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         } else {
             _rows = 2;
         }
-
+        
         if (attributes[@"hideDoneButton"]) {
             _hideDoneButton = [attributes[@"hideDoneButton"] boolValue];
         }
         if (attributes[@"disableMoveViewUp"]) {
             _disableMoveViewUp = [WXConvert BOOL:attributes[@"disableMoveViewUp"]];
         }
-
+        
         // handle styles
         if (styles[@"color"]) {
             _colorForStyle = [WXConvert UIColor:styles[@"color"]];
@@ -169,7 +170,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
             _placeholderColor = [UIColor colorWithRed:0x99/255.0 green:0x99/255.0 blue:0x99/255.0 alpha:1.0];
         }
     }
-
+    
     return self;
 }
 
@@ -197,13 +198,13 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
     [self setRows:_rows];
     [self setReturnKeyType:_returnKeyType];
     [self updatePattern];
-
+    
     if (!self.hideDoneButton) {
         UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(closeKeyboard)];
         UIBarButtonItem *space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 0, 44)];
         toolbar.items = [NSArray arrayWithObjects:space, barButton, nil];
-
+        
         self.inputAccessoryView = toolbar;
     }
 
@@ -216,7 +217,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
                                              selector:@selector(keyboardWasShown:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
@@ -289,7 +290,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         return formater;
     }
     NSRange subStringRange = NSMakeRange(start.location+1, end.location - start.location-1);
-
+    
     return [formater substringWithRange:subStringRange];
 }
 
@@ -444,7 +445,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
     if (attributes[@"maxlength"]) {
         _maxLength = [NSNumber numberWithInteger:[attributes[@"maxlength"] integerValue]];
     }
-
+    
     if (attributes[@"disableMoveViewUp"]) {
         _disableMoveViewUp = [WXConvert BOOL:attributes[@"disableMoveViewUp"]];
     }
@@ -499,7 +500,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         _fontFamily = [WXConvert NSString:styles[@"fontFamily"]];
     }
     [self setTextFont];
-
+    
     if (styles[@"textAlign"]) {
         _textAlignForStyle = [WXConvert NSTextAlignment:styles[@"textAlign"]];
         [self setTextAlignment:_textAlignForStyle] ;
@@ -518,19 +519,19 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
     if (self.flexCssNode == nullptr) {
         return;
     }
-
+    
         UIEdgeInsets padding_flex = UIEdgeInsetsMake(
                                                      self.flexCssNode->getPaddingTop(),
                                                      self.flexCssNode->getPaddingLeft(),
                                                      self.flexCssNode->getPaddingBottom(),
                                                      self.flexCssNode->getPaddingRight()
                                                      );
-
+        
         if (!UIEdgeInsetsEqualToEdgeInsets(padding_flex, _padding)) {
             [self setPadding:padding_flex];
         }
-
-
+        
+        
         UIEdgeInsets border_flex = UIEdgeInsetsMake(self.flexCssNode->getBorderWidthTop(), self.flexCssNode->getBorderWidthLeft(), self.flexCssNode->getBorderWidthBottom(), self.flexCssNode->getBorderWidthRight());
 
         if (!UIEdgeInsetsEqualToEdgeInsets(border_flex, _border)) {
@@ -546,24 +547,24 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         if (strongSelf == nil) {
             return CGSizeZero;
         }
-
+        
         if (strongSelf.flexCssNode == nullptr) {
             return CGSizeZero;
         }
-
+        
         CGSize computedSize = [[[NSString alloc] init]sizeWithAttributes:nil];
             if (!isnan(strongSelf.flexCssNode->getMinWidth())) {
                 computedSize.width = MAX(computedSize.width, strongSelf.flexCssNode->getMinWidth());
             }
-
+            
             if (!isnan(strongSelf.flexCssNode->getMaxWidth())) {
                 computedSize.width = MIN(computedSize.width, strongSelf.flexCssNode->getMaxWidth());
             }
-
+            
             if (!isnan(strongSelf.flexCssNode->getMinHeight())) {
                 computedSize.height = MAX(computedSize.height, strongSelf.flexCssNode->getMinHeight());
             }
-
+            
             if (!isnan(strongSelf.flexCssNode->getMaxHeight())) {
                 computedSize.height = MIN(computedSize.height, strongSelf.flexCssNode->getMaxHeight());
             }
@@ -619,7 +620,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         ((WXTextInputView*)textField).deleteWords = FALSE;
         ((WXTextInputView*)textField).editWords = string;
     }
-
+  
     if ([_inputType isEqualToString:@"tel"] || [_inputType isEqualToString:@"number"] ) {
         if (![self isPureInt:string]) {
             if ([string isEqualToString:@"+"]||[string isEqualToString:@"."]||[string isEqualToString:@"*"]||[string isEqualToString:@"#"]||(string.length == 0 && range.length == 1))
@@ -665,7 +666,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         NSInteger cursorPosition = [textField offsetFromPosition:textField.beginningOfDocument toPosition:textRange.start];
         NSMutableString * preText = [[textField.text substringToIndex:cursorPosition] mutableCopy];
         NSMutableString * lastText = [[textField.text substringFromIndex:cursorPosition] mutableCopy];
-
+        
         NSRegularExpression *recoverRule = [NSRegularExpression regularExpressionWithPattern:_recoverRule options:NSRegularExpressionCaseInsensitive error:NULL];
         [recoverRule replaceMatchesInString:preText options:0 range:NSMakeRange(0, preText.length) withTemplate:_recoverReplace];
         [recoverRule replaceMatchesInString:lastText options:0 range:NSMakeRange(0, lastText.length) withTemplate:_recoverReplace];
@@ -674,7 +675,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         [formatRule replaceMatchesInString:newString options:0 range:NSMakeRange(0, newString.length) withTemplate:_formatReplace];
         NSString * oldText = textField.text;
         NSInteger adjust = 0;
-
+        
         if (cursorPosition == textField.text.length) {
             adjust = newString.length-oldText.length;
         }
@@ -687,11 +688,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         }
 
     }
-    if (_inputEvent) {
-        // bind each other , the key must be attrs
-        [self fireEvent:@"input" params:@{@"value":[textField text]} domChanges:@{@"attrs":@{@"value":[textField text]}}];
-    }
-
+    
     if (_maxLength) {
         NSString *toBeString = textField.text;
         NSString *language = [[UIApplication sharedApplication] textInputMode].primaryLanguage;
@@ -708,6 +705,11 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
                 textField.text = [toBeString substringToIndex:_maxLength.integerValue];
             }
         }
+    }
+
+    if (_inputEvent) {
+        // bind each other , the key must be attrs
+        [self fireEvent:@"input" params:@{@"value":[textField text]} domChanges:@{@"attrs":@{@"value":[textField text]}}];
     }
 }
 
@@ -731,7 +733,6 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
             };
         }
     }
-
     if ([[CustomWeexSDKManager getSoftInputMode] isEqualToString:@"pan"]) {
         //若键盘盖住输入框，页面不会自动上移
     }else{
@@ -808,7 +809,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
             return NO;
         }
     }
-
+    
     if (_maxLength) {
         NSUInteger oldLength = [textView.text length];
         NSUInteger replacementLength = [text length];
@@ -816,7 +817,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
         NSUInteger newLength = oldLength - rangeLength + replacementLength;
         return newLength <= [_maxLength integerValue] ;
     }
-
+    
     return YES;
 }
 
@@ -945,7 +946,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
     if(![self.view isFirstResponder]) {
         return;
     }
-
+    
     CGRect end = [[[notification userInfo] objectForKey:@"UIKeyboardFrameEndUserInfoKey"] CGRectValue];
     if (!_disableMoveViewUp) {
         _keyboardSize = end.size;
@@ -962,11 +963,11 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
             self.weexInstance.isRootViewFrozen = YES;
         }
     }
-
+    
     if (_keyboardEvent) {
         [self fireEvent:@"keyboard" params:@{ @"isShow": @YES, @"keyboardSize": @(end.size.height / self.weexInstance.pixelScaleFactor) }];
     }
-
+    
     _keyboardHidden = NO;
 }
 
@@ -985,7 +986,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
     if (_keyboardEvent) {
         [self fireEvent:@"keyboard" params:@{ @"isShow": @NO }];
     }
-
+    
     _keyboardHidden = YES;
 }
 

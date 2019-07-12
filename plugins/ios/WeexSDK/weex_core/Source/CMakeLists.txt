@@ -21,7 +21,7 @@ set(WEEXCORE_LIBRARY_NAME weexcore)
 set(WEEX_CORE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 message("${ANDROID_STL} ")
-if ("${ANDROID_STL}" STREQUAL "c++_static")
+if ("${ANDROID_STL}" STREQUAL "c++_static" OR "${ANDROID_STL}" STREQUAL "c++_shared")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 elseif ("${ANDROID_STL}" STREQUAL "gnustl_static")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++1y")
@@ -31,7 +31,6 @@ add_compile_options(-fexceptions)
 
 add_definitions(-DGNU_SUPPORT=1)
 add_definitions(-DJSONCPP_NO_LOCALE_SUPPORT=1)
-add_definitions(-DDEBUG=1)
 
 add_definitions(-DRENDER_LOG=0)
 add_definitions(-DPERFORMANCE_LOG=0)
@@ -39,7 +38,8 @@ add_definitions(-DLAYOUT_LOG=0)
 add_definitions(-DJSAPI_LOG=0)
 add_definitions(-DDOM_PARSER_LOG=0)
 
-set(LOCAL_LIBRARIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI})
+message("ANDROID_PROJECT_DIR:"${ANDROID_PROJECT_DIR})
+set(LOCAL_LIBRARIES_DIR ${ANDROID_PROJECT_DIR}/libs/${ANDROID_ABI})
 
 if ("${ANDROID_ABI}" STREQUAL "x86")
     # todo
@@ -88,6 +88,7 @@ set(COMMON_SRCS
   ./core/bridge/platform/core_side_in_platform.cpp
   ./core/bridge/script/core_side_in_script.cpp
   ./core/parser/dom_wson.cpp
+  ./core/parser/action_args_check.cpp
 
    ./core/network/http_module.cc
         )
@@ -106,7 +107,20 @@ if(ANDROID)
   add_definitions(-DOS_ANDROID=1)
   ## add_subdirectory for subdirectory has a CMakeLists.txt
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/IPC)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/android/jsengine)
+
+
+  message("check build jsc BUILD_RUNTIME_API flag: ${BUILD_RUNTIME_API}")
+  if ("${BUILD_RUNTIME_API}" STREQUAL "true")
+      add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/js_runtime)
+      message("cmake build jsApi for runtime")
+  else()
+      add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/android/jsengine)
+      message("cmake build jsApi for jsc")
+  endif()
+
+
+
+
   ## include_directories for include head file
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/IPC)
 

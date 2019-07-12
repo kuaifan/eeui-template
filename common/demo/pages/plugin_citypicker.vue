@@ -6,7 +6,7 @@
             <navbar-item type="title">
                 <text class="title">城市选择器</text>
             </navbar-item>
-            <navbar-item type="right" @click="viewCode('plugin/citypicker')">
+            <navbar-item type="right" @click="viewCode('markets/detail.html#citypicker')">
                 <icon content="md-code-working" class="iconr"></icon>
             </navbar-item>
         </navbar>
@@ -72,8 +72,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
     const citypicker = app.requireModule('citypicker');
 
@@ -87,7 +85,7 @@
         },
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
             citypicker() {
                 if (typeof citypicker === 'undefined') {

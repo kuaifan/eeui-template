@@ -20,6 +20,7 @@
 #include "android/wrap/wx_bridge.h"
 #include <fstream>
 
+#include "android/wrap/log_utils.h"
 #include "android/base/string/string_utils.h"
 #include "android/bridge/platform/android_bridge.h"
 #include "android/bridge/platform/android_bridge_in_multi_process.h"
@@ -41,6 +42,7 @@
 #include "core/layout/measure_func_adapter_impl_android.h"
 #include "core/manager/weex_core_manager.h"
 #include "core/bridge/eagle_bridge.h"
+#include "core/common/view_utils.h"
 #include "third_party/json11/json11.hpp"
 
 using namespace WeexCore;
@@ -248,6 +250,15 @@ static void SetViewPortWidth(JNIEnv* env, jobject jcaller, jstring instanceId,
       ->SetViewPortWidth(jString2StrFast(env, instanceId), value);
 }
 
+static void SetDeviceDisplay(JNIEnv* env, jobject jcaller, jstring instanceId,
+                           jfloat value, float height, float scale) {
+  WeexCoreManager::Instance()
+          ->getPlatformBridge()
+          ->core_side()
+          ->SetDeviceDisplay(jString2StrFast(env, instanceId), value, height, scale);
+}
+
+
 static jint InitFramework(JNIEnv* env, jobject object, jstring script,
                           jobject params) {
   WXBridge::Instance()->Reset(env, object);
@@ -339,6 +350,8 @@ static jint InitFramework(JNIEnv* env, jobject object, jstring script,
   auto result =
       bridge->core_side()->InitFramework(c_script.getChars(), params_vector);
   freeParams(params_vector);
+
+  WeexCoreManager::Instance()->set_log_bridge(new LogUtils());
   return result;
 }
 
@@ -461,6 +474,27 @@ static void ExecJSWithCallback(JNIEnv* env, jobject jcaller,
                            function.getChars(), params, callbackId);
 
   freeParams(params);
+}
+
+
+static void UpdateInitFrameworkParams(JNIEnv* env, jobject jcaller,
+                                      jstring key_,
+                                      jstring value_,
+                                      jstring desc_){
+
+  if(key_ == nullptr || value_ == nullptr || desc_ == nullptr){
+    return;
+  }
+
+  WeexCoreManager::Instance()
+        ->getPlatformBridge()
+        ->core_side()
+        ->UpdateInitFrameworkParams(jString2StrFast(env, key_),
+                                    jString2StrFast(env, value_),
+                                    jString2StrFast(env, desc_));
+  if(jString2StrFast(env, key_) == "androidStatusBarHeight"){
+    WXCoreEnvironment::getInstance()->PutOption(WeexCore::STATUS_BAR_HEIGHT, jString2StrFast(env, value_));
+  }
 }
 
 static void UpdateGlobalConfig(JNIEnv* env, jobject jcaller, jstring config) {
@@ -593,7 +627,7 @@ static jstring ExecJSOnInstance(JNIEnv* env, jobject jcaller,
       WeexCoreManager::Instance()
           ->getPlatformBridge()
           ->core_side()
-          ->ExecJSOnInstance(idChar.getChars(), scriptChar.getChars());
+          ->ExecJSOnInstance(idChar.getChars(), scriptChar.getChars(),type);
 
   if (result.get() == nullptr || result->data.get() == nullptr)
     return nullptr;

@@ -11,7 +11,12 @@
 
         <div class="tline"></div>
 
-        <div v-if="lists.length === 0" class="tismain">
+        <div v-if="noConsole === true" class="tismain">
+            <div class="tisbody">
+                <text class="tisitem">当前环境不支持，可能不是开发环境。</text>
+            </div>
+        </div>
+        <div v-else-if="lists.length === 0" class="tismain">
             <div class="tisbody">
                 <text class="tisitem">可使用以下方法调试日志：</text>
                 <text class="tisitem" @click="addLog('log', '普通日志')">console.log("普通日志")</text>
@@ -153,8 +158,6 @@
 </style>
 
 <script>
-    import {each, formatDate, jsonStringify, randomString} from "../../common/js/global";
-
     const eeui = app.requireModule('eeui');
     const debug = app.requireModule('debug');
     const dom = app.requireModule('dom');
@@ -165,6 +168,8 @@
                 active: '',
                 lists: [],
 
+                noConsole: false,
+
                 scrollHeight: 0,
                 scrollBottom: true,
                 scrollDiffer: 0,
@@ -173,6 +178,11 @@
         },
 
         mounted() {
+            if (console.open !== true) {
+                this.noConsole = true;
+                return;
+            }
+            //
             this.active = "all";
             debug.setLogListener((item) => {
                 if (this.active === 'all' || item.type === this.active) {
@@ -189,7 +199,6 @@
 
         watch: {
             active(val) {
-                this.lists = [];
                 switch (val) {
                     case "all": {
                         debug.getLogAll((res) => {
@@ -214,8 +223,8 @@
             formatLog(text) {
                 let string = "";
                 if (text != null && typeof text == "object") {
-                    each(text, (index, item) => {
-                        string += (item != null && typeof item == "object") ? jsonStringify(item) : item;
+                    this.each(text, (index, item) => {
+                        string += (item != null && typeof item == "object") ? this.jsonStringify(item) : item;
                         string += " ";
                     });
                 }else{
@@ -227,16 +236,16 @@
             addLog(type, text) {
                 switch (type) {
                     case 'log':
-                        console.log(text, '随机字符：' + randomString(16));
+                        console.log(text, '随机字符：' + this.randomString(16));
                         break;
                     case 'info':
-                        console.info(text, '随机字符：' + randomString(16));
+                        console.info(text, '随机字符：' + this.randomString(16));
                         break;
                     case 'warn':
-                        console.warn(text, '随机字符：' + randomString(16));
+                        console.warn(text, '随机字符：' + this.randomString(16));
                         break;
                     case 'error':
-                        console.error(text, '随机字符：' + randomString(16));
+                        console.error(text, '随机字符：' + this.randomString(16));
                         break;
                 }
                 if (this.active !== 'all') {
@@ -247,11 +256,11 @@
             info(item) {
                 eeui.confirm({
                     title: "日志详情",
-                    message: "类型：" + item.type + "\n时间：" + formatDate("Y-m-d H:i:s", item.time) + "\n内容：" + this.formatLog(item.text),
+                    message: "类型：" + item.type + "\n时间：" + this.formatDate("Y-m-d H:i:s", item.time) + "\n内容：" + this.formatLog(item.text),
                     buttons: ["复制", "关闭"]
                 }, (result) => {
                     if (result.status === "click" && result.title === "复制") {
-                        eeui.copyText(jsonStringify(item));
+                        eeui.copyText(this.jsonStringify(item));
                         eeui.toast("复制成功");
                     }
                 });
@@ -298,7 +307,102 @@
             close() {
                 debug.removeLogListener();
                 debug.closeConsole();
-            }
+            },
+
+            isNullOrUndefined(obj) {
+                return typeof obj === "undefined" || obj === null;
+            },
+
+            likeArray(obj) {
+                return this.isNullOrUndefined(obj) ? false : typeof obj.length === 'number';
+            },
+
+            each(elements, callback) {
+                let i, key;
+                if (this.likeArray(elements)) {
+                    if (typeof elements.length === "number") {
+                        for (i = 0; i < elements.length; i++) {
+                            if (callback.call(elements[i], i, elements[i]) === false) return elements
+                        }
+                    }
+                } else {
+                    for (key in elements) {
+                        if (!elements.hasOwnProperty(key)) continue;
+                        if (callback.call(elements[key], key, elements[key]) === false) return elements
+                    }
+                }
+
+                return elements
+            },
+
+            formatDate(format, v) {
+                if (format === '') {
+                    format = 'Y-m-d H:i:s';
+                }
+                if (typeof v === 'undefined') {
+                    v = new Date().getTime();
+                } else if (/^(-)?\d{1,10}$/.test(v)) {
+                    v = v * 1000;
+                } else if (/^(-)?\d{1,13}$/.test(v)) {
+                    v = v * 1000;
+                } else if (/^(-)?\d{1,14}$/.test(v)) {
+                    v = v * 100;
+                } else if (/^(-)?\d{1,15}$/.test(v)) {
+                    v = v * 10;
+                } else if (/^(-)?\d{1,16}$/.test(v)) {
+                    v = v * 1;
+                } else {
+                    return v;
+                }
+                let dateObj = new Date(v);
+                if (parseInt(dateObj.getFullYear()) + "" === "NaN") {
+                    return v;
+                }
+                //
+                format = format.replace(/Y/g, dateObj.getFullYear());
+                format = format.replace(/m/g, this.zeroFill(dateObj.getMonth() + 1, 2));
+                format = format.replace(/d/g, this.zeroFill(dateObj.getDate(), 2));
+                format = format.replace(/H/g, this.zeroFill(dateObj.getHours(), 2));
+                format = format.replace(/i/g, this.zeroFill(dateObj.getMinutes(), 2));
+                format = format.replace(/s/g, this.zeroFill(dateObj.getSeconds(), 2));
+                return format;
+            },
+
+            zeroFill(str, length, after) {
+                str += "";
+                if (str.length >= length) {
+                    return str;
+                }
+                let _str = '', _ret = '';
+                for (let i = 0; i < length; i++) {
+                    _str += '0';
+                }
+                if (after || typeof after === 'undefined') {
+                    _ret = (_str + "" + str).substr(length * -1);
+                } else {
+                    _ret = (str + "" + _str).substr(0, length);
+                }
+                return _ret;
+            },
+
+            jsonStringify(json, defaultVal) {
+                try{
+                    return JSON.stringify(json);
+                }catch (e) {
+                    return defaultVal ? defaultVal : "";
+                }
+            },
+
+            randomString(len) {
+                len = len || 32;
+                let $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678oOLl9gqVvUuI1';
+                let maxPos = $chars.length;
+                let pwd = '';
+                for (let i = 0; i < len; i++) {
+                    pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+                }
+                return pwd;
+            },
         }
     };
 </script>

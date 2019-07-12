@@ -20,6 +20,10 @@
 // Created by Darin on 11/02/2018.
 //
 
+#ifdef USE_JS_RUNTIME
+#include "js_runtime/weex/utils/weex_jsc_utils.h"
+#else
+
 #ifndef WEEXV8_UTILS_H
 #define WEEXV8_UTILS_H
 
@@ -84,6 +88,8 @@
 #include "third_party/IPC/IPCFutexPageQueue.h"
 #include "third_party/IPC/IPCException.h"
 #include "third_party/IPC/Serializing/IPCSerializer.h"
+#include "include/JavaScriptCore/runtime/StructureInlines.h"
+#include "include/JavaScriptCore/runtime/JSCJSValueInlines.h"
 
 #if !defined(PATH_MAX)
 #define PATH_MAX 4096
@@ -341,3 +347,4 @@ namespace WEEXICU {
 }
 
 #endif //WEEXV8_UTILS_H
+#endif //USE_JS_RUNTIME

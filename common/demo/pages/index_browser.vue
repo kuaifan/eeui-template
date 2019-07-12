@@ -47,7 +47,6 @@
     }
 </style>
 <script>
-    import {getObject} from "../../common/js/global";
     import HeadNav from "../components/headNav.vue";
 
     const eeui = app.requireModule('eeui');
@@ -78,11 +77,11 @@
             },
 
             apiReady() {
-                this.title = getObject(app.config.params, 'title');
-                this.url = getObject(app.config.params, 'url');
-                this.fixedTitle = getObject(app.config.params, 'fixedTitle') === true;
-                this.hideBottomNav = getObject(app.config.params, 'hideBottomNav') === true;
-                this.$refs.myWebview.setProgressbarVisibility(getObject(app.config.params, 'progressbarVisibility') !== false);
+                this.title = this.getObject(app.config.params, 'title');
+                this.url = this.getObject(app.config.params, 'url');
+                this.fixedTitle = this.getObject(app.config.params, 'fixedTitle') === true;
+                this.hideBottomNav = this.getObject(app.config.params, 'hideBottomNav') === true;
+                this.$refs.myWebview.setProgressbarVisibility(this.getObject(app.config.params, 'progressbarVisibility') !== false);
                 this.$refs.myWebview.setUrl(this.url);
                 setTimeout(() => { this.loadIng--; }, 100);
             },

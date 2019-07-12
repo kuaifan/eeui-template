@@ -12,7 +12,7 @@
             </navbar-item>
         </navbar>
 
-        <grid class="grid">
+        <grid class="grid" @itemClick="itemClick">
 
             <div class="grid-item" v-for="item in gridLists">
                 <image class="item-image" resize="cover"
@@ -77,8 +77,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
 
     export default {
@@ -90,7 +88,10 @@
 
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
+            },
+            itemClick(data) {
+                eeui.toast("点击第" + (data.page + 1) + "页第" + (data.position + 1) + "个，总序号第" + (data.index + 1) + "个");
             },
         }
     };

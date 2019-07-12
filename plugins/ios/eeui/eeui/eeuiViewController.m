@@ -650,8 +650,15 @@ static int easyNavigationButtonTag = 8000;
             [myView addSubview:self->_consoleWeexView];
             UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, self->_consoleWeexView);
         };
-        NSString *consoleUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs/main-console.js"]];
-        [instance renderWithURL:[NSURL URLWithString:consoleUrl] options:nil data:nil];
+        NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs/main-console.js"]];
+        NSString *appboard = [DeviceUtil getAppboardContent];
+        if (appboard.length > 0) {
+            [DeviceUtil downloadScript:tempUrl appboard:appboard cache:0 callback:^(NSString *path) {
+                [instance renderWithURL:[NSURL URLWithString:path == nil ? tempUrl : path] options:nil data:nil];
+            }];
+        }else{
+            [instance renderWithURL:[NSURL URLWithString:tempUrl] options:nil data:nil];
+        }        
     }else{
         [self.view bringSubviewToFront:self.consoleView];
     }

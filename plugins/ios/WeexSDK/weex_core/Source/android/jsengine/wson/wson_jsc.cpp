@@ -28,20 +28,18 @@
 
 #include "include/JavaScriptCore/runtime/ObjectConstructor.h"
 #include "include/JavaScriptCore/runtime/JSONObject.h"
-#include "include/JavaScriptCore/runtime/JSCJSValueInlines.h"
+#include "include/JavaScriptCore/runtime/JSCJSValue.h"
 #include <wtf/Vector.h>
 #include <wtf/HashMap.h>
 
 
+#define LOGE(format, ...) LOGE(format, ##__VA_ARGS__)
 
 #ifdef  __ANDROID__
     //#define WSON_JSC_DEBUG  true;
-    #include <android/log.h>
     #include <wtf/unicode/WTFUTF8.h>
-    #define TAG "weex"
-    #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+    #include "base/log_defines.h"
 #else
-  #define LOGE(...)  printf(__VA_ARGS__)
   #include <wtf/unicode/UTF8.h>
 #endif
 
@@ -549,12 +547,12 @@ namespace wson {
             wson_push_type_null(buffer);
             return;
         }
-#ifdef __ANDROID__
-        LOGE("weex wson err value type is not handled, treat as null, json value %s %d %d ", JSONStringify(exec, val, 0).utf8().data(), val.isFunction(), val.tag());
-        for(size_t i=0; i<objectStack.size(); i++){
-            LOGE("weex wson err value type is not handled, treat as null, root json value %s", JSONStringify(exec, objectStack[i], 0).utf8().data());
-        }
-#endif
+// #ifdef __ANDROID__
+//         LOGE("weex wson err value type is not handled, treat as null, json value %s %d %d ", JSONStringify(exec, val, 0).utf8().data(), val.isFunction(), val.tag());
+//         for(size_t i=0; i<objectStack.size(); i++){
+//             LOGE("weex wson err value type is not handled, treat as null, root json value %s", JSONStringify(exec, objectStack[i], 0).utf8().data());
+//         }
+// #endif
         wson_push_type_null(buffer);
     }
 

@@ -27,6 +27,8 @@
 #include "core/render/manager/render_manager.h"
 #include "core/bridge/eagle_bridge.h"
 #include "wson/wson_parser.h"
+#include "core/config/core_environment.h"
+#include "core/parser/action_args_check.h"
 #ifdef OS_ANDROID
 #include <base/time_calculator.h>
 #include "android/weex_extend_js_api.h"
@@ -52,6 +54,17 @@ void CoreSideInScript::CallNative(const char *page_id, const char *task,
                                   const char *callback) {
   if (page_id == nullptr || task == nullptr) return;
 
+  if (WXCoreEnvironment::getInstance()->isUseRunTimeApi()){
+    if (isCallNativeToFinish(task)){
+      RenderManager::GetInstance()->CreateFinish(page_id);
+    } else {
+      WeexCoreManager::Instance()
+              ->getPlatformBridge()
+              ->platform_side()
+              ->CallNative(page_id, task, callback);
+    }
+    return;
+  }
   std::string task_str(task);
   std::string target_str("[{\"module\":\"dom\",\"method\":\"createFinish\","
                          "\"args\":[]}]");
@@ -469,7 +482,15 @@ void CoreSideInScript::OnReceivedResult(long callback_id,
 void CoreSideInScript::UpdateComponentData(const char* page_id,
                                            const char* cid,
                                            const char* json_data) {
-    EagleBridge::GetInstance()->data_render_handler()->UpdateComponentData(page_id, cid, json_data);
+    auto handler = EagleBridge::GetInstance()->data_render_handler();
+    if(handler){
+      handler->UpdateComponentData(page_id, cid, json_data);
+    }
+    else{
+      WeexCore::WeexCoreManager::Instance()->getPlatformBridge()->platform_side()->ReportException(
+        page_id, "UpdateComponentData", 
+        "There is no data_render_handler when UpdateComponentData invoked");
+    }
 }
 
 }  // namespace WeexCore

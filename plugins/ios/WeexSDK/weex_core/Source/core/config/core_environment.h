@@ -56,6 +56,8 @@ namespace WeexCore {
 
     bool mInteractionLogSwitch;
 
+    bool mUseRuntimeApi;
+
   public:
 
     bool SetPlatform(std::string platformName);
@@ -94,7 +96,12 @@ namespace WeexCore {
         return mOptions;
     };
 
+    bool isUseRunTimeApi();
+
+    void setUseRunTimeApi(bool useRuntimeApi);
+
     void AddOption(std::string key, std::string value);
+    void PutOption(std::string key, std::string value);
 
     static WXCoreEnvironment *getInstance() {
       if (!m_pInstance) {

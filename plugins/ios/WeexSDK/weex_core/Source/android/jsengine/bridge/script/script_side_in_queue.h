@@ -24,7 +24,11 @@
 #define WEEXV8_SCRIPT_SIDE_IN_QUEUE_H
 
 #include "core/bridge/script_bridge.h"
+#ifdef USE_JS_RUNTIME
+#include "js_runtime/weex/task/weex_task_queue.h"
+#else
 #include "android/jsengine/task/weex_task_queue.h"
+#endif
 
 namespace weex {
     namespace bridge {
@@ -87,11 +91,14 @@ namespace weex {
                                    std::vector<INIT_FRAMEWORK_PARAMS *> &params) override;
 
                 std::unique_ptr<WeexJSResult>
-                ExecJSOnInstance(const char *instanceId, const char *script) override;
+                ExecJSOnInstance(const char *instanceId, const char *script,int type) override;
 
                 int DestroyInstance(const char *instanceId) override;
 
                 int UpdateGlobalConfig(const char *config) override;
+
+                int UpdateInitFrameworkParams(const std::string& key, const std::string& value, const std::string& desc) override;
+
 
             private:
                 std::vector<std::string> usingBackThreadId;

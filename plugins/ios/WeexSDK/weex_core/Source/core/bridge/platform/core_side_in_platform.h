@@ -45,10 +45,14 @@ class CoreSideInPlatform : public PlatformBridge::CoreSide {
                    float value) override;
   void MarkDirty(const std::string &instance_id,
                  const std::string &render_ref) override;
-  void SetViewPortWidth(const std::string &instance_id, float width) override;
+  void SetViewPortWidth(const std::string &instance_id, float width) override; // set page required view port width
+  void SetDeviceDisplayOfPage(const std::string &instance_id, float width, float height /* unused now */) override; // set page required device width
+  void SetPageArgument(const std::string &pageId, const std::string& key, const std::string& value) override;
+  void SetDeviceDisplay(const std::string &instance_id, float width, float height, float scale) override;
   void SetPageDirty(const std::string &instance_id) override;
   void ForceLayout(const std::string &instance_id) override;
   bool NotifyLayout(const std::string &instance_id) override;
+  bool RelayoutUsingRawCssStyles(const std::string& instance_id) override;
   std::vector<int64_t> GetFirstScreenRenderTime(
       const std::string &instance_id) override;
   std::vector<int64_t> GetRenderFinishTime(
@@ -99,11 +103,14 @@ class CoreSideInPlatform : public PlatformBridge::CoreSide {
                      const char *script, int script_length, const char *opts, const char *initData,
                      const char *extendsApi, std::vector<INIT_FRAMEWORK_PARAMS*>& params, const char* render_strategy) override;
   std::unique_ptr<WeexJSResult> ExecJSOnInstance(const char *instanceId,
-                               const char *script) override;
+                               const char *script,int type) override;
   int DestroyInstance(const char *instanceId) override;
   int UpdateGlobalConfig(const char *config) override;
 
- private:
+  int UpdateInitFrameworkParams(const std::string& key, const std::string& value, const std::string& desc) override;
+
+
+private:
   DISALLOW_COPY_AND_ASSIGN(CoreSideInPlatform);
 };
 }  // namespace WeexCore

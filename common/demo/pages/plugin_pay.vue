@@ -6,7 +6,7 @@
             <navbar-item type="title">
                 <text class="title">微信/支付宝支付</text>
             </navbar-item>
-            <navbar-item type="right" @click="viewCode('plugin/pay')">
+            <navbar-item type="right" @click="viewCode('markets/detail.html#pay')">
                 <icon content="md-code-working" class="iconr"></icon>
             </navbar-item>
         </navbar>
@@ -68,8 +68,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
     const pay = app.requireModule('pay');
 
@@ -81,7 +79,7 @@
         },
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
 
             weixinPay() {

@@ -78,8 +78,6 @@
 </style>
 
 <script>
-    import {openViewUrl} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
 
     export default {
@@ -251,7 +249,7 @@
             },
 
             openMore() {
-                openViewUrl("https://www.echartsjs.com/examples/");
+                this.openViewUrl("https://www.echartsjs.com/examples/");
             },
         }
     };

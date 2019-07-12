@@ -24,6 +24,7 @@
 
 #include "core/bridge/platform_bridge.h"
 #include "core/layout/measure_func_adapter.h"
+#include "base/closure.h"
 
 namespace WeexCore
 {
@@ -57,7 +58,7 @@ namespace WeexCore
         void CallNativeComponent(const char* pageId, const char* ref, const char *method,
                                  const char *arguments, int argumentsLength, const char *options, int optionsLength) override;
         std::unique_ptr<ValueWithType> RegisterPluginModule(const char *name, const char *class_name, const char *version) override;
-
+        std::unique_ptr<ValueWithType> RegisterPluginComponent(const char *name, const char *class_name, const char *version) override;
         void SetTimeout(const char* callbackID, const char* time) override ;
         
         void NativeLog(const char* str_array) override ;
@@ -124,6 +125,8 @@ namespace WeexCore
         }
         
         void OnReceivedResult(long callback_id, std::unique_ptr<WeexJSResult>& result) override {};
+
+        void PostTaskOnComponentThread(const weex::base::Closure closure) override;
     };
     
     class WXCoreMeasureFunctionBridge : public MeasureFunctionAdapter
@@ -152,15 +155,21 @@ namespace WeexCore
                  isWidthWrapContent:(BOOL)isWidthWrapContent
                 isHeightWrapContent:(BOOL)isHeightWrapContent;
 
+// Set/Get GLOBAL device size which will affect all pages
 + (void)setDeviceSize:(CGSize)size;
++ (CGSize)getDeviceSize;
 
+// DO NOT call this method directly, you should use WXSDKInstance
 + (void)setViewportWidth:(NSString*)pageId width:(CGFloat)width;
 
+// DO NOT call this method directly, you should use WXSDKInstance
 + (void)setPageRequired:(NSString *)pageId width:(CGFloat)width height:(CGFloat)height;
 
 + (void)layoutPage:(NSString*)pageId forced:(BOOL)forced;
 
 + (void)closePage:(NSString*)pageId;
+
++ (BOOL)reloadPageLayout:(NSString*)pageId;
 
 + (void)layoutRenderObject:(void*)object size:(CGSize)size page:(NSString*)pageId;
 
@@ -197,6 +206,10 @@ namespace WeexCore
 + (BOOL)isComponentAffineType:(NSString *)type asType:(NSString *)baseType;
 
 + (void)registerCoreEnv:(NSString*)key withValue:(NSString*)value;
+
++ (void)setPageArgument:(NSString*)pageId key:(NSString*)key value:(NSString*)value;
+
++ (BOOL)isKeepingRawCssStyles:(NSString*)pageId;
 
 @end
 

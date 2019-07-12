@@ -189,8 +189,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
 
     export default {
@@ -248,7 +246,7 @@
         },
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
         }
     };

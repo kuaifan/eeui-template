@@ -82,6 +82,26 @@ namespace WeexCore {
     mOptions.insert(std::pair<std::string, std::string>(key, value));
     if (key == "switchInteractionLog") {
       mInteractionLogSwitch = "true" == value;
+    } else if(key == "debugMode" && value == "true"){
+      WeexCore::DebugMode = true;
     }
+  }
+
+  void WXCoreEnvironment::PutOption(std::string key, std::string value){
+    auto it = mOptions.find(key);
+    if(it == mOptions.end()){
+      AddOption(key, value);
+      return;
+    }else{
+      it->second = value;
+    }
+  }
+
+  void WXCoreEnvironment::setUseRunTimeApi(bool useRuntimeApi) {
+    this->mUseRuntimeApi = useRuntimeApi;
+  }
+
+  bool WXCoreEnvironment::isUseRunTimeApi(){
+    return mUseRuntimeApi;
   }
 }

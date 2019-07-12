@@ -63,13 +63,16 @@ class ScriptSideInMultiSo : public ScriptBridge::ScriptSide {
                      const char *script, const char *opts, const char *initData,
                      const char *extendsApi, std::vector<INIT_FRAMEWORK_PARAMS*>& params) override;
 
-  std::unique_ptr<WeexJSResult> ExecJSOnInstance(const char *instanceId, const char *script) override;
+  std::unique_ptr<WeexJSResult> ExecJSOnInstance(const char *instanceId, const char *script,int type) override;
 
   int DestroyInstance(const char *instanceId) override;
 
   int UpdateGlobalConfig(const char *config) override;
 
-  ScriptSideInMultiSo();
+  int UpdateInitFrameworkParams(const std::string& key, const std::string& value, const std::string& desc)override;
+
+
+    ScriptSideInMultiSo();
 
   virtual ~ScriptSideInMultiSo();
 

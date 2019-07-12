@@ -37,13 +37,14 @@ class DefaultRequestHandler : public RequestHandler,
   ~DefaultRequestHandler() override;
   void Send(const char* instance_id, const char* url,
             Callback callback) override;
+  void GetBundleType(const char *instance_id, const char *content, Callback callback) override;
 };
 
 class CallbackWrapper {
  public:
   CallbackWrapper(Callback callback) : callback_(callback) {}
   ~CallbackWrapper() {}
-  void Invoke(const std::string& result) { callback_(result); }
+  void Invoke(const std::string& result, const std::string& bundleType) { callback_(result, bundleType); }
 
  private:
   Callback callback_;

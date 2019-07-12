@@ -604,7 +604,6 @@ static BOOL bNeedRemoveEvents = YES;
     pthread_mutex_unlock(&_propertyMutex);
     
     if (subcomponent->_positionType == WXPositionTypeFixed) {
-        subcomponent.ignoreInteraction = YES;
         [self.weexInstance.componentManager addFixedComponent:subcomponent];
     }
     
@@ -800,6 +799,10 @@ static BOOL bNeedRemoveEvents = YES;
 - (void)updateStyles:(NSDictionary *)styles
 {
     WXAssertMainThread();
+
+    if (self.componentCallback) {
+        self.componentCallback(self, WXComponentUpdateStylesCallback, styles);
+    }
 }
 
 - (void)updateAttributes:(NSDictionary *)attributes

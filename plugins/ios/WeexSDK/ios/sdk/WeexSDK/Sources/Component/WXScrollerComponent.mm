@@ -53,7 +53,7 @@
     [super setContentOffset:contentOffset animated:animated];
     BOOL scrollStartEvent = [[self.wx_component valueForKey:@"_scrollStartEvent"] boolValue];
     id scrollEventListener = [self.wx_component valueForKey:@"_scrollEventListener"];
-
+    
     if (animated && (scrollStartEvent ||scrollEventListener)  && !WXPointEqualToPoint(contentOffset, self.contentOffset)) {
         CGFloat scaleFactor = self.wx_component.weexInstance.pixelScaleFactor;
         NSDictionary *contentSizeData = @{@"width":@(self.contentSize.width / scaleFactor),
@@ -113,7 +113,7 @@
     NSString * _alwaysScrollableVertical;
     NSString * _alwaysScrollableHorizontal;
     BOOL _bounces;
-
+    
     // refreshForAppear: load more when refresh component begin appear(if scroll is dragging or decelerating, should delay)
     // refreshForWholeVisible: load more until the whole refresh component visible
     NSString *_refreshType;
@@ -124,14 +124,14 @@
     NSString *_direction;
     BOOL _showScrollBar;
     BOOL _pagingEnabled;
-
+    
     BOOL _shouldNotifiAppearDescendantView;
     BOOL _shouldRemoveScrollerListener;
     CGPoint _scrollStartPoint;
     CGPoint _scrollEndPoint;
 
     //css_node_t *_scrollerCSSNode;
-
+    
     NSHashTable* _delegates;
 }
 
@@ -145,14 +145,14 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 - (BOOL)_insertSubcomponent:(WXComponent *)subcomponent atIndex:(NSInteger)index
 {
     BOOL inserted = [super _insertSubcomponent:subcomponent atIndex:index];
-
+    
     if ([subcomponent isKindOfClass:[WXRefreshComponent class]]) {
         _refreshComponent = (WXRefreshComponent*)subcomponent;
     }
     else if ([subcomponent isKindOfClass:[WXLoadingComponent class]]) {
         _loadingComponent = (WXLoadingComponent*)subcomponent;
     }
-
+    
     // If a vertical list is added to a horizontal scroller, we need platform dependent layout
     if (_flexCssNode && [self isKindOfClass:[WXScrollerComponent class]] &&
         [subcomponent isKindOfClass:[WXScrollerComponent class]] &&
@@ -173,7 +173,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 {
     self = [super initWithRef:ref type:type styles:styles attributes:attributes events:events weexInstance:weexInstance];
     if (self) {
-
+        
         _stickyArray = [NSMutableArray array];
         _listenerArray = [NSMutableArray array];
         _scrollEvent = NO;
@@ -182,7 +182,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         _lastScrollEventFiredOffset = CGPointMake(0, 0);
         _scrollDirection = attributes[@"scrollDirection"] ? [WXConvert WXScrollDirection:attributes[@"scrollDirection"]] : WXScrollDirectionVertical;
         _showScrollBar = attributes[@"showScrollbar"] ? [WXConvert BOOL:attributes[@"showScrollbar"]] : YES;
-
+        
         if (attributes[@"alwaysScrollableVertical"]) {
             _alwaysScrollableVertical = [WXConvert NSString:attributes[@"alwaysScrollableVertical"]];
         }
@@ -214,21 +214,21 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
                 _flexCssNode->set_flex(1.0);
             }
         }
-
+        
         id configCenter = [WXSDKEngine handlerForProtocol:@protocol(WXConfigCenterProtocol)];
         if ([configCenter respondsToSelector:@selector(configForKey:defaultValue:isDefault:)]) {
             BOOL shouldNotifiAppearDescendantView = [[configCenter configForKey:@"iOS_weex_ext_config.shouldNotifiAppearDescendantView" defaultValue:@(YES) isDefault:NULL] boolValue];
             _shouldNotifiAppearDescendantView = shouldNotifiAppearDescendantView;
             BOOL shouldRemoveScrollerListener = [[configCenter configForKey:@"iOS_weex_ext_config.shouldRemoveScrollerListener" defaultValue:@(YES) isDefault:NULL] boolValue];
             _shouldRemoveScrollerListener = shouldRemoveScrollerListener;
-
+            
         }
         //may be list
         if ([@"scroller" isEqualToString:type]) {
             [weexInstance.apmInstance updateDiffStats:KEY_PAGE_STATS_SCROLLER_NUM withDiffValue:1];
-        }
+        }        
     }
-
+    
     return self;
 }
 
@@ -250,18 +250,18 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
     scrollView.showsHorizontalScrollIndicator = _showScrollBar;
     scrollView.scrollEnabled = _scrollable;
     scrollView.pagingEnabled = _pagingEnabled;
-
+    
     if (scrollView.bounces != _bounces) {
         scrollView.bounces = _bounces;
     }
-
+    
     if (_alwaysScrollableHorizontal) {
         scrollView.alwaysBounceHorizontal = [WXConvert BOOL:_alwaysScrollableHorizontal];
     }
     if (_alwaysScrollableVertical) {
         scrollView.alwaysBounceVertical = [WXConvert BOOL:_alwaysScrollableVertical];
     }
-
+    
     if (@available(iOS 11.0, *)) {
         if ([scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
             scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -269,13 +269,13 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
     } else {
         // Fallback on earlier versions
     }
-
+    
     if (self.ancestorScroller) {
         scrollView.scrollsToTop = NO;
     } else {
         scrollView.scrollsToTop = YES;
     }
-
+    
     if (_pagingEnabled && _pageSize > 0) {
         scrollView.pagingEnabled = NO; // turn off system default paging
         scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
@@ -292,7 +292,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         [self adjustSticky];
         [self handleAppear];
     }
-
+    
     [_loadingComponent resizeFrame];
 }
 
@@ -321,12 +321,12 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         ((UIScrollView *)self.view).showsHorizontalScrollIndicator = _showScrollBar;
         ((UIScrollView *)self.view).showsVerticalScrollIndicator = _showScrollBar;
     }
-
+    
     if (attributes[@"pagingEnabled"]) {
         _pagingEnabled = [WXConvert BOOL:attributes[@"pagingEnabled"]];
         ((UIScrollView *)self.view).pagingEnabled = _pagingEnabled;
     }
-
+    
     if (attributes[@"pageSize"]) {
         _pageSize = [WXConvert WXPixelType:attributes[@"pageSize"]
                                scaleFactor:self.weexInstance.pixelScaleFactor];
@@ -334,7 +334,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             _pageSize = 0;
         }
     }
-
+    
     if ([self isViewLoaded]) {
         if (_pagingEnabled && _pageSize > 0) {
             ((UIScrollView *)self.view).pagingEnabled = NO; // turn off system default paging
@@ -344,16 +344,16 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             ((UIScrollView *)self.view).decelerationRate = UIScrollViewDecelerationRateNormal;
         }
     }
-
+    
     if (attributes[@"loadmoreoffset"]) {
         _loadMoreOffset = [WXConvert WXPixelType:attributes[@"loadmoreoffset"] scaleFactor:self.weexInstance.pixelScaleFactor];
     }
-
+    
     if (attributes[@"bounce"]) {
         _bounces = [WXConvert BOOL:attributes[@"bounce"]];
         ((UIScrollView *)self.view).bounces = _bounces;
     }
-
+    
     if (attributes[@"loadmoreretry"]) {
         NSUInteger loadmoreretry = [WXConvert NSUInteger:attributes[@"loadmoreretry"]];
         if (loadmoreretry != _loadmoreretry) {
@@ -361,7 +361,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         }
         self.loadmoreretry = loadmoreretry;
     }
-
+    
     if (attributes[@"scrollable"]) {
         _scrollable = attributes[@"scrollable"] ? [WXConvert BOOL:attributes[@"scrollable"]] : YES;
         ((UIScrollView *)self.view).scrollEnabled = _scrollable;
@@ -370,20 +370,20 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         _alwaysScrollableHorizontal = [WXConvert NSString:attributes[@"alwaysScrollableHorizontal"]];
         ((UIScrollView*)self.view).alwaysBounceHorizontal = [WXConvert BOOL:_alwaysScrollableHorizontal];
     }
-
+    
     if (attributes[@"alwaysScrollableVertical"]) {
         _alwaysScrollableVertical = [WXConvert NSString:attributes[@"alwaysScrollableVertical"]];
         ((UIScrollView*)self.view).alwaysBounceVertical = [WXConvert BOOL:_alwaysScrollableVertical];
     }
-
+    
     if (attributes[@"refreshType"]) {
         _refreshType = [WXConvert NSString:attributes[@"refreshType"]];
     }
-
+    
     if (attributes[@"offsetAccuracy"]) {
         _offsetAccuracy = [WXConvert WXPixelType:attributes[@"offsetAccuracy"] scaleFactor:self.weexInstance.pixelScaleFactor];
     }
-
+    
     if (attributes[@"scrollDirection"]) {
         _scrollDirection = attributes[@"scrollDirection"] ? [WXConvert WXScrollDirection:attributes[@"scrollDirection"]] : WXScrollDirectionVertical;
     }
@@ -444,7 +444,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 - (void)adjustForRTL
 {
     if (![WXUtility enableRTLLayoutDirection]) return;
-
+    
     // this is scroll rtl solution.
     // scroll layout not use direction, use self tranform
     if (self.view && [self isDirectionRTL]) {
@@ -462,7 +462,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 
 - (void)_adjustForRTL {
     if (![WXUtility enableRTLLayoutDirection]) return;
-
+    
     [super _adjustForRTL];
     [self adjustForRTL];
 }
@@ -481,7 +481,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         if (isnan(relativePosition.y)) {
             continue;
         }
-
+        
         WXComponent *supercomponent = component.supercomponent;
         if(supercomponent != self && component.view.superview != self.view) {
             [component.view removeFromSuperview];
@@ -489,26 +489,26 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         } else {
             [self.view bringSubviewToFront:component.view];
         }
-
+        
         CGFloat relativeY = relativePosition.y;
         BOOL needSticky = NO;
-
+        
         if (scrollOffsetY >= relativeY) {
             needSticky = YES;
         } else {
             // important: reset views' frame
             component.view.frame = CGRectMake(relativePosition.x, relativePosition.y, component.calculatedFrame.size.width, component.calculatedFrame.size.height);
         }
-
+        
         if (!needSticky) {
             continue;
         }
-
+        
         // The minimum Y sticky view can reach is its original position
         CGFloat minY = relativeY;
         CGPoint superRelativePosition = supercomponent == self ? CGPointZero : [supercomponent.supercomponent.view convertPoint:supercomponent.view.frame.origin toView:self.view];
         CGFloat maxY = superRelativePosition.y + supercomponent.calculatedFrame.size.height - component.calculatedFrame.size.height;
-
+        
         CGFloat stickyY = scrollOffsetY;
         if (stickyY < minY) {
             stickyY = minY;
@@ -516,7 +516,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             // Sticky component can not go beyond its parent's bounds when its parent is not scroller;
             stickyY = maxY;
         }
-
+        
         UIView *stickyView = component.view;
         CGPoint origin = stickyView.frame.origin;
         origin.y = stickyY;
@@ -575,7 +575,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 
     CGPoint contentOffset = scrollView.contentOffset;
     CGFloat scaleFactor = self.weexInstance.pixelScaleFactor;
-
+    
     if (_scrollDirection == WXScrollDirectionHorizontal) {
         CGFloat contentOffetX = 0;
         if (self.isDirectionRTL && component.supercomponent != self) {
@@ -584,7 +584,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             contentOffetX = [component.supercomponent.view convertPoint:component.view.frame.origin toView:self.view].x;
         }
         contentOffetX += offset * scaleFactor;
-
+        
         if (scrollView.contentSize.width < scrollView.frame.size.width) {
             contentOffset.x = 0;
         }else if (scrollView.contentSize.width >= scrollView.frame.size.width && contentOffetX > scrollView.contentSize.width - scrollView.frame.size.width) {
@@ -595,7 +595,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
     } else {
         CGFloat contentOffetY = [component.supercomponent.view convertPoint:component.view.frame.origin toView:self.view].y;
         contentOffetY += offset * scaleFactor;
-
+        
         if (scrollView.contentSize.height < scrollView.frame.size.height) {
             contentOffset.y = 0;
         }else if (scrollView.contentSize.height >= scrollView.frame.size.height && contentOffetY > scrollView.contentSize.height - scrollView.frame.size.height) {
@@ -604,7 +604,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             contentOffset.y = contentOffetY;
         }
     }
-
+    
     [scrollView setContentOffset:contentOffset animated:animated];
 }
 
@@ -619,14 +619,14 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             return _previousLoadMoreContentHeight != ((UIScrollView *)self.view).contentSize.width && ((UIScrollView *)self.view).contentSize.width - ((UIScrollView *)self.view).contentOffset.x -  self.view.frame.size.width <= _loadMoreOffset;
         }
     }
-
+    
     return NO;
 }
 
 - (void)loadMore
 {
     [self fireEvent:@"loadmore" params:nil];
-
+    
     if (WXScrollDirectionVertical == _scrollDirection) {
         _previousLoadMoreContentHeight = ((UIScrollView *)self.view).contentSize.height;
     } else if (WXScrollDirectionHorizontal == _scrollDirection) {
@@ -719,13 +719,13 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     _isDragging = YES;
-
+    
     if ([_refreshType isEqualToString:@"refreshForAppear"] && _refreshComponent) {
         [_refreshComponent setIndicatorHidden:NO];
     }
-
+    
     _scrollStartPoint = scrollView.contentOffset;
-
+    
     if (_scrollStartEvent || _scrollEventListener) {
         CGFloat scaleFactor = self.weexInstance.pixelScaleFactor;
         NSDictionary *contentSizeData = @{@"width":@(scrollView.contentSize.width / scaleFactor),
@@ -733,7 +733,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         NSDictionary *contentOffsetData = @{@"x":@(-scrollView.contentOffset.x / scaleFactor),
                                             @"y":@(-scrollView.contentOffset.y / scaleFactor)};
         NSDictionary *params = @{@"contentSize":contentSizeData, @"contentOffset":contentOffsetData, @"isDragging":@(scrollView.isDragging)};
-
+        
         if (_scrollStartEvent) {
             [self fireEvent:@"scrollstart" params:params domChanges:nil];
         }
@@ -741,7 +741,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             _scrollEventListener(self, @"scrollstart", params);
         }
     }
-
+    
     NSHashTable *delegates = [_delegates copy];
     for (id<UIScrollViewDelegate> delegate in delegates) {
         if ([delegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
@@ -760,7 +760,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             instance.onScroll(scrollView.contentOffset);
         }
     }
-
+    
     if (_lastContentOffset.x > scrollView.contentOffset.x) {
         _direction = @"right";
     } else if (_lastContentOffset.x < scrollView.contentOffset.x) {
@@ -776,7 +776,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             [self handleLoadMore];
         }
     }
-
+    
     CGFloat scaleFactor = self.weexInstance.pixelScaleFactor;
     if (_isDragging) {
         // only trigger pullingDown event when user is dragging
@@ -791,11 +791,11 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
     // check sticky
     [self adjustSticky];
     [self handleAppear];
-
+    
     if (self.onScroll) {
         self.onScroll(scrollView);
     }
-
+    
     if (_scrollEvent || _scrollEventListener) {
         CGFloat distance = 0;
         if (_scrollDirection == WXScrollDirectionHorizontal) {
@@ -809,7 +809,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             //contentOffset values are replaced by (-contentOffset.x,-contentOffset.y), in order to be consistent with Android client.
             NSDictionary *contentOffsetData = @{@"x": @(-scrollView.contentOffset.x / scaleFactor),
                                                 @"y": @(-scrollView.contentOffset.y / scaleFactor)};
-
+            
             if (_scrollEvent) {
                 [self fireEvent:@"scroll" params:@{@"contentSize":contentSizeData, @"contentOffset":contentOffsetData} domChanges:nil];
             }
@@ -819,7 +819,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             _lastScrollEventFiredOffset = scrollView.contentOffset;
         }
     }
-
+    
     NSHashTable *delegates = [_delegates copy];
     for (id<UIScrollViewDelegate> delegate in delegates) {
         if ([delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
@@ -831,9 +831,9 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
     [self dispatchScrollEndEvent:scrollView];
-
+    
     UIEdgeInsets inset = [scrollView contentInset];
-
+    
 //  currently only set contentInset when loading
 //    if ([_refreshComponent displayState]) {
 //        inset.top = _refreshComponent.view.frame.size.height;
@@ -841,14 +841,14 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 //    else {
 //        inset.top = 0;
 //    }
-
+    
     if ([_loadingComponent displayState]) {
         inset.bottom = _loadingComponent.view.frame.size.height;
     } else {
         inset.bottom = 0;
     }
     [scrollView setContentInset:inset];
-
+    
     NSHashTable *delegates = [_delegates copy];
     for (id<UIScrollViewDelegate> delegate in delegates) {
         if ([delegate respondsToSelector:@selector(scrollViewDidEndScrollingAnimation:)]) {
@@ -867,7 +867,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             [eventNotify notifyScrollEvent:self.weexInstance.instanceId from:_scrollStartPoint to:_scrollEndPoint];
         }
     }
-
+    
     NSHashTable *delegates = [_delegates copy];
     for (id<UIScrollViewDelegate> delegate in delegates) {
         if ([delegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
@@ -883,7 +883,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         if (_scrollDirection == WXScrollDirectionVertical) {
             CGFloat targetY = scrollView.contentOffset.y + velocity.y * 120.0;
             CGFloat targetIndex = round(targetY / _pageSize);
-
+            
             /*
              When user's finger departs from screen with any velocity (like swipe gesture).
              We make sure that target index is changed.
@@ -899,16 +899,16 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
                     targetIndex = sourceIndex - 1;
                 }
             }
-
+            
             if (targetIndex < 0)
                 targetIndex = 0;
-
+            
             targetContentOffset->y = targetIndex * _pageSize;
         }
         else {
             CGFloat targetX = scrollView.contentOffset.x + velocity.x * 120.0;
             CGFloat targetIndex = round(targetX / _pageSize);
-
+            
             /*
              When user's finger departs from screen with any velocity (like swipe gesture).
              We make sure that target index is changed.
@@ -924,13 +924,13 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
                     targetIndex = sourceIndex - 1;
                 }
             }
-
+            
             if (targetIndex < 0)
                 targetIndex = 0;
             targetContentOffset->x = targetIndex * _pageSize;
         }
     }
-
+    
     if ([_refreshType isEqualToString:@"refreshForAppear"]) {
         if(targetContentOffset == nil)
             return;
@@ -944,7 +944,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             // drop up
         }
     }
-
+    
     NSHashTable *delegates = [_delegates copy];
     for (id<UIScrollViewDelegate> delegate in delegates) {
         if ([delegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
@@ -957,14 +957,14 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 {
     [_loadingComponent.view setHidden:NO];
     [_refreshComponent.view setHidden:NO];
-
+    
     //refresh
     if ([_refreshType isEqualToString:@"refreshForWholeVisible"]) {
         if (_refreshComponent && scrollView.contentOffset.y < 0 && scrollView.contentOffset.y + _refreshComponent.calculatedFrame.size.height < _refreshComponent.calculatedFrame.origin.y) {
             [_refreshComponent refresh];
         }
     }
-
+    
     //loading
     if (_loadingComponent && scrollView.contentOffset.y > 0 &&
         scrollView.contentOffset.y + scrollView.frame.size.height > _loadingComponent.view.frame.origin.y + _loadingComponent.calculatedFrame.size.height) {
@@ -974,14 +974,14 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         _isScrolling = NO;
         [self performSelector:@selector(scrollViewDidEndDecelerating:) withObject:scrollView afterDelay:0.1];
     }
-
+    
     NSHashTable *delegates = [_delegates copy];
     for (id<UIScrollViewDelegate> delegate in delegates) {
         if ([delegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
             [delegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
         }
     }
-
+    
     _isDragging = NO;
 }
 
@@ -1006,7 +1006,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
     CGFloat vw = scrollView.frame.size.width - scrollView.contentInset.left - scrollView.contentInset.right;
     CGFloat vh = scrollView.frame.size.height - scrollView.contentInset.top - scrollView.contentInset.bottom;
     CGRect scrollRect = CGRectMake(vx, vy, vw, vh);;
-
+    
     // notify action for appear
     NSArray *listenerArrayCopy = [self.listenerArray copy];
     for(WXScrollToTarget *target in listenerArrayCopy){
@@ -1047,10 +1047,10 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
 - (void)scrollToTarget:(WXScrollToTarget *)target scrollRect:(CGRect)rect
 {
     WXComponent *component = target.target;
-    if (![component isViewLoaded]) {
+    if (![component isViewLoaded]) { 
         return;
     }
-
+    
     CGFloat ctop;
     if (component && component->_view && component->_view.superview) {
         ctop = [self absolutePositionForComponent:component].y;
@@ -1065,7 +1065,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
         cleft = 0.0;
     }
     CGFloat cright = cleft + CGRectGetWidth(component.calculatedFrame);
-
+    
     CGFloat vtop = CGRectGetMinY(rect), vbottom = CGRectGetMaxY(rect), vleft = CGRectGetMinX(rect), vright = CGRectGetMaxX(rect);
     if(cbottom > vtop && ctop <= vbottom && cleft <= vright && cright > vleft){
         if(!target.hasAppear && component){
@@ -1124,7 +1124,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
      a verticall list with NAN height will be set flex=1, which suppresses its style-width property.
      This will cause two lists with style-width 750px in a horizontal scroller sharing one screen width.
      Here we respect its style-width property so that the two lists will both be screen width wide. */
-
+    
     if (_needsPlatformLayout) {
         if (_flexCssNode) {
             float top = _flexCssNode->getLayoutPositionTop();
@@ -1143,12 +1143,12 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             }
 
             _flexCssNode->markAllDirty();
-
+            
             // this is scroll rtl solution.
             // scroll layout not use direction, use self tranform
             // but we need inherit direction in CSS, so we set children layout diretion manually
             _flexCssNode->determineChildLayoutDirection(_flexCssNode->getLayoutDirectionFromPathNode());
-
+            
             std::pair<float, float> renderPageSize;
             renderPageSize.first = self.weexInstance.frame.size.width;
             renderPageSize.second = self.weexInstance.frame.size.height;
@@ -1156,7 +1156,7 @@ WX_EXPORT_METHOD(@selector(resetLoadmore))
             _flexCssNode->setParent(nullptr, _flexCssNode);
             _flexCssNode->calculateLayout(renderPageSize);
             _flexCssNode->setParent(parent, _flexCssNode);
-
+            
             // set origin and size back
             _flexCssNode->rewriteLayoutResult(left, top, width, height);
         }

@@ -78,8 +78,7 @@ typedef enum : NSUInteger {
     WXThreadSafeMutableDictionary *_moduleEventObservers;
     BOOL _performanceCommit;
     BOOL _debugJS;
-    id<WXBridgeProtocol> _instanceJavaScriptContext; // sandbox javaScript context    
-    CGFloat _defaultPixelScaleFactor;
+    id<WXBridgeProtocol> _instanceJavaScriptContext; // sandbox javaScript context
     BOOL _defaultDataRender;
 }
 
@@ -118,9 +117,10 @@ typedef enum : NSUInteger {
         _performance = [[WXPerformance alloc] init];
         _apmInstance = [[WXApmForInstance alloc] init];
         
-        _defaultPixelScaleFactor = CGFLOAT_MIN;
         _defaultDataRender = NO;
         
+        _useBackupJsThread = NO;
+
         [self addObservers];
     }
     return self;
@@ -145,6 +145,9 @@ typedef enum : NSUInteger {
     _instanceJavaScriptContext = _debugJS ? [NSClassFromString(@"WXDebugger") alloc] : [[WXJSCoreBridge alloc] initWithoutDefaultContext];
     if (!_debugJS) {
         id<WXBridgeProtocol> jsBridge = [[WXSDKManager bridgeMgr] valueForKeyPath:@"bridgeCtx.jsBridge"];
+        if (_useBackupJsThread) {
+              jsBridge = [[WXSDKManager bridgeMgr] valueForKeyPath:@"backupBridgeCtx.jsBridge"];
+        }
         JSContext* globalContex = jsBridge.javaScriptContext;
         JSContextGroupRef contextGroup = JSContextGetGroup([globalContex JSGlobalContextRef]);
         JSClassDefinition classDefinition = kJSClassDefinitionEmpty;
@@ -209,12 +212,43 @@ typedef enum : NSUInteger {
     _viewportWidth = viewportWidth;
     
     // notify weex core
-    [WXCoreBridge setViewportWidth:_instanceId width:viewportWidth];
+    NSString* pageId = _instanceId;
+    WXPerformBlockOnComponentThread(^{
+        [WXCoreBridge setViewportWidth:pageId width:viewportWidth];
+    });
+}
+
+- (void)setPageKeepRawCssStyles
+{
+    [self setPageArgument:@"reserveCssStyles" value:@"true"];
+}
+
+- (void)isKeepingRawCssStyles:(void(^)(BOOL))callback {
+    NSString* pageId = _instanceId;
+    WXPerformBlockOnComponentThread(^{
+        if (callback) {
+            callback([WXCoreBridge isKeepingRawCssStyles:pageId]);
+        }
+    });
+}
+
+- (void)setPageArgument:(NSString*)key value:(NSString*)value
+{
+    NSString* pageId = _instanceId;
+    WXPerformBlockOnComponentThread(^{
+        [WXCoreBridge setPageArgument:pageId key:key value:value];
+    });
 }
 
 - (void)setPageRequiredWidth:(CGFloat)width height:(CGFloat)height
 {
-    [WXCoreBridge setPageRequired:_instanceId width:width height:height];
+    _screenSize = CGSizeMake(width, height);
+    
+    // notify weex core
+    NSString* pageId = _instanceId;
+    WXPerformBlockOnComponentThread(^{
+        [WXCoreBridge setPageRequired:pageId width:width height:height];
+    });
 }
 
 - (void)renderWithURL:(NSURL *)url
@@ -238,6 +272,7 @@ typedef enum : NSUInteger {
         WXLogError(@"Url must be passed if you use renderWithURL");
         return;
     }
+    [WXCoreBridge install];
 
     _scriptURL = url;
     [self _checkPageName];
@@ -256,7 +291,8 @@ typedef enum : NSUInteger {
 {
     _options = [options isKindOfClass:[NSDictionary class]] ? options : nil;
     _jsData = data;
-    
+    [WXCoreBridge install];
+
     self.needValidate = [[WXHandlerFactory handlerForProtocol:@protocol(WXValidateProtocol)] needValidate:self.scriptURL];
 
     if ([source isKindOfClass:[NSString class]]) {
@@ -270,7 +306,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)_downloadAndExecScript:(NSURL *)url {
-    [[WXSDKManager bridgeMgr] DownloadJS:url completion:^(NSString *script) {
+    [[WXSDKManager bridgeMgr] DownloadJS:_instanceId url:url completion:^(NSString *script) {
         if (!script) {
             return;
         }
@@ -285,7 +321,13 @@ typedef enum : NSUInteger {
                 });
             }
             else {
-                WXLogError(@"No data render handler found!");
+                if (self.componentManager.isValid) {
+                    WXSDKErrCode errorCode = WX_KEY_EXCEPTION_DEGRADE_EAGLE_RENDER_ERROR;
+                    NSError *error = [NSError errorWithDomain:WX_ERROR_DOMAIN code:errorCode userInfo:@{@"message":@"No data render handler found!"}];
+                    WXPerformBlockOnComponentThread(^{
+                        [self.componentManager renderFailed:error];
+                    });
+                }
             }
             return;
         }
@@ -519,7 +561,7 @@ typedef enum : NSUInteger {
         if (strongSelf == nil) {
             return;
         }
-        
+
         NSMutableDictionary* optionsCopy = [strongSelf->_options mutableCopy];
         optionsCopy[bundleResponseUrlOptionKey] = [response.URL absoluteString];
         strongSelf->_options = [optionsCopy copy];
@@ -636,6 +678,14 @@ typedef enum : NSUInteger {
     NSURLRequestCachePolicy cachePolicy = forcedReload ? NSURLRequestReloadIgnoringCacheData : NSURLRequestUseProtocolCachePolicy;
     WXResourceRequest *request = [WXResourceRequest requestWithURL:_scriptURL resourceType:WXResourceTypeMainBundle referrer:_scriptURL.absoluteString cachePolicy:cachePolicy];
     [self _renderWithRequest:request options:_options data:_jsData];
+}
+
+- (void)reloadLayout
+{
+    NSString* pageId = _instanceId;
+    WXPerformBlockOnComponentThread(^{
+        [WXCoreBridge reloadPageLayout:pageId];
+    });
 }
 
 - (void)refreshInstance:(id)data
@@ -781,16 +831,9 @@ typedef enum : NSUInteger {
 
 - (CGFloat)pixelScaleFactor
 {
-    if (self.viewportWidth > 0) {
-        return [WXUtility portraitScreenSize].width / self.viewportWidth;
-    } else {
-        if (_defaultPixelScaleFactor != CGFLOAT_MIN) {
-            return _defaultPixelScaleFactor;
-        }
-        
-        _defaultPixelScaleFactor = [WXUtility defaultPixelScaleFactor];
-        return _defaultPixelScaleFactor;
-    }
+    CGFloat usingScreenWidth = _screenSize.width > 0 ? _screenSize.width : [WXCoreBridge getDeviceSize].width;
+    CGFloat usingViewPort = _viewportWidth > 0 ? _viewportWidth : WXDefaultScreenWidth;
+    return usingScreenWidth / usingViewPort;
 }
     
 - (BOOL)wlasmRender {

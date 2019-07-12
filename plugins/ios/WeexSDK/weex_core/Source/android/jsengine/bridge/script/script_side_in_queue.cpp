@@ -31,6 +31,7 @@
 #include "android/jsengine/task/impl/destory_instance_task.h"
 #include "android/jsengine/task/impl/exe_js_on_app_with_result.h"
 #include "android/jsengine/task/impl/update_global_config_task.h"
+#include "android/jsengine/task/impl/update_init_framework_params_task.h"
 #include "android/jsengine/task/impl/ctime_callback_task.h"
 #include "android/jsengine/task/impl/exe_js_services_task.h"
 #include "android/jsengine/task/impl/exe_js_on_instance_task.h"
@@ -261,11 +262,18 @@ int ScriptSideInQueue::CreateInstance(const char *instanceId,
 }
 
 std::unique_ptr<WeexJSResult> ScriptSideInQueue::ExecJSOnInstance(const char *instanceId,
-                                                                  const char *script) {
-  LOGD("ScriptSideInQueue::ExecJSOnInstance");
+                                                                  const char *script,int type) {
+  LOGD("ScriptSideInQueue::ExecJSOnInstance type:%d",type);
   ExeJsOnInstanceTask *task = new ExeJsOnInstanceTask(String::fromUTF8(instanceId),
                                                       String::fromUTF8(script));
   taskQueue(instanceId, false)->addTask(task);
+  if (type == -1){
+      //don't need wait. just run js.
+    std::unique_ptr<WeexJSResult> returnResult;
+    returnResult.reset(new WeexJSResult());
+    LOGE("test-> return default result");
+    return returnResult;
+  }
   auto future = std::unique_ptr<WeexTask::Future>(new WeexTask::Future());
   task->set_future(future.get());
   return std::move(future->waitResult());
@@ -282,12 +290,33 @@ int ScriptSideInQueue::DestroyInstance(const char *instanceId) {
 int ScriptSideInQueue::UpdateGlobalConfig(const char *config) {
   LOGD("ScriptSideInQueue::UpdateGlobalConfig");
   weexTaskQueue_->addTask(new UpdateGlobalConfigTask(String::fromUTF8(config)));
-  if (WeexEnv::getEnv()->enableBackupThread() && weexTaskQueue_bk_ != nullptr) {
-    weexTaskQueue_bk_->addTask(new UpdateGlobalConfigTask(String::fromUTF8(config)));
+  if (WeexEnv::getEnv()->enableBackupThread()) {
+    UpdateGlobalConfigTask* task = new UpdateGlobalConfigTask(String::fromUTF8(config));
+    if(WeexEnv::getEnv()->can_m_cache_task_() && weexTaskQueue_bk_ == nullptr){
+      WeexEnv::getEnv()->m_task_cache_.push_back(task);
+    } else {
+      weexTaskQueue_bk_->addTask(task);
+    }
   }
 
   return 1;
 }
+
+int ScriptSideInQueue::UpdateInitFrameworkParams(const std::string& key, const std::string& value, const std::string& desc){
+ LOGD("ScriptSideInQueue::UpdateInitFrameworkParams");
+  weexTaskQueue_->addTask(new UpdateInitFrameworkParamsTask(key, value, desc));
+  if (WeexEnv::getEnv()->enableBackupThread()) {
+    UpdateInitFrameworkParamsTask* task = new UpdateInitFrameworkParamsTask(key, value, desc);
+    if(WeexEnv::getEnv()->can_m_cache_task_() && weexTaskQueue_bk_ == nullptr){
+      WeexEnv::getEnv()->m_task_cache_.push_back(task);
+    } else {
+      weexTaskQueue_bk_->addTask(task);
+    }
+  }
+
+  return 1;
+}
+
 
 void ScriptSideInQueue::useBackUpWeexRuntime(std::string id) {
   usingBackThreadId.push_back(id);

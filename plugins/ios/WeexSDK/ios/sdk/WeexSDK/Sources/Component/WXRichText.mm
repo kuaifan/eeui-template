@@ -159,20 +159,20 @@ do {\
     }
     if ([value isKindOfClass: [NSArray class]]) {
         [_richNodes removeAllObjects];
-
+        
         WXRichNode *rootNode = [[WXRichNode alloc]init];
         [_richNodes addObject:rootNode];
-
+        
         //记录richtext根节点styles，仅用于子节点的样式继承
         rootNode.type = @"root";
         if (_styles) {
             [self fillCSSStyles:_styles toNode:rootNode superNode:nil];
         }
-
+        
         for (NSDictionary *dict in value) {
             [self recursivelyAddChildNode:dict toSuperNode:rootNode];
         }
-
+        
         _backgroundColor = rootNode.backgroundColor?:[UIColor whiteColor];
     }
 }
@@ -196,7 +196,7 @@ do {\
         node.pseudoRef = attributes[@"pseudoRef"];
         node.href = [NSURL URLWithString:@"click://"];
     }
-
+    
     if (attributes[@"href"]) {
         node.href = [NSURL URLWithString:attributes[@"href"]];
     }
@@ -206,11 +206,11 @@ do {\
             node.pseudoRef = superNode.pseudoRef;
         }
     }
-
+    
     if (attributes[@"src"]) {
         node.src = [NSURL URLWithString:attributes[@"src"]];
     }
-
+    
     if (attributes[@"value"] ) {
         id value = attributes[@"value"];
         if ([value isKindOfClass:[NSString class]]) {
@@ -225,15 +225,15 @@ do {\
         WXLogError(@"Invalid rich text structure.");
         return;
     }
-
+    
     if (![nodeValue[@"type"] isKindOfClass:[NSString class]]) {
         WXLogError(@"Invalid rich text structure.");
         return;
     }
-
+    
     WXRichNode *node = [[WXRichNode alloc]init];
     [_richNodes addObject:node];
-
+    
     node.type = nodeValue[@"type"];
 
     [self fillCSSStyles:nodeValue[@"style"] toNode:node superNode:superNode];
@@ -241,7 +241,7 @@ do {\
     if (nodeValue[@"attr"]) {
         [self fillAttributes:nodeValue[@"attr"] toNode:node superNode:superNode];
     }
-
+    
     if (nodeValue[@"children"]) {
         id value = nodeValue[@"children"];
         if ([value isKindOfClass:[NSArray class]]) {
@@ -290,7 +290,7 @@ do {\
                 WXFloorPixelValue(sself.flexCssNode->getPaddingBottom()+sself.flexCssNode->getBorderWidthBottom()),
                 WXFloorPixelValue(sself.flexCssNode->getPaddingRight()+sself.flexCssNode->getBorderWidthRight())
             };
-
+            
             NSMutableAttributedString* attrString = [sself buildAttributeString];
             WXPerformBlockOnMainThread(^{
                 WXRichTextView* view = [sself textView];
@@ -305,16 +305,16 @@ do {\
 - (CGSize (^)(CGSize))measureBlock
 {
     __weak typeof(self) weakSelf = self;
-
+    
     return ^CGSize (CGSize constrainedSize) {
-
+        
         NSMutableAttributedString *attributedString = [weakSelf buildAttributeString];
-
+        
         CGFloat width = constrainedSize.width;
         if (isnan(width)) {
             width = CGFLOAT_MAX;
         }
-
+        
         CGRect rect = [attributedString boundingRectWithSize:CGSizeMake(width, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil];
         CGSize computedSize = rect.size;
         if(weakSelf.flexCssNode != nullptr){
@@ -346,24 +346,24 @@ do {\
     [self fillAttributes:_attributes];
     NSMutableArray *array = [NSMutableArray arrayWithArray:_richNodes];
     pthread_mutex_unlock(&(_attributedStringMutex));
-
+    
     NSMutableDictionary *nodeRange = [NSMutableDictionary dictionary];
     NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
     NSUInteger location;
-
+    
     __weak typeof(self) weakSelf = self;
     for (WXRichNode *node in array) {
         location = attrStr.length;
-
+        
         if ([node.type isEqualToString:@"span"]) {
             if (node.text && [node.text length] > 0) {
                 NSString *text = node.text;
                 [attrStr.mutableString appendString:text];
-
+                
                 NSRange range = NSMakeRange(location, text.length);
                 [attrStr addAttribute:NSForegroundColorAttributeName value:node.color ?: [UIColor blackColor] range:range];
                 [attrStr addAttribute:NSBackgroundColorAttributeName value:node.backgroundColor ?: _backgroundColor range:range];
-
+                
                 UIFont *font = [WXUtility fontWithSize:node.fontSize textWeight:node.fontWeight textStyle:WXTextStyleNormal fontFamily:node.fontFamily scaleFactor:self.weexInstance.pixelScaleFactor];
                 if (font) {
                     [attrStr addAttribute:NSFontAttributeName value:font range:range];
@@ -377,21 +377,21 @@ do {\
                 }
                 [attrStr addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:WXTextDecorationNone] range:range];
                 [attrStr addAttribute:NSStrikethroughStyleAttributeName value:[NSNumber numberWithInteger:WXTextDecorationNone] range:range];
-
+                
                 if (node.textDecoration == WXTextDecorationUnderline) {
                     [attrStr addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:WXTextDecorationUnderline] range:range];
                 }
                 else if (node.textDecoration == WXTextDecorationLineThrough) {
                     [attrStr addAttribute:NSStrikethroughStyleAttributeName value:[NSNumber numberWithInteger:WXTextDecorationLineThrough] range:range];
                 }
-
+                
                 if (node.href) {
                     [attrStr addAttribute:NSLinkAttributeName value:node.href range:range];
                 }
                 else {
                     [attrStr removeAttribute:NSLinkAttributeName range:range];
                 }
-
+                
                 NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
                 paragraphStyle.alignment = _textAlign;
                 if(_lineHeight != 0 )
@@ -401,29 +401,29 @@ do {\
                     [attrStr addAttribute:NSBaselineOffsetAttributeName value:@((_lineHeight - font.lineHeight)/2) range:range];
                 }
                 [attrStr addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:range];
-
+                
                 [nodeRange setObject:node forKey:NSStringFromRange(range)];
             }
         }
         else if ([node.type isEqualToString:@"image"]) {
             NSTextAttachment *imgAttachment = [[NSTextAttachment alloc]init];
             imgAttachment.bounds = CGRectMake(0, 0, node.width, node.height);
-
+            
             NSAttributedString *attachAttriStr = [NSAttributedString attributedStringWithAttachment:imgAttachment];
             [attrStr appendAttributedString:attachAttriStr];
-
+            
             NSRange range = NSMakeRange(location, attachAttriStr.length);
             [attrStr addAttribute:NSFontAttributeName value: [UIFont systemFontOfSize:node.height] range:range];
-
+            
             if (node.href) {
                 [attrStr addAttribute:NSLinkAttributeName value:node.href range:range];
             }
             else {
                 [attrStr removeAttribute:NSLinkAttributeName range:range];
             }
-
+            
             [nodeRange setObject:node forKey:NSStringFromRange(range)];
-
+            
             if (node.src) {
                 [[self imageLoader] downloadImageWithURL:node.src.absoluteString imageFrame:imgAttachment.bounds userInfo:nil completed:^(UIImage *image, NSError *error, BOOL finished) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -434,24 +434,24 @@ do {\
             }
         }
     }
-
+    
     pthread_mutex_lock(&(_attributedStringMutex));
     [_nodeRanges removeAllObjects];
     _nodeRanges = [NSMutableDictionary dictionaryWithDictionary:nodeRange];
     pthread_mutex_unlock(&(_attributedStringMutex));
-
+    
     return attrStr;
 }
 
 - (void)updateStyles:(NSDictionary *)styles {
-
+    
     if (styles[@"textAlign"]) {
         _textAlign = [WXConvert NSTextAlignment:styles[@"textAlign"]];
     }
     if (styles[@"lineHeight"]) {
         _lineHeight = [WXConvert CGFloat:styles[@"lineHeight"]] / 2;
     }
-
+    
     WXPerformBlockOnComponentThread(^{
         [_styles addEntriesFromDictionary:styles];
         [self syncTextStorageForView];
@@ -469,7 +469,7 @@ do {\
     pthread_mutex_lock(&(_attributedStringMutex));
     [self fillAttributes:_attributes];
     pthread_mutex_unlock(&(_attributedStringMutex));
-
+    
     if (_styles[@"height"]) {
        [self innerLayout];
     }
@@ -488,10 +488,10 @@ do {\
     if (!URL) {
         return NO;
     }
-
+    
     NSString *rangeStr = NSStringFromRange(characterRange);
     WXRichNode *node = [_nodeRanges objectForKey:rangeStr];
-
+    
     if (![[node.href absoluteString] isEqualToString:@"click://"]) {
         id<WXNavigationProtocol> navigationHandler = [self navigationHandler];
         if ([navigationHandler respondsToSelector:@selector(pushViewControllerWithParam:
@@ -512,7 +512,7 @@ do {\
         [params setObject:node.pseudoRef forKey:@"pseudoRef"];
         [[WXSDKManager bridgeMgr] fireEvent:self.weexInstance.instanceId ref:self.ref type:@"itemclick" params:params domChanges:nil];
     }
-
+    
     return NO;
 }
 

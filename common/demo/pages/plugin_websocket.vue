@@ -6,7 +6,7 @@
             <navbar-item type="title">
                 <text class="title">即时通讯</text>
             </navbar-item>
-            <navbar-item type="right" @click="viewCode('plugin/websocket')">
+            <navbar-item type="right" @click="viewCode('markets/detail.html#websocket')">
                 <icon content="md-code-working" class="iconr"></icon>
             </navbar-item>
         </navbar>
@@ -147,8 +147,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
     const websocket = app.requireModule('websocket');
 
@@ -157,6 +155,7 @@
             return {
                 url: 'ws://echo.websocket.org',
 
+                onLine: false,
                 msgLists: [],
                 sendText: '',
             }
@@ -167,8 +166,6 @@
                 eeui.alert({
                     title: '温馨提示',
                     message: "检测到未安装websocket插件，安装详细请登录https://eeui.app/",
-                }, () => {
-                    eeui.closePage();
                 });
                 return;
             }
@@ -177,7 +174,7 @@
 
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
 
             connect() {
@@ -188,6 +185,7 @@
                     switch (result.status) {
                         case 'open': //连接已经准备好接受和发送数据
                             eeui.loadingClose(loaddingName);
+                            this.onLine = true;
                             this.addMsg({
                                 type: 'left',
                                 msg: '请问您有什么问题？'
@@ -237,12 +235,19 @@
                     return;
                 }
                 this.sendText = "";
+                eeui.keyboardHide();
+                if (!this.onLine) {
+                    eeui.alert({
+                        title: '温馨提示',
+                        message: "检测到未安装websocket插件，安装详细请登录https://eeui.app/",
+                    });
+                    return;
+                }
                 this.addMsg({
                     type: 'right',
                     msg: msg
                 });
                 websocket.send(msg);
-                eeui.keyboardHide();
             },
 
             returnSend(data) {

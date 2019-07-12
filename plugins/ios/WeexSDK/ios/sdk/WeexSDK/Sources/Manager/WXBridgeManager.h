@@ -28,6 +28,10 @@ extern "C" {
 #endif
     void WXPerformBlockOnBridgeThread(void (^block)(void));
     void WXPerformBlockSyncOnBridgeThread(void (^block) (void));
+    void WXPerformBlockOnBackupBridgeThread(void (^block)(void));
+
+    void WXPerformBlockOnBridgeThreadForInstance(void (^block)(void), NSString* instance);
+    void WXPerformBlockSyncOnBridgeThreadForInstance(void (^block) (void), NSString* instance);
 #ifdef __cplusplus
 }
 #endif
@@ -118,9 +122,10 @@ extern "C" {
 
 /**
  + *  download JS Script
- + *  @param scriptUrl    :   script url
+ + *  @param instance    :   instance id
+ + *  @param scriptUrl   :   script url
  + **/
-- (void)DownloadJS:(NSURL *)scriptUrl completion:(void (^)(NSString *script))complection;
+- (void)DownloadJS:(NSString *)instance url:(NSURL *)scriptUrl completion:(void (^)(NSString *script))complection;
 
 /**
  *  Register JS service Script

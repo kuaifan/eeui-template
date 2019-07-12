@@ -38,16 +38,15 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-
 subprojects {
     ext {
         applicationId = "app.eeui.playground"
 
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0.1"
 
         eeuiVersionCode = 1
-        eeuiVersionName = "1.0.0"
+        eeuiVersionName = "1.0.1"
 
         compileSdkVersion = 28
         appMinSdkVersion = 16
@@ -55,6 +54,6 @@ subprojects {
         supportLibVersion = "28.0.0"
 
         fastjsonLibVersion = "1.2.58"
-        weex_sdkLibVersion = "0.26.0"
+        weex_sdkLibVersion = "0.24.0"
     }
 }

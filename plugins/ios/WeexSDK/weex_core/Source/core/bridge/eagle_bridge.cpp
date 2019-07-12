@@ -39,7 +39,7 @@ namespace WeexCore {
     }
     
     void EagleRenderObject::AddStyle(std::string key, std::string value) {
-        render_object_impl_->AddStyle(key, value);
+        render_object_impl_->AddStyle(key, value, false);
     }
 
     void EagleRenderObject::UpdateAttr(std::string key, std::string value) {
@@ -71,7 +71,7 @@ namespace WeexCore {
     }
     
     void EagleRenderObject::ApplyDefaultStyle() {
-        render_object_impl_->ApplyDefaultStyle();
+        render_object_impl_->ApplyDefaultStyle(false);
     }
     
     int EagleRenderObject::AddRenderObject(int index, EagleRenderObject child) {
@@ -130,15 +130,23 @@ namespace WeexCore {
     }
     
     void EagleBridge::WeexCoreHandler::ReportException(const char* page_id, const char* func, const char* exception_string) {
-        WeexCore::WeexCoreManager::Instance()->getPlatformBridge()->platform_side()->ReportException(page_id, nullptr, exception_string);
+        WeexCore::WeexCoreManager::Instance()->getPlatformBridge()->platform_side()->ReportException(page_id, func, exception_string);
     }
     
-    void EagleBridge::WeexCoreHandler::Send(const char* instance_id, const char* url, std::function<void(const std::string&)> callback) {
+    void EagleBridge::WeexCoreHandler::Send(const char* instance_id, const char* url, std::function<void(const std::string&, const std::string&)> callback) {
         weex::core::network::HttpModule http_module;
         http_module.Send(instance_id, url, callback);
     }
+
+    void EagleBridge::WeexCoreHandler::GetBundleType(const char* instance_id, const char* content, std::function<void(const std::string&, const std::string&)> callback) {
+        weex::core::network::HttpModule http_module;
+        http_module.GetBundleType(instance_id, content, callback);
+    }
     
     int EagleBridge::WeexCoreHandler::RefreshFinish(const char* page_id, const char* task, const char* callback) {
+      WeexCore::WeexCoreManager::Instance()
+          ->getPlatformBridge()
+          ->core_side()->ForceLayout(page_id);
         return WeexCore::WeexCoreManager::Instance()
         ->getPlatformBridge()
         ->platform_side()
@@ -157,6 +165,16 @@ namespace WeexCore {
         ->getPlatformBridge()
         ->platform_side()
         ->RegisterPluginModule(name.c_str(), class_name.c_str(), version.c_str());
+    }
+    std::unique_ptr<ValueWithType> EagleBridge::WeexCoreHandler::RegisterPluginComponent(const std::string &name, const std::string &class_name, const std::string &version) {
+        return WeexCoreManager::Instance()
+        ->getPlatformBridge()
+        ->platform_side()
+        ->RegisterPluginComponent(name.c_str(), class_name.c_str(), version.c_str());
+    }
+
+    void EagleBridge::WeexCoreHandler::PostTaskOnComponentThread(const weex::base::Closure& closure) {
+        WeexCoreManager::Instance()->getPlatformBridge()->platform_side()->PostTaskOnComponentThread(closure);
     }
 #endif
     void EagleBridge::WeexCoreHandler::CallNativeComponent(const char* page_id, const char* module, const char* method,const char* arguments, int arguments_length, const char* options, int options_length) {

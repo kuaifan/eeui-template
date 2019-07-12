@@ -6,7 +6,7 @@
             <navbar-item type="title">
                 <text class="title">友盟推送模块</text>
             </navbar-item>
-            <navbar-item type="right" @click="viewCode('plugin/umeng')">
+            <navbar-item type="right" @click="viewCode('markets/detail.html#umeng')">
                 <icon content="md-code-working" class="iconr"></icon>
             </navbar-item>
         </navbar>
@@ -67,8 +67,6 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
     const umeng = app.requireModule('umeng');
 
@@ -80,7 +78,7 @@
         },
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
 
             getToken() {

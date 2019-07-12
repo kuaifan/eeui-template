@@ -144,11 +144,13 @@ class ScriptBridge {
                                const char *extendsApi, std::vector<INIT_FRAMEWORK_PARAMS*>& params) = 0;
 
     virtual std::unique_ptr<WeexJSResult>  ExecJSOnInstance(const char *instanceId,
-                                   const char *script) = 0;
+                                   const char *script,int type) = 0;
 
     virtual int DestroyInstance(const char *instanceId) = 0;
 
     virtual int UpdateGlobalConfig(const char *config) = 0;
+
+    virtual int UpdateInitFrameworkParams(const std::string& key, const std::string& value, const std::string& desc) = 0;
 
     inline ScriptBridge *bridge() { return bridge_; }
 

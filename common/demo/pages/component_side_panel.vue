@@ -114,14 +114,12 @@
 </style>
 
 <script>
-    import {openViewCode} from "../../common/js/common";
-
     const eeui = app.requireModule('eeui');
 
     export default {
         methods: {
             viewCode(str) {
-                openViewCode(str);
+                this.openViewCode(str);
             },
             itemClick(params) {
                 eeui.toast("点击了" + (params.position + 1) + "项，name：" + params.name);

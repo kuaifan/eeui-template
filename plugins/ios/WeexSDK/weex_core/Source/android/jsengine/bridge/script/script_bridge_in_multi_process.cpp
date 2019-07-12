@@ -218,6 +218,8 @@ namespace weex {
                                          ExecJSOnInstance);
                 handler->registerHandler(static_cast<uint32_t>(IPCJSMsg::UPDATEGLOBALCONFIG),
                                          UpdateGlobalConfig);
+                handler->registerHandler(static_cast<uint32_t>(IPCJSMsg::UpdateInitFrameworkParams),
+                                         UpdateInitFrameworkParams);
             }
 
             std::unique_ptr<IPCResult> ScriptBridgeInMultiProcess::InitFramework(
@@ -253,8 +255,13 @@ namespace weex {
                     init_framework_params->value = IPCByteArrayToWeexByteArray(ba);
 
                     if(!WeexEnv::getEnv()->enableBackupThread()) {
+#ifdef USE_JS_RUNTIME
+                        std::string type = init_framework_params->type->content;
+                        std::string value = init_framework_params->value->content;
+#else
                         auto type = String::fromUTF8(init_framework_params->type->content);
                         auto value = String::fromUTF8(init_framework_params->value->content);
+#endif
                         if(type == "enableBackupThread") {
                             auto enable = value == "true";
                             LOGE("enable backupThread %d",enable);
@@ -471,8 +478,9 @@ namespace weex {
                 LOGD("ScriptBridgeInMultiProcess::ExecJSONInstance");
                 const char *instanceID = GetUTF8StringFromIPCArg(arguments, 0);
                 const char *script = GetUTF8StringFromIPCArg(arguments, 1);
+                int type = arguments->get<int32_t>(2);
 
-                const std::unique_ptr<WeexJSResult> &ptr = Instance()->script_side()->ExecJSOnInstance(instanceID, script);
+                const std::unique_ptr<WeexJSResult> &ptr = Instance()->script_side()->ExecJSOnInstance(instanceID, script,type);
 
                 return createByteArrayResult(ptr->data.get(), ptr->length);
             }
@@ -482,6 +490,17 @@ namespace weex {
                 LOGD("ScriptBridgeInMultiProcess::UpdateGlobalConfig");
                 const char *configString = GetUTF8StringFromIPCArg(arguments, 0);
                 Instance()->script_side()->UpdateGlobalConfig(configString);
+                return createVoidResult();
+            }
+
+            std::unique_ptr<IPCResult> ScriptBridgeInMultiProcess::UpdateInitFrameworkParams(
+                    IPCArguments *arguments) {
+                LOGD("ScriptBridgeInMultiProcess::UpdateInitFrameworkParams");
+                const char *key = GetUTF8StringFromIPCArg(arguments, 0);
+                const char *value = GetUTF8StringFromIPCArg(arguments, 1);
+                const char *desc = GetUTF8StringFromIPCArg(arguments, 2);
+                Instance()->script_side()->UpdateInitFrameworkParams(key, value, desc);
+                LOGD("ScriptBridgeInMultiProcess::UpdateInitFrameworkParams End");
                 return createVoidResult();
             }
 

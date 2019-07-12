@@ -31,11 +31,10 @@ namespace network {
 
     void DefaultRequestHandler::Send(const char* instance_id, const char* url, Callback callback) {
         NSURL* nsURL = [NSURL URLWithString:NSSTRING(url)];
-        [[WXSDKManager bridgeMgr] DownloadJS:nsURL completion:^(NSString *script) {
+        [[WXSDKManager bridgeMgr] DownloadJS:@(instance_id) url:nsURL completion:^(NSString *script) {
             WXPerformBlockOnBridgeThread(^{
-                WXPerformBlockOnComponentThread(^{
-                    callback([script UTF8String] ? : "");
-                });
+                NSString* bundleType = @"Vue";
+                callback([script UTF8String] ? : "", [bundleType UTF8String]);
             });
         }];
     }
