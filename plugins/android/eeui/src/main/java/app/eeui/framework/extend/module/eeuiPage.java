@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.eeui.framework.BuildConfig;
 import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.activity.PageActivityNoTransparent;
 import app.eeui.framework.activity.PageActivityTransparent;
@@ -292,6 +293,9 @@ public class eeuiPage {
             if (files != null) {
                 for (String file : files) {
                     if (!TextUtils.isEmpty(file) && file.endsWith(".js")) {
+                        if (!BuildConfig.DEBUG && (file.endsWith(".dev.js") || file.endsWith(".debug.js"))) {
+                            continue;
+                        }
                         String key = "appboard/" + file;
                         String temp = mAppboardContent.get(key);
                         if (temp == null) {

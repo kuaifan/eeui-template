@@ -2237,7 +2237,7 @@ public class PageActivity extends AppCompatActivity {
 
             }
         });
-        mInstance.renderByUrl("Console::" + mPageInfo.getPageName(), "file://assets/main-console.js", null, null, WXRenderStrategy.APPEND_ASYNC);
+        eeuiPage.cachePage(this, "file://assets/main-console.js", 0, null, (resParams, newUrl) -> mInstance.renderByUrl("Console::" + mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC));
         mBody.addView(mPageLogView);
     }
 
