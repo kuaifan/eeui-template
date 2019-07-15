@@ -64,6 +64,7 @@
     [WXSDKEngine registerComponent:@"ripple" withClass:NSClassFromString(@"eeuiRippleComponent")];
     [WXSDKEngine registerComponent:@"scroll-text" withClass:NSClassFromString(@"eeuiScrollTextComponent")];
     [WXSDKEngine registerComponent:@"scroll-view" withClass:NSClassFromString(@"eeuiRecylerComponent")];
+    [WXSDKEngine registerComponent:@"scroll-header" withClass:NSClassFromString(@"eeuiScrollHeaderComponent")];
     [WXSDKEngine registerComponent:@"side-panel" withClass:NSClassFromString(@"eeuiSidePanelComponent")];
     [WXSDKEngine registerComponent:@"side-panel-menu" withClass:NSClassFromString(@"eeuiSidePanelItemComponent")];
     [WXSDKEngine registerComponent:@"tabbar" withClass:NSClassFromString(@"eeuiTabbarComponent")];

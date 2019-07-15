@@ -12,6 +12,7 @@
 #import "WXMonitor.h"
 #import "NSObject+WXSwizzle.h"
 #import "WXComponent+Events.h"
+#import "eeuiScrollHeaderComponent.h"
 
 #define kCellTag 1000
 
@@ -42,7 +43,10 @@ static NSString * const cellID = @"cellID";
 
 @property (nonatomic, assign) CGFloat scrolledY;
 
-@property (nonatomic, weak, readonly) UICollectionView *collectionView;
+@property (nonatomic, strong) UICollectionView *collectionView;
+
+@property (nonatomic, strong) UIView *headerView;
+@property (nonatomic, strong) NSMutableArray *headerData;
 
 @end
 
@@ -81,6 +85,8 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
         self.subViews = [NSMutableArray arrayWithCapacity:5];
         self.lastVisibleItem = 0;
         self.scrolledY = 0;
+        
+        self.headerData = [[NSMutableArray alloc] init];
 
         _isRefreshListener = [events containsObject:@"refreshListener"];
         _isPullLoadListener = [events containsObject:@"pullLoadListener"];
@@ -256,6 +262,14 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
     }
 
     subcomponent.view.tag = kCellTag + index;
+    
+    if ([subcomponent isKindOfClass:[eeuiScrollHeaderComponent class]]) {
+        if (_headerView == nil) {
+            [_view.superview addSubview:_headerView = [[UIView alloc] init]];
+        }else{
+            [_view bringSubviewToFront:_headerView];
+        }
+    }
 
     //添加手势
     UITapGestureRecognizer *tapRecognizer = nil;
@@ -293,6 +307,55 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    if (_headerView != nil) {
+        //添加到header
+        for (WXView *view in scrollView.subviews) {
+            if ([[view wx_component] isKindOfClass:[eeuiScrollHeaderComponent class]]) {
+                if (scrollView.contentOffset.y >= view.frame.origin.y) {
+                    [_headerData addObject:@{ @"tag": @(view.tag), @"x": @(view.frame.origin.x), @"y": @(view.frame.origin.y) }];
+                    CGRect temp = view.frame;
+                    temp.origin.x = 0;
+                    temp.origin.y = 0;
+                    [view setFrame:temp];
+                    [view removeFromSuperview];
+                    [_headerView addSubview:view];
+                    [(eeuiScrollHeaderComponent *)[view wx_component] stateCallback:@"float"];
+                    _headerView.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, view.frame.size.height);
+                }
+            }
+        }
+        //从header删除
+        for (id obj in _headerData) {
+            if ([obj isKindOfClass:[NSDictionary class]]) {
+                if (scrollView.contentOffset.y < [WXConvert NSInteger:obj[@"y"]]) {
+                    for (WXView *view in _headerView.subviews) {
+                        if (view.tag == [WXConvert NSInteger:obj[@"tag"]]) {
+                            CGRect temp = view.frame;
+                            temp.origin.x = [WXConvert NSInteger:obj[@"x"]];
+                            temp.origin.y = [WXConvert NSInteger:obj[@"y"]];
+                            [view setFrame:temp];
+                            [view removeFromSuperview];
+                            [scrollView addSubview:view];
+                            [(eeuiScrollHeaderComponent *)[view wx_component] stateCallback:@"static"];
+                            break;
+                        }
+                    }
+                    [_headerData removeObject:obj];
+                }
+            }
+        }
+        //更新header状态
+        NSInteger count = [_headerView.subviews count];
+        NSInteger index = 0;
+        for (WXView *view in _headerView.subviews) {
+            if (index >= count - 1) {
+                [(eeuiScrollHeaderComponent *)[view wx_component] stateCallback:@"float"];
+            }else{
+                [(eeuiScrollHeaderComponent *)[view wx_component] stateCallback:@"static"];
+            }
+            index++;
+        }
+    }
     NSDictionary *res = @{@"x":@(0), @"y":@(scrollView.contentOffset.y*ScreeScale), @"dx":@(0), @"dy":@(fabs(scrollView.contentOffset.y - _scrolledY)*ScreeScale)};
     [self fireEvent:@"scrolled" params:res];
 }

@@ -21,7 +21,9 @@
 
         <scroll-view class="list">
 
-            <text class="list-title">组件 Components</text>
+            <scroll-header>
+                <text class="list-title">组件 Components</text>
+            </scroll-header>
 
             <div class="list-item" v-for="(item, index) in components" :key="index" @click="openUrl(item.url)">
                 <div class="list-item-left">
@@ -34,7 +36,9 @@
                 </div>
             </div>
 
-            <text class="list-title">自定义组件 UI</text>
+            <scroll-header>
+                <text class="list-title">自定义组件 UI</text>
+            </scroll-header>
 
             <div class="list-item" v-for="(item, index) in uis" :key="index" @click="openUrl(item.url)">
                 <div class="list-item-left">
@@ -47,7 +51,9 @@
                 </div>
             </div>
 
-            <text class="list-title">模块 Module</text>
+            <scroll-header>
+                <text class="list-title">模块 Module</text>
+            </scroll-header>
 
             <div class="list-item" v-for="(item, index) in module" :key="index" @click="openUrl(item.url)">
                 <div class="list-item-left">
@@ -60,7 +66,9 @@
                 </div>
             </div>
 
-            <text class="list-title">插件化 Plugins</text>
+            <scroll-header>
+                <text class="list-title">插件化 Plugins</text>
+            </scroll-header>
 
             <div class="list-item" v-for="(item, index) in plugin" :key="index" @click="openUrl(item.url)">
                 <div class="list-item-left">
@@ -83,7 +91,9 @@
                 </div>
             </div>
 
-            <text class="list-title">关于 About EEUI</text>
+            <scroll-header>
+                <text class="list-title">关于 About EEUI</text>
+            </scroll-header>
 
             <div class="list-item" v-for="(item, index) in abouts" :key="index" @click="openWeb(item.url)">
                 <div class="list-item-left">
@@ -96,10 +106,10 @@
                 </div>
             </div>
 
-            <div class="list-title-box" v-if="history.length > 0">
+            <scroll-header class="list-title-box" v-if="history.length > 0">
                 <text class="list-title">扫码历史</text>
                 <text class="list-subtitle" @click="clearHistory()">清空历史</text>
-            </div>
+            </scroll-header>
 
             <div v-if="history.length > 0">
                 <div class="list-item" v-for="(text, index) in history" :key="index" @click="openAuto(text)">
@@ -158,21 +168,22 @@
     .list-title-box {
         flex-direction: row;
         align-items: center;
+        background-color: #ffffff;
     }
 
     .list-title {
-        padding-top: 36px;
+        flex: 1;
+        padding-top: 32px;
         padding-right: 24px;
-        padding-bottom: 24px;
+        padding-bottom: 32px;
         padding-left: 24px;
         font-size: 28px;
         color: #757575;
+        background-color: #ffffff;
     }
 
     .list-subtitle {
-        position: absolute;
-        right: 24px;
-        bottom: 24px;
+        padding-right: 24px;
         font-size: 24px;
     }
 
@@ -213,12 +224,12 @@
     }
 
     .list-left-title-history {
-        color: #242424;
+        color: #666666;
         padding-left: 12px;
         width: 660px;
         font-size: 26px;
         text-overflow: ellipsis;
-        lines: 1;
+        lines: 2;
     }
 
     .list-right-title {

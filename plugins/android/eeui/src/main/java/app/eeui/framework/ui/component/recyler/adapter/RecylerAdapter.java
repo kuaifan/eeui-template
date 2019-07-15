@@ -1,7 +1,6 @@
 package app.eeui.framework.ui.component.recyler.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.eeui.framework.R;
-
-import app.eeui.framework.extend.module.eeuiCommon;
+import app.eeui.framework.ui.component.recyler.bean.ViewItem;
 
 /**
  * Created by WDM on 2018/3/1.
@@ -27,7 +25,7 @@ public class RecylerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private static final String TAG = "RecylerAdapter";
 
-    private List<View> viewDatas = new ArrayList<>();
+    private List<ViewItem> viewDatas = new ArrayList<>();
     private Context context;
     private int normalType = 0;
     private int footType = 1;
@@ -58,7 +56,8 @@ public class RecylerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof NormalHolder) {
             NormalHolder normalHolder = ((NormalHolder) holder);
-            View view = viewDatas.get(position);
+            ViewItem viewItem = viewDatas.get(position);
+            View view = viewItem.getView();
             if (view != null) {
                 ViewGroup parentViewGroup = (ViewGroup) view.getParent();
                 if (parentViewGroup != null ) {
@@ -114,6 +113,14 @@ public class RecylerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else {
             return normalType;
         }
+    }
+
+    public List<ViewItem> getAllView() {
+        return viewDatas;
+    }
+
+    public ViewItem getItemView(int position) {
+        return viewDatas.get(position);
     }
 
     class NormalHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -178,7 +185,7 @@ public class RecylerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return viewDatas.size();
     }
 
-    public void updateList(int index, View view, boolean hasMore) {
+    public void updateList(int index, ViewItem view, boolean hasMore) {
         if (view != null) {
             viewDatas.add(index, view);
         }
@@ -187,7 +194,12 @@ public class RecylerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void removeList(View view, boolean hasMore) {
         if (view != null) {
-            viewDatas.remove(view);
+            for (ViewItem item : viewDatas) {
+                if (item.getView() == view) {
+                    viewDatas.remove(item);
+                    break;
+                }
+            }
         }
         this.hasMore = hasMore;
     }

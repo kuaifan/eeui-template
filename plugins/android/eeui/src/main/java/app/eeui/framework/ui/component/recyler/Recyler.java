@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.alibaba.fastjson.JSONObject;
-
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.annotation.JSMethod;
 import com.taobao.weex.dom.CSSShorthand;
@@ -29,11 +28,12 @@ import java.util.Map;
 import app.eeui.framework.R;
 import app.eeui.framework.extend.module.eeuiCommon;
 import app.eeui.framework.extend.module.eeuiConstants;
-
 import app.eeui.framework.extend.module.eeuiJson;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
+import app.eeui.framework.ui.component.scrollHeader.ScrollHeaderView;
 import app.eeui.framework.ui.component.recyler.adapter.RecylerAdapter;
+import app.eeui.framework.ui.component.recyler.bean.ViewItem;
 import app.eeui.framework.ui.component.recyler.listener.RecylerOnBottomScrollListener;
 
 public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayout.OnRefreshListener {
@@ -44,22 +44,24 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
 
     private SwipeRefreshLayout v_swipeRefresh;
     private RecyclerView v_recyler;
+    private FrameLayout v_header;
 
     private boolean isSwipeRefresh;
     private boolean isRefreshAuto;
 
-    private int gridRow = 1;
     private int footIdentify;
     private int lastVisibleItem = 0;
 
     private boolean hasMore = false;
     private boolean isLoading = false;
     private boolean isRefreshing = false;
+    private boolean isHeaderFloat = false;
 
     private GridLayoutManager mLayoutManager;
     private RecylerAdapter mAdapter;
     private Runnable listUpdateRunnable;
     private Handler mHandler = new Handler();
+    private ViewGroup headerViewGroup;
 
     public Recyler(WXSDKInstance instance, WXVContainer parent, BasicComponentData basicComponentData) {
         super(instance, parent, basicComponentData);
@@ -117,7 +119,19 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
         if (view == null || mAdapter == null) {
             return;
         }
-        mAdapter.updateList(index, view, hasMore);
+        if (view instanceof ScrollHeaderView) {
+            ViewGroup parentViewGroup = (ViewGroup) view.getParent();
+            if (parentViewGroup != null ) {
+                parentViewGroup.removeView(view);
+            }
+            ScrollHeaderView temp = new ScrollHeaderView(getContext());
+            temp.addView(view);
+            temp.setLayoutParams(view.getLayoutParams());
+            mAdapter.updateList(index, new ViewItem(temp), hasMore);
+            isHeaderFloat = true;
+        }else{
+            mAdapter.updateList(index, new ViewItem(view), hasMore);
+        }
         mAdapter.notifyItemInserted(index);
         notifyUpdateFoot();
     }
@@ -127,7 +141,15 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
         if (child == null || child.getHostView() == null || mAdapter == null) {
             return;
         }
-        mAdapter.removeList(child.getHostView(), hasMore);
+        View view = child.getHostView();
+        if (view instanceof ScrollHeaderView) {
+            view = (View) view.getParent();
+            if (view == v_header) {
+                view = headerViewGroup;
+            }
+        }
+        mAdapter.removeList(view, hasMore);
+        removeHeaderIndex(view);
         notifyUpdateList();
         super.remove(child, destroy);
     }
@@ -186,11 +208,6 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
                 }
                 return true;
 
-            case "row":
-                //gridRow = eeuiParse.parseInt(val, 1);
-                //mLayoutManager.setSpanCount(gridRow);
-                return true;
-
             case "pullTips":
                 mAdapter.setPullTips(eeuiParse.parseBool(val, true) && getEvents().contains(eeuiConstants.Event.PULLLOAD_LISTENER));
                 return true;
@@ -219,6 +236,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
     private void initPagerView() {
         v_swipeRefresh = mView.findViewById(R.id.v_swipeRefresh);
         v_recyler = mView.findViewById(R.id.v_recyler);
+        v_header = mView.findViewById(R.id.v_header);
         //
         v_swipeRefresh.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
         v_swipeRefresh.setOnRefreshListener(this);
@@ -231,7 +249,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
         }
         //
         mAdapter = new RecylerAdapter(getContext());
-        mLayoutManager = new GridLayoutManager(getContext(), gridRow);
+        mLayoutManager = new GridLayoutManager(getContext(), 1);
         v_recyler.setHasFixedSize(true);
         v_recyler.setLayoutManager(mLayoutManager);
         v_recyler.setAdapter(mAdapter);
@@ -261,6 +279,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                loadHeaderIndex(mLayoutManager.findFirstVisibleItemPosition());
                 lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
                 if (isSwipeRefresh) {
                     boolean isFirst = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
@@ -323,6 +342,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
                 v_recyler.post(()-> {
                     if (getHostView() != null && mAdapter != null) {
                         mAdapter.notifyItemChanged(mAdapter.getItemCount() - 1);
+                        loadHeaderIndex(mLayoutManager.findFirstVisibleItemPosition());
                     }
                 });
             }
@@ -344,6 +364,94 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
         }else{
             mAdapter.updateList(-1, null, false);
             notifyUpdateFoot();
+        }
+    }
+
+    /**
+     * 顶部悬浮相关
+     * @param firstPos
+     */
+    private void loadHeaderIndex(int firstPos) {
+        if (!isHeaderFloat) {
+            return;
+        }
+        ViewItem item = null;
+        int index;
+        for (index = mAdapter.getItemCount() - 1; index >= 0; --index) {
+            if (index > firstPos) {
+                continue;
+            }
+            ViewItem temp = mAdapter.getItemView(index);
+            if (temp.isScrollHeader()) {
+                item = temp;
+                break;
+            }
+        }
+        if (item == null) {
+            removeHeaderIndex();
+            return;
+        }
+        if (item.getView() instanceof ScrollHeaderView && ((ScrollHeaderView) item.getView()).getChildCount() > 0) {
+            removeHeaderIndex();
+            headerViewGroup = (ViewGroup) item.getView();
+            if (index == 0 && !item.isPost()) {
+                ViewItem finalItem = item;
+                headerViewGroup.post(() -> {
+                    for (int i = 0; i < headerViewGroup.getChildCount(); i++) {
+                        View temp = headerViewGroup.getChildAt(i);
+                        if (temp instanceof ScrollHeaderView) {
+                            ((ScrollHeaderView) temp).stateChanged("float");
+                        }
+                        headerViewGroup.removeView(temp);
+                        v_header.addView(temp);
+                    }
+                    finalItem.setPost(true);
+                });
+            } else {
+                for (int i = 0; i < headerViewGroup.getChildCount(); i++) {
+                    View temp = headerViewGroup.getChildAt(i);
+                    if (temp instanceof ScrollHeaderView) {
+                        ((ScrollHeaderView) temp).stateChanged("float");
+                    }
+                    headerViewGroup.removeView(temp);
+                    v_header.addView(temp);
+                }
+            }
+        }
+    }
+
+    /**
+     * 顶部悬浮相关
+     */
+    private void removeHeaderIndex() {
+        if (!isHeaderFloat) {
+            return;
+        }
+        if (headerViewGroup == null) {
+            return;
+        }
+        for (int i = 0 ; i < v_header.getChildCount(); i++) {
+            View temp = v_header.getChildAt(i);
+            if (temp instanceof ScrollHeaderView) {
+                ((ScrollHeaderView) temp).stateChanged("static");
+            }
+            v_header.removeView(temp);
+            headerViewGroup.addView(temp);
+        }
+        headerViewGroup = null;
+    }
+
+    /**
+     * 顶部悬浮相关
+     * @param view
+     */
+    private void removeHeaderIndex(View view) {
+        if (!isHeaderFloat) {
+            return;
+        }
+        if (view == headerViewGroup) {
+            removeHeaderIndex();
+            loadHeaderIndex(mLayoutManager.findFirstVisibleItemPosition());
         }
     }
 
