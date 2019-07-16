@@ -11,6 +11,15 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import com.taobao.weex.WXSDKManager;
+import com.taobao.weex.adapter.IWXImgLoaderAdapter;
+import com.taobao.weex.common.WXImageStrategy;
+import com.taobao.weex.dom.WXImageQuality;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.integration.glide.Glide;
@@ -23,15 +32,6 @@ import app.eeui.framework.extend.integration.glide.request.RequestOptions;
 import app.eeui.framework.extend.integration.glide.request.target.Target;
 import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiHtml;
-
-import com.taobao.weex.WXSDKManager;
-import com.taobao.weex.adapter.IWXImgLoaderAdapter;
-import com.taobao.weex.common.WXImageStrategy;
-import com.taobao.weex.dom.WXImageQuality;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class ImageAdapter implements IWXImgLoaderAdapter {
 
@@ -72,6 +72,9 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
     private void loadImage(int loadNum, String url, ImageView view, WXImageStrategy strategy) {
         if (url.contains("/./")) {
             url = url.replaceAll("/\\./", "/");
+        }
+        if (url.contains("/../")) {
+            url = url.replaceAll("/(((?!/).)*)/../", "/");
         }
         String finalUrl = url;
         //

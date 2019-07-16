@@ -12,12 +12,12 @@
 
 + (NSString*)eeuiVersion
 {
-    return @"3";
+    return @"4";
 }
 
 + (NSString*)eeuiVersionName
 {
-    return @"1.0.3";
+    return @"1.0.4";
 }
 
 @end
