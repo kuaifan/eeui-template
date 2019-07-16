@@ -3,6 +3,7 @@ package app.eeui.framework.ui.component.navbar;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +43,6 @@ public class Navbar extends WXVContainer<ViewGroup> {
 
     private View mView;
 
-    private FrameLayout l_main;
-
     private ImageView v_back;
 
     private LinearLayout v_left_box, v_middle_box, v_right_box;
@@ -54,6 +53,9 @@ public class Navbar extends WXVContainer<ViewGroup> {
 
     public Navbar(WXSDKInstance instance, WXVContainer parent, BasicComponentData basicComponentData) {
         super(instance, parent, basicComponentData);
+        if (TextUtils.isEmpty(basicComponentData.getStyles().getBackgroundColor())) {
+            updateNativeStyle(Constants.Name.BACKGROUND_COLOR, "#3EB4FF");
+        }
         updateNativeStyle(Constants.Name.FLEX_DIRECTION, "row");
     }
 
@@ -137,10 +139,6 @@ public class Navbar extends WXVContainer<ViewGroup> {
                 setTitleType(eeuiParse.parseStr(val, "center"));
                 return true;
 
-            case "backgroundColor":
-                l_main.setBackgroundColor(eeuiParse.parseColor(eeuiParse.parseStr(val, "#3EB4FF")));
-                return true;
-
             default:
                 return false;
         }
@@ -175,7 +173,6 @@ public class Navbar extends WXVContainer<ViewGroup> {
     }
 
     private void initPagerView() {
-        l_main = mView.findViewById(R.id.l_main);
         v_back = mView.findViewById(R.id.v_back);
         v_back.setOnClickListener((View view)->{
             if (getEvents().contains(eeuiConstants.Event.GO_BACK_OVERRIDE)) {

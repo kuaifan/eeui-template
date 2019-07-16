@@ -116,6 +116,22 @@
     if (top && top.url) {
         topUrl = top.url;
     }
+    
+    if ([url hasPrefix:@"root:"]) {
+        NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
+        if ([topUrl hasPrefix:tempUrl]) {
+            return [NSString stringWithFormat:@"%@/eeui/%@", tempUrl, [url substringFromIndex:5]];
+        }else{
+            url = [NSString stringWithFormat:@"/%@", [url substringFromIndex:5]];
+        }
+    }else if ([url hasPrefix:@"root://"]) {
+        NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
+        if ([topUrl hasPrefix:tempUrl]) {
+            return [NSString stringWithFormat:@"%@/eeui/%@", tempUrl, [url substringFromIndex:7]];
+        }else{
+            url = [NSString stringWithFormat:@"/%@", [url substringFromIndex:7]];
+        }
+    }
 
     NSURL *URL = [NSURL URLWithString:topUrl];
     NSString *scheme = [URL scheme];

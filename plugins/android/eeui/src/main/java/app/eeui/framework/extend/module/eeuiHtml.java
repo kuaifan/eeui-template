@@ -61,8 +61,29 @@ public class eeuiHtml {
      * @return
      */
     public static String repairUrl(String url, String websiteUrl) {
+        String newUrl = __repairUrl(url, websiteUrl);
+        if (newUrl.contains("/../")) {
+            newUrl = newUrl.replaceAll("/(((?!/).)*)/../", "/");
+        }
+        return newUrl;
+    }
+
+    private static String __repairUrl(String url, String websiteUrl) {
         if (url == null || url.startsWith("http") || url.startsWith("ftp://")) {
             return url;
+        }
+        if (url.startsWith("root:")) {
+            if (websiteUrl.startsWith("file://assets")) {
+                return "file://assets/eeui/" + url.substring(5);
+            } else {
+                url = "/" + url.substring(5);
+            }
+        }else if (url.startsWith("root://")) {
+            if (websiteUrl.startsWith("file://assets")) {
+                return "file://assets/eeui/" + url.substring(7);
+            } else {
+                url = "/" + url.substring(7);
+            }
         }
         try {
             URL tmp = new URL(websiteUrl);

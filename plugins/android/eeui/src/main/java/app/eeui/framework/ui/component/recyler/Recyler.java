@@ -31,10 +31,10 @@ import app.eeui.framework.extend.module.eeuiConstants;
 import app.eeui.framework.extend.module.eeuiJson;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
-import app.eeui.framework.ui.component.scrollHeader.ScrollHeaderView;
 import app.eeui.framework.ui.component.recyler.adapter.RecylerAdapter;
 import app.eeui.framework.ui.component.recyler.bean.ViewItem;
 import app.eeui.framework.ui.component.recyler.listener.RecylerOnBottomScrollListener;
+import app.eeui.framework.ui.component.scrollHeader.ScrollHeaderView;
 
 public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -51,6 +51,10 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
 
     private int footIdentify;
     private int lastVisibleItem = 0;
+
+    private int refreshIdentify;
+    private int refreshStart = 0;
+    private int refreshEnd = 0;
 
     private boolean hasMore = false;
     private boolean isLoading = false;
@@ -247,6 +251,8 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
             isSwipeRefresh = false;
             v_swipeRefresh.setEnabled(false);
         }
+        refreshStart = v_swipeRefresh.getProgressViewStartOffset();
+        refreshEnd = v_swipeRefresh.getProgressViewEndOffset();
         //
         mAdapter = new RecylerAdapter(getContext());
         mLayoutManager = new GridLayoutManager(getContext(), 1);
@@ -417,6 +423,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
                     v_header.addView(temp);
                 }
             }
+            notifyHeaderIndex();
         }
     }
 
@@ -439,6 +446,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
             headerViewGroup.addView(temp);
         }
         headerViewGroup = null;
+        notifyHeaderIndex();
     }
 
     /**
@@ -453,6 +461,25 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
             removeHeaderIndex();
             loadHeaderIndex(mLayoutManager.findFirstVisibleItemPosition());
         }
+    }
+
+    /**
+     * 顶部悬浮相关
+     */
+    private void notifyHeaderIndex() {
+        if (isSwipeRefresh) {
+            return;
+        }
+        refreshIdentify++;
+        int tempId = refreshIdentify;
+        mHandler.postDelayed(()-> {
+            if (tempId == refreshIdentify) {
+                v_header.post(()-> {
+                    int h = v_header.getMeasuredHeight();
+                    v_swipeRefresh.setProgressViewOffset(false, refreshStart + h, refreshStart + refreshEnd + h);
+                });
+            }
+        }, 300);
     }
 
     /***************************************************************************************************/

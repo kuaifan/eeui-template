@@ -42,11 +42,11 @@ subprojects {
     ext {
         applicationId = "app.eeui.playground"
 
-        versionCode = 2
-        versionName = "1.0.2"
+        versionCode = 3
+        versionName = "1.0.3"
 
-        eeuiVersionCode = 2
-        eeuiVersionName = "1.0.2"
+        eeuiVersionCode = 3
+        eeuiVersionName = "1.0.3"
 
         compileSdkVersion = 28
         appMinSdkVersion = 16

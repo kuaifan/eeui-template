@@ -51,6 +51,7 @@
 #import "WXPageEventNotifyEvent.h"
 #import "WXCoreBridge.h"
 #import <WeexSDK/WXDataRenderHandler.h>
+#import "WeexSDKManager.h"
 
 #define WEEX_LITE_URL_SUFFIX           @"wlasm"
 
@@ -853,6 +854,13 @@ typedef enum : NSUInteger {
 
 - (NSURL *)completeURL:(NSString *)url
 {
+    //eeui dev s
+    NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:kCachePath];
+    filePath = [NSString stringWithFormat:@"file://%@/", filePath];
+    if ([[_scriptURL absoluteString] hasPrefix:filePath]) {
+        return [NSURL URLWithString:url];
+    }
+    //eeui dev e
     if (!_scriptURL) {
         return [NSURL URLWithString:url];
     }

@@ -271,7 +271,7 @@
             }
         },
 
-        mounted() {
+        created() {
             this.components = [
                 {
                     title: '轮播控件',
