@@ -3,7 +3,6 @@ package app.eeui.framework.extend.module;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -11,7 +10,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.WXSDKInstance;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,7 +23,6 @@ import app.eeui.framework.activity.PageActivityTransparent;
 import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
 import app.eeui.framework.extend.module.rxtools.tool.RxFileTool;
-import app.eeui.framework.extend.module.utilcode.util.TimeUtils;
 
 /**
  * Created by WDM on 2018/3/25.
@@ -225,13 +222,17 @@ public class eeuiPage {
      * @return
      */
     public static String realUrl(String url) {
-        try {
-            URL uri = new URL(url);
-            url = uri.toString();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return url;
+        return eeuiHtml.realUrl(url);
+    }
+
+    /**
+     * 补全地址
+     * @param context
+     * @param url
+     * @return
+     */
+    public static String rewriteUrl(Context context, String url) {
+        return eeuiHtml.repairUrl(context, url);
     }
 
     /**
@@ -248,36 +249,6 @@ public class eeuiPage {
                 && !lastUrl.contains(".")) {
                 url = url + ".js";
             }
-        }
-        return url;
-    }
-
-    /**
-     * 补全地址
-     * @param context
-     * @param url
-     * @return
-     */
-    public static String rewriteUrl(Context context, String url) {
-        if (url == null || url.startsWith("http://") || url.startsWith("https://") || url.startsWith("ftp://") || url.startsWith("file://") || url.startsWith("data:image/")) {
-            Uri mUri = Uri.parse(url);
-            if (TextUtils.equals("http", mUri.getScheme()) || TextUtils.equals("https", mUri.getScheme())) {
-                String weexTpl = mUri.getQueryParameter("_wx_tpl");
-                url = TextUtils.isEmpty(weexTpl) ? mUri.toString() : weexTpl;
-            }
-            if (url != null && url.contains("/./")) {
-                url = url.replaceAll("/\\./", "/");
-            }
-            return url;
-        }
-        if (context instanceof PageActivity) {
-            PageBean info = ((PageActivity) context).getPageInfo();
-            if (info != null) {
-                url = eeuiHtml.repairUrl(url, info.getUrl());
-            }
-        }
-        if (url.contains("/./")) {
-            url = url.replaceAll("/\\./", "/");
         }
         return url;
     }
@@ -346,7 +317,7 @@ public class eeuiPage {
         String appboard = eeuiPage.getAppboardContent(context);
         if (cache >= 1000 || !TextUtils.isEmpty(appboard)) {
             if (url.startsWith("file://")) {
-                String tempUrl = saveCachePage(context, eeuiCommon.md5(url), appboard + eeuiCommon.getAssetsFile(context, url));
+                String tempUrl = saveCachePage(context, url, appboard + eeuiCommon.getAssetsFile(context, url));
                 if (tempUrl == null) {
                     Log.d(TAG, "cachePage assetsError: " + url);
                     mOnCachePageCallback.success(resParams, url);
@@ -363,7 +334,7 @@ public class eeuiPage {
                 eeuiIhttp.get("eeuiPage", url, data, new eeuiIhttp.ResultCallback() {
                     @Override
                     public void success(String resData, boolean isCache) {
-                        String tempUrl = saveCachePage(context, eeuiCommon.md5(url), appboard + resData);
+                        String tempUrl = saveCachePage(context, url, appboard + resData);
                         if (tempUrl == null) {
                             Log.d(TAG, "cachePage errors: " + url);
                             mOnCachePageCallback.success(resParams, url);
@@ -394,16 +365,26 @@ public class eeuiPage {
     /**
      * 保存缓存页面
      * @param context
-     * @param fileName
+     * @param url
      * @param string
      * @return
      */
-    private static String saveCachePage(Context context, String fileName, String string) {
-        File tempPath = context.getExternalFilesDir("Caches/pages");
+    private static String saveCachePage(Context context, String url, String string) {
+        String path = "/";
+        try {
+            URL tmp = new URL(url);
+            int lastIndex = tmp.getPath().lastIndexOf("/");
+            if (lastIndex > -1){
+                path = tmp.getPath().substring(0, lastIndex);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        File tempPath = context.getExternalFilesDir("page_cache" + path);
         if (tempPath == null) {
             return null;
         }
-        tempPath = new File(tempPath.getPath() + "/" + fileName);
+        tempPath = new File(tempPath.getPath() + "/" + eeuiCommon.md5(url));
         if (!RxFileTool.writeFileFromString(tempPath, string, false)) {
             return null;
         }

@@ -48,13 +48,6 @@
 
 - (id<WXImageOperationProtocol>)downloadImageWithURL:(NSString *)url imageFrame:(CGRect)imageFrame userInfo:(NSDictionary *)userInfo completed:(void(^)(UIImage *image,  NSError *error, BOOL finished))completedBlock
 {
-    NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:kCachePath];
-    filePath = [NSString stringWithFormat:@"file://%@/", filePath];
-    if ([url hasPrefix:filePath]) {
-        NSArray *array = [url componentsSeparatedByString:filePath];
-        url = array[1];
-    }
-    
     url = [Config verifyFile:[DeviceUtil rewriteUrl:url]];
     
     return (id<WXImageOperationProtocol>)[SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:url] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {

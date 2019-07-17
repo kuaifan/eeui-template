@@ -379,7 +379,7 @@
 
 - (void)getCacheSizePage:(WXModuleKeepAliveCallback)callback
 {
-    NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:kCachePath];
+    NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"page_cache"];
     NSInteger  size = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
 
     if (callback) {
@@ -390,7 +390,7 @@
 - (void)clearCachePage
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:kCachePath];
+    NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"page_cache"];
 
     if ([fileManager fileExistsAtPath:filePath]) {
         [fileManager removeItemAtPath:filePath error:nil];

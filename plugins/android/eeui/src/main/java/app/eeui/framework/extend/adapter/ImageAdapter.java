@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.taobao.weex.WXSDKManager;
@@ -16,12 +17,9 @@ import com.taobao.weex.adapter.IWXImgLoaderAdapter;
 import com.taobao.weex.common.WXImageStrategy;
 import com.taobao.weex.dom.WXImageQuality;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import app.eeui.framework.activity.PageActivity;
-import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.integration.glide.Glide;
 import app.eeui.framework.extend.integration.glide.RequestBuilder;
 import app.eeui.framework.extend.integration.glide.load.DataSource;
@@ -70,54 +68,24 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
      * @param strategy
      */
     private void loadImage(int loadNum, String url, ImageView view, WXImageStrategy strategy) {
-        if (url.contains("/./")) {
-            url = url.replaceAll("/\\./", "/");
-        }
-        if (url.contains("/../")) {
-            url = url.replaceAll("/(((?!/).)*)/../", "/");
-        }
-        String finalUrl = url;
-        //
         if (view.getLayoutParams().width <= 0 || view.getLayoutParams().height <= 0) {
             if (loadNum < 5) {
-                mHandler.postDelayed(() -> view.post(() -> loadImage(loadNum + 1, finalUrl, view, strategy)), 200);
+                mHandler.postDelayed(() -> view.post(() -> loadImage(loadNum + 1, url, view, strategy)), 200);
             }
             return;
-        }
-        //
-        String tempUrl = finalUrl;
-        File tempPath = view.getContext().getExternalFilesDir("Caches/pages");
-        if (tempPath != null) {
-            String cachePath = "file://" + tempPath.getPath() + "/";
-            if (tempUrl.startsWith(cachePath)) {
-                tempUrl = tempUrl.substring((cachePath).length());
-            }
-        }
-        if (tempUrl.startsWith("//")) {
-            tempUrl = "http:" + finalUrl;
-        } else if (!tempUrl.startsWith("http") && !tempUrl.startsWith("ftp:") && !tempUrl.startsWith("file:") && !tempUrl.startsWith("data:image/")) {
-            if (view.getContext() instanceof PageActivity) {
-                PageBean mPageBean = ((PageActivity) view.getContext()).getPageInfo();
-                if (mPageBean != null) {
-                    tempUrl = eeuiHtml.repairUrl(tempUrl, mPageBean.getUrl());
-                }
-            }
         }
         //
         if (view.getContext() == null) {
             return;
         }
-        //
-        tempUrl = eeuiBase.config.verifyFile(tempUrl);
+        String tempUrl = eeuiBase.config.verifyFile(eeuiHtml.repairUrl(view.getContext(), url));
+        Log.d(TAG, "loadImage: " + tempUrl);
         try {
             RequestBuilder<Drawable> myLoad;
             if (tempUrl.startsWith("file://assets/")) {
                 Bitmap myBitmap = getImageFromAssetsFile(view.getContext(), tempUrl.substring(14));
                 myLoad = Glide.with(view.getContext()).load(myBitmap);
-            }else if (tempUrl.startsWith("file:///assets/")) {
-                Bitmap myBitmap = getImageFromAssetsFile(view.getContext(), tempUrl.substring(15));
-                myLoad = Glide.with(view.getContext()).load(myBitmap);
-            }else{
+            } else {
                 myLoad = Glide.with(view.getContext()).load(tempUrl);
             }
             //
@@ -126,7 +94,7 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     if (strategy.getImageListener() != null) {
-                        strategy.getImageListener().onImageFinish(finalUrl, view, false, null);
+                        strategy.getImageListener().onImageFinish(url, view, false, null);
                     }
                     return false;
                 }
@@ -134,7 +102,7 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
                 @Override
                 public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                     if (strategy.getImageListener() != null) {
-                        strategy.getImageListener().onImageFinish(finalUrl, view, true, null);
+                        strategy.getImageListener().onImageFinish(url, view, true, null);
                     }
                     return false;
                 }

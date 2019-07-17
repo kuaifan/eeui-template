@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define kCachePath @"cache_path"
-
 @interface WeexSDKManager : NSObject
 
 @property (nonatomic, strong) NSString *weexUrl;

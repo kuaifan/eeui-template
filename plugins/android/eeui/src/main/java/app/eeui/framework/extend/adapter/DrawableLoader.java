@@ -7,17 +7,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.taobao.weex.WXSDKManager;
 import com.taobao.weex.adapter.DrawableStrategy;
 import com.taobao.weex.adapter.IDrawableLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import app.eeui.framework.activity.PageActivity;
-import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.integration.glide.Glide;
 import app.eeui.framework.extend.integration.glide.RequestBuilder;
 import app.eeui.framework.extend.integration.glide.load.engine.DiskCacheStrategy;
@@ -26,8 +24,11 @@ import app.eeui.framework.extend.integration.glide.request.target.SimpleTarget;
 import app.eeui.framework.extend.integration.glide.request.transition.Transition;
 import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiHtml;
+import app.eeui.framework.ui.eeui;
 
 public class DrawableLoader implements IDrawableLoader {
+
+    private static final String TAG = "DrawableLoader";
 
     private Context mContext;
 
@@ -37,39 +38,13 @@ public class DrawableLoader implements IDrawableLoader {
 
     @Override
     public void setDrawable(String url, DrawableTarget drawableTarget, DrawableStrategy drawableStrategy) {
-        if (url.contains("/./")) {
-            url = url.replaceAll("/\\./", "/");
-        }
-        String finalUrl = url;
         WXSDKManager.getInstance().postOnUiThread(() -> {
-
-            String tempUrl = finalUrl;
-            File tempPath = mContext.getExternalFilesDir("Caches/pages");
-            if (tempPath != null) {
-                String cachePath = "file://" + tempPath.getPath() + "/";
-                if (tempUrl.startsWith(cachePath)) {
-                    tempUrl = tempUrl.substring((cachePath).length());
-                }
-            }
-            if (tempUrl.startsWith("//")) {
-                tempUrl = "http:" + finalUrl;
-            } else if (!tempUrl.startsWith("http") && !tempUrl.startsWith("ftp:") && !tempUrl.startsWith("file:") && !tempUrl.startsWith("data:image/")) {
-                if (mContext instanceof PageActivity) {
-                    PageBean mPageBean = ((PageActivity) mContext).getPageInfo();
-                    if (mPageBean != null) {
-                        tempUrl = eeuiHtml.repairUrl(tempUrl, mPageBean.getUrl());
-                    }
-                }
-            }
-
-            tempUrl = eeuiBase.config.verifyFile(tempUrl);
+            String tempUrl = eeuiBase.config.verifyFile(eeuiHtml.repairUrl(eeui.getActivityList().getLast(), url));
+            Log.d(TAG, "setDrawable: " + tempUrl);
             try {
                 RequestBuilder<Drawable> myLoad;
                 if (tempUrl.startsWith("file://assets/")) {
                     Bitmap myBitmap = getImageFromAssetsFile(mContext, tempUrl.substring(14));
-                    myLoad = Glide.with(mContext).load(myBitmap);
-                } else if (tempUrl.startsWith("file:///assets/")) {
-                    Bitmap myBitmap = getImageFromAssetsFile(mContext, tempUrl.substring(15));
                     myLoad = Glide.with(mContext).load(myBitmap);
                 } else {
                     myLoad = Glide.with(mContext).load(tempUrl);
