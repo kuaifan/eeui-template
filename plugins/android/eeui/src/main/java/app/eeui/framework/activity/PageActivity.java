@@ -38,44 +38,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import app.eeui.framework.extend.integration.actionsheet.ActionItem;
-import app.eeui.framework.extend.integration.actionsheet.ActionSheet;
-import app.eeui.framework.extend.integration.glide.load.DataSource;
-import app.eeui.framework.extend.integration.glide.load.engine.DiskCacheStrategy;
-import app.eeui.framework.extend.integration.glide.load.engine.GlideException;
-import app.eeui.framework.extend.integration.glide.request.RequestListener;
-import app.eeui.framework.extend.integration.glide.request.RequestOptions;
-import app.eeui.framework.extend.integration.glide.request.target.Target;
-import app.eeui.framework.extend.integration.iconify.widget.IconTextView;
-import app.eeui.framework.extend.module.utilcode.util.KeyboardUtils;
-import app.eeui.framework.extend.module.eeuiBase;
-import app.eeui.framework.extend.module.eeuiScreenUtils;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import app.eeui.framework.BuildConfig;
-import app.eeui.framework.R;
-import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
-import app.eeui.framework.extend.module.rxtools.module.scaner.CameraManager;
-import app.eeui.framework.extend.module.rxtools.module.scaner.CaptureActivityHandler;
-import app.eeui.framework.extend.module.rxtools.module.scaner.decoding.InactivityTimer;
-import app.eeui.framework.extend.module.rxtools.tool.RxAnimationTool;
-import app.eeui.framework.extend.module.rxtools.tool.RxBeepTool;
-import app.eeui.framework.extend.module.rxtools.tool.RxPhotoTool;
-import app.eeui.framework.extend.module.rxtools.tool.RxQrBarTool;
-import app.eeui.framework.extend.module.utilcode.constant.PermissionConstants;
-import app.eeui.framework.extend.module.eeuiAlertDialog;
-import app.eeui.framework.extend.module.eeuiConstants;
-import app.eeui.framework.extend.module.eeuiJson;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import app.eeui.framework.extend.integration.glide.Glide;
-import app.eeui.framework.extend.integration.glide.request.target.SimpleTarget;
-import app.eeui.framework.extend.integration.glide.request.transition.Transition;
-
-import app.eeui.framework.extend.integration.zxing.Result;
-
 import com.rabtman.wsmanager.WsManager;
 import com.rabtman.wsmanager.listener.WsStatusListener;
 import com.taobao.weex.IWXRenderListener;
@@ -102,21 +67,53 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.eeui.framework.extend.integration.statusbarutil.StatusBarUtil;
-import app.eeui.framework.extend.integration.swipebacklayout.BGASwipeBackHelper;
+import app.eeui.framework.BuildConfig;
+import app.eeui.framework.R;
 import app.eeui.framework.extend.bean.PageBean;
-import app.eeui.framework.extend.module.utilcode.util.PermissionUtils;
-import app.eeui.framework.extend.module.utilcode.util.ScreenUtils;
-import app.eeui.framework.extend.module.utilcode.util.SizeUtils;
+import app.eeui.framework.extend.integration.actionsheet.ActionItem;
+import app.eeui.framework.extend.integration.actionsheet.ActionSheet;
+import app.eeui.framework.extend.integration.glide.Glide;
+import app.eeui.framework.extend.integration.glide.load.DataSource;
+import app.eeui.framework.extend.integration.glide.load.engine.DiskCacheStrategy;
+import app.eeui.framework.extend.integration.glide.load.engine.GlideException;
+import app.eeui.framework.extend.integration.glide.request.RequestListener;
+import app.eeui.framework.extend.integration.glide.request.RequestOptions;
+import app.eeui.framework.extend.integration.glide.request.target.SimpleTarget;
+import app.eeui.framework.extend.integration.glide.request.target.Target;
+import app.eeui.framework.extend.integration.glide.request.transition.Transition;
+import app.eeui.framework.extend.integration.iconify.widget.IconTextView;
+import app.eeui.framework.extend.integration.statusbarutil.StatusBarUtil;
+import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
+import app.eeui.framework.extend.integration.swipebacklayout.BGASwipeBackHelper;
+import app.eeui.framework.extend.integration.zxing.Result;
+import app.eeui.framework.extend.module.eeuiAlertDialog;
+import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiCommon;
+import app.eeui.framework.extend.module.eeuiConstants;
 import app.eeui.framework.extend.module.eeuiIhttp;
+import app.eeui.framework.extend.module.eeuiJson;
 import app.eeui.framework.extend.module.eeuiMap;
 import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
-import app.eeui.framework.extend.view.FloatDragView;
+import app.eeui.framework.extend.module.eeuiScreenUtils;
+import app.eeui.framework.extend.module.rxtools.module.scaner.CameraManager;
+import app.eeui.framework.extend.module.rxtools.module.scaner.CaptureActivityHandler;
+import app.eeui.framework.extend.module.rxtools.module.scaner.decoding.InactivityTimer;
+import app.eeui.framework.extend.module.rxtools.tool.RxAnimationTool;
+import app.eeui.framework.extend.module.rxtools.tool.RxBeepTool;
+import app.eeui.framework.extend.module.rxtools.tool.RxPhotoTool;
+import app.eeui.framework.extend.module.rxtools.tool.RxQrBarTool;
+import app.eeui.framework.extend.module.utilcode.constant.PermissionConstants;
+import app.eeui.framework.extend.module.utilcode.util.KeyboardUtils;
+import app.eeui.framework.extend.module.utilcode.util.PermissionUtils;
+import app.eeui.framework.extend.module.utilcode.util.ScreenUtils;
+import app.eeui.framework.extend.module.utilcode.util.SizeUtils;
 import app.eeui.framework.extend.view.ExtendWebView;
+import app.eeui.framework.extend.view.FloatDragView;
 import app.eeui.framework.extend.view.SwipeCaptchaView;
 import app.eeui.framework.ui.eeui;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -513,8 +510,11 @@ public class PageActivity extends AppCompatActivity {
             }
         }
         if (BuildConfig.DEBUG) {
-            if (PageActivity.hideDev && eeui.getActivityList().size() == 1) {
-                PageActivity.hideDev = false;
+            if (eeui.getActivityList().size() == 1) {
+                eeuiCommon.setVariate("__deBugSocket:Init", 0);
+                if (PageActivity.hideDev) {
+                    PageActivity.hideDev = false;
+                }
             }
             closeConsole();
         }
@@ -1966,6 +1966,7 @@ public class PageActivity extends AppCompatActivity {
                                     public void invoke(Object data) {
                                         Map<String, Object> retData = eeuiMap.objectToMap(data);
                                         if (eeuiParse.parseStr(retData.get("status")).equals("click") && eeuiParse.parseStr(retData.get("title")).equals("确定")) {
+                                            eeuiCommon.setVariate("__deBugSocket:Init", 0);
                                             eeuiBase.cloud.reboot();
                                         }
                                     }
@@ -1978,6 +1979,7 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 8: {
+                                eeuiCommon.setVariate("__deBugSocket:Init", 0);
                                 eeuiBase.cloud.clearUpdate();
                                 break;
                             }

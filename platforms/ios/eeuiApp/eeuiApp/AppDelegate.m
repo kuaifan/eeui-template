@@ -428,6 +428,7 @@ NSDictionary *mLaunchOptions;
         [Cloud appData];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([Cloud welcome:self.window click:nil] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [Cloud welcomeClose];
+            [self initDebug:0];
         });
 
         [WeexInitManager didFinishLaunchingWithOptions:mLaunchOptions];
