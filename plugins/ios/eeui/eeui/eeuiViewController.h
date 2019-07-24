@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 @property (nonatomic, strong) NSString *backgroundColor;
 @property (nonatomic, strong) NSString *softInputMode;
 @property (nonatomic, strong) NSString *safeAreaBottom;//底部安全距离
+@property (nonatomic, assign) long loadTime;//最后加载时间
 
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, assign) NSInteger cache;//缓存时长，0则不缓存
@@ -60,9 +61,9 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 - (void)startLoading;
 - (void)refreshPage;
 
-- (void)setHomeUrl:(NSString *)url;
+- (void)setHomeUrl:(NSString*)url refresh:(BOOL)refresh;
 
-- (void)setResumeUrl:(NSString *)url;
+- (void)setResumeUrl:(NSString*)url;
 
 - (void)addStatusListener:(NSString*)name;
 - (void)clearStatusListener:(NSString*)name;

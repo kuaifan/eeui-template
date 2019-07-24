@@ -45,4 +45,6 @@ static NSMutableDictionary * mAppboardContent;
 
 + (void)downloadScript:(NSString *)url appboard:(NSString *)appboard cache:(NSInteger)cache callback:(void(^)(NSString* path))callback;
 
++ (NSString *)timesFromString:(NSString *)timestamp;
+
 @end

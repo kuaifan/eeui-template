@@ -1204,6 +1204,10 @@ public class PageActivity extends AppCompatActivity {
         lifecycleLastStatus = status;
         lifecycleListener(status);
         //
+        if ("viewCreated".contentEquals(status)) {
+            mPageInfo.setLoadTime(eeuiCommon.timeStamp());
+        }
+        //
         if (mOnPageStatusListeners.size() > 0) {
             for (String name : mOnPageStatusListeners.keySet()) {
                 JSCallback call = mOnPageStatusListeners.get(name);
@@ -1872,7 +1876,9 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 2: {
-                                showPageInfo(JSON.toJSONString(getPageInfo().toMap(), true));
+                                Map<String, Object> info = getPageInfo().toMap();
+                                info.put("loadTime", eeuiCommon.formatDate(eeuiParse.parseStr(info.get("loadTime")), null));
+                                showPageInfo(JSON.toJSONString(info, true));
                                 break;
                             }
                             case 3: {
@@ -2060,8 +2066,14 @@ public class PageActivity extends AppCompatActivity {
                     deBugSocketConnect("reconnect");
                 }, 3000);
             } else {
-                Log.d("[socket]", "onFailure");
-                Toast.makeText(PageActivity.this, "WiFi同步连接失败：" + t.getMessage(), LENGTH_SHORT).show();
+                String statusRand = eeuiCommon.randomString(6);
+                eeuiCommon.setVariate("__deBugSocket:statusRand", statusRand);
+                mHandler.postDelayed(()-> {
+                    if (eeuiCommon.getVariateInt("__deBugSocket:Status") != 1 && statusRand.contentEquals(eeuiCommon.getVariateStr("__deBugSocket:statusRand"))) {
+                        Log.d("[socket]", "onFailure");
+                        Toast.makeText(PageActivity.this, "WiFi同步连接失败：" + t.getMessage(), LENGTH_SHORT).show();
+                    }
+                }, 1000);
             }
             //
             List<Activity> activityList = eeui.getActivityList();
@@ -2091,8 +2103,11 @@ public class PageActivity extends AppCompatActivity {
                             if (!homePage.equals(mHomePage))  {
                                 eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", mHomePage, 2);
                                 mHandler.postDelayed(()-> {
+                                    String curUrl = mActivity.mPageInfo.getUrl();
                                     mActivity.mPageInfo.setUrl(mHomePage);
-                                    mActivity.reload();
+                                    if (!mHomePage.contentEquals(curUrl) || eeuiCommon.timeStamp() - mActivity.mPageInfo.getLoadTime() > 5) {
+                                        mActivity.reload();
+                                    }
                                     BGAKeyboardUtil.closeKeyboard(PageActivity.this);
                                 }, 300);
                             }

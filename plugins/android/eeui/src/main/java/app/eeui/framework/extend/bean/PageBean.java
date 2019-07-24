@@ -3,12 +3,11 @@ package app.eeui.framework.extend.bean;
 import android.app.Activity;
 import android.content.Context;
 
+import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.bridge.JSCallback;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * Created by WDM on 2018/3/7.
@@ -26,6 +25,7 @@ public class PageBean {
         temp.put("params", getParams());
         temp.put("cache", getCache());
         temp.put("loading", isLoading());
+        temp.put("loadTime", getLoadTime());
         temp.put("swipeBack", isSwipeBack());
         temp.put("animated", isAnimated());
         temp.put("animatedClose", isAnimatedClose());
@@ -90,6 +90,7 @@ public class PageBean {
     private JSCallback callback;
     private Context context;
     private JSONObject otherObject;
+    private long loadTime = 0;
 
     public String getPageName() {
         return pageName;
@@ -283,4 +284,11 @@ public class PageBean {
         this.otherObject = otherObject;
     }
 
+    public long getLoadTime() {
+        return loadTime;
+    }
+
+    public void setLoadTime(long loadTime) {
+        this.loadTime = loadTime;
+    }
 }

@@ -9,7 +9,7 @@
 
 @interface ViewController : UIViewController
 
-- (void) loadUrl:(NSString*) url;
+- (void) loadUrl:(NSString*) url forceRefresh:(BOOL) forceRefresh;
 
 - (BOOL) isReady;
 

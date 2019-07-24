@@ -733,6 +733,12 @@ static int easyNavigationButtonTag = 8000;
     if (self.statusBlock) {
         self.statusBlock(status);
     }
+    
+    if ([status isEqualToString:@"viewCreated"]) {
+        _loadTime = [[NSDate date] timeIntervalSince1970];
+        [[eeuiNewPageManager sharedIntstance] setPageDataValue:self.pageName key:@"loadTime"
+                                                         value:[DeviceUtil timesFromString:[NSString stringWithFormat:@"%ld", (long)_loadTime]]];
+    }
 
     //通知监听
     if ([status isEqualToString:_notificationStatus]) {
@@ -744,11 +750,13 @@ static int easyNavigationButtonTag = 8000;
     }
 }
 
-- (void)setHomeUrl:(NSString*)url
+- (void)setHomeUrl:(NSString*)url refresh:(BOOL)refresh
 {
     self.url = url;
     [[eeuiNewPageManager sharedIntstance] setPageDataValue:self.pageName key:@"url" value:self.url];
-    [self refreshPage];
+    if (refresh) {
+        [self refreshPage];
+    }
 }
 
 - (void)setResumeUrl:(NSString *)url

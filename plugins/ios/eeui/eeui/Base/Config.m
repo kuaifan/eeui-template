@@ -6,6 +6,7 @@
 //
 
 #import "Config.h"
+#import "IpUtil.h"
 #import <CommonCrypto/CommonDigest.h>
 
 @implementation Config
@@ -64,13 +65,54 @@ static NSMutableArray *verifyDir;
 }
 
 //获取主页地址
-+ (NSString *) getHome
++ (void) getHomeUrl:(void(^)(NSString* path))callback
 {
+    NSString *socketHome = [self getString:@"socketHome" defaultVal:@""];
     NSString *homePage = [self getString:@"homePage" defaultVal:@""];
     if (homePage.length == 0) {
         homePage = [NSString stringWithFormat:@"file://%@", [self getResourcePath:@"bundlejs/eeui/pages/index.js"]];
     }
-    return homePage;
+    #if DEBUG
+    #else
+        socketHome = @"";
+    #endif
+    if (socketHome.length == 0) {
+        callback(homePage);
+        return;
+    }
+    NSURL *socketURL = [NSURL URLWithString:socketHome];
+    NSRange lastRange = [[socketURL host] rangeOfString:@"." options:NSBackwardsSearch];
+    BOOL isLip = NO;
+    if (lastRange.location != NSNotFound) {
+        NSString *socketHostTo = [[socketURL host] substringToIndex:lastRange.location];
+        NSArray *ipLists = [IpUtil getLocalIPAddressIPv4Lists];
+        for (NSString *ipv in ipLists) {
+            if ([ipv hasPrefix:socketHostTo]) {
+                isLip = YES;
+                break;
+            }
+        }
+    }
+    if (!isLip) {
+        callback(homePage);
+        return;
+    }
+    //
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:socketHome]];
+    [request setTimeoutInterval:1.0];
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *downloadTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (!error) {
+            NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            NSRange range = [content rangeOfString:@"^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}" options:NSRegularExpressionSearch];
+            if (range.location != NSNotFound) {
+                callback(socketHome);
+                return;
+            }
+        }
+        callback(homePage);
+    }];
+    [downloadTask resume];
 }
 
 //获取主页配置值

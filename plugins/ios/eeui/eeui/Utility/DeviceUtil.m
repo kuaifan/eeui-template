@@ -352,4 +352,15 @@
     [downloadTask resume];
 }
 
+
+// 时间戳—>字符串时间
++ (NSString *)timesFromString:(NSString *)timestamp {
+    //时间戳转时间的方法
+    NSDate *timeData = [NSDate dateWithTimeIntervalSince1970:[timestamp intValue]];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString *strTime = [dateFormatter stringFromDate:timeData];
+    return strTime;
+}
+
 @end

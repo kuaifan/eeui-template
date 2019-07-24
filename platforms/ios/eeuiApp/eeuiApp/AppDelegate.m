@@ -423,7 +423,9 @@ NSDictionary *mLaunchOptions;
 
         [Config clear];
         [[[DeviceUtil getTopviewControler] navigationController] popToRootViewControllerAnimated:NO];
-        [[[ViewController alloc]init] loadUrl:[Config getHome]];
+        [Config getHomeUrl:^(NSString * _Nonnull path) {
+            [[[ViewController alloc]init] loadUrl:path forceRefresh:YES];
+        }];
 
         [Cloud appData];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([Cloud welcome:self.window click:nil] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -493,10 +495,10 @@ NSDictionary *mLaunchOptions;
     if ([msg hasPrefix:@"HOMEPAGE:"]) {
         [[[DeviceUtil getTopviewControler] navigationController] popToRootViewControllerAnimated:NO];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [mController loadUrl:[msg substringFromIndex:9]];
+            [mController loadUrl:[msg substringFromIndex:9] forceRefresh:NO];
         });
     }else if ([msg hasPrefix:@"HOMEPAGEBACK:"]) {
-        [mController loadUrl:[msg substringFromIndex:13]];
+        [mController loadUrl:[msg substringFromIndex:13] forceRefresh:YES];
     }else if ([msg hasPrefix:@"RECONNECT:"]) {
         NSURL *url = [NSURL URLWithString:[msg substringFromIndex:10]];
         NSURL *nowUrl = [NSURL URLWithString:[(eeuiViewController*)[DeviceUtil getTopviewControler] url]];

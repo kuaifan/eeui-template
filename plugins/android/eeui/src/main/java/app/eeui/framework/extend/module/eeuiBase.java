@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -16,14 +17,17 @@ import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.utils.WXFileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import app.eeui.framework.BuildConfig;
 import app.eeui.framework.R;
@@ -52,6 +56,10 @@ public class eeuiBase {
         void skip();
         void finish();
         void click(String var);
+    }
+
+    public interface OnHomeUrlListener {
+        void result(String var);
     }
 
 
@@ -103,14 +111,60 @@ public class eeuiBase {
 
         /**
          * 获取主页地址
-         * @return
+         * @param mOnHomeUrlListener
          */
-        public static String getHome() {
-            String homePage = eeuiJson.getString(get(), "homePage");
-            if (homePage.length() == 0) {
-                homePage = "file://assets/eeui/pages/index.js";
+        public static void getHomeUrl(OnHomeUrlListener mOnHomeUrlListener) {
+            String socketHome = eeuiJson.getString(get(), "socketHome");
+            final String[] homePage = {eeuiJson.getString(get(), "homePage")};
+            if (homePage[0].length() == 0) {
+                homePage[0] = "file://assets/eeui/pages/index.js";
             }
-            return homePage;
+            if (!BuildConfig.DEBUG || TextUtils.isEmpty(socketHome)) {
+                mOnHomeUrlListener.result(homePage[0]);
+                return;
+            }
+            //
+            boolean isLip = false;
+            try {
+                String socketIP = eeuiParse.parseStr(new URL(socketHome).getHost());
+                for(String ipv: eeuiIp.getHostIPv4Lists()) {
+                    ipv = ipv.substring(0, ipv.lastIndexOf("."));
+                    if (socketIP.startsWith(ipv)) {
+                        isLip = true;
+                    }
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            if (!isLip) {
+                mOnHomeUrlListener.result(homePage[0]);
+                return;
+            }
+            //
+            Map<String, Object> data = new HashMap<>();
+            data.put("setting:timeout", 1000);
+            eeuiIhttp.get("eeuiPage", socketHome, data, new eeuiIhttp.ResultCallback() {
+                @Override
+                public void success(String resData, boolean isCache) {
+                    if (!TextUtils.isEmpty(resData)) {
+                        Matcher matcher = Pattern.compile("^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}").matcher(resData);
+                        if (matcher.find()) {
+                            homePage[0] = socketHome;
+                        }
+                    }
+                    mOnHomeUrlListener.result(homePage[0]);
+                }
+
+                @Override
+                public void error(String error) {
+                    mOnHomeUrlListener.result(homePage[0]);
+                }
+
+                @Override
+                public void complete() {
+
+                }
+            });
         }
 
         /**

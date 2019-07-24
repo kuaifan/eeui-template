@@ -221,7 +221,7 @@
 
 - (void)setPageBackPressed:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    NSString *name = [self getPageName:params];
+    // NSString *name = [self getPageName:params];
 
     //    if (callback) {
     //        callback(nil, YES);
@@ -567,6 +567,7 @@
         [res setObject:[NSString stringWithFormat:@"%ld", (long)vc.statusBarAlpha] forKey:@"statusBarAlpha"];
         [res setObject:vc.statusBarStyleCustom forKey:@"statusBarStyle"];
         [res setObject:vc.backgroundColor forKey:@"backgroundColor"];
+        [res setObject:@"" forKey:@"loadTime"];
         [self.pageData setObject:res forKey:pageName];
     }
 }

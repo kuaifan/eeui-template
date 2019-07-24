@@ -258,8 +258,10 @@ static ClickWelcome myClickWelcome;
         if ([view isKindOfClass:[eeuiViewController class]]) {
             eeuiViewController *vc = (eeuiViewController*)view;
             if (vc.isFirstPage) {
-                [WeexSDKManager sharedIntstance].weexUrl = [Config getHome];
-                [vc setHomeUrl: [Config getHome]];
+                [Config getHomeUrl:^(NSString * _Nonnull path) {
+                    [WeexSDKManager sharedIntstance].weexUrl = path;
+                    [vc setHomeUrl: path refresh:YES];
+                }];
             }
         }
     }

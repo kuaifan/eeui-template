@@ -65,46 +65,54 @@ eeuiViewController *homeController;
     }
     _isOpenNext = YES;
     //
-    NSString *bundleUrl = [Config getHome];
-    [WeexSDKManager sharedIntstance].weexUrl = bundleUrl;
-    [[WeexSDKManager sharedIntstance] setup];
-
-    [self.activityIndicatorView setHidden:YES];
-    [self.activityIndicatorView stopAnimating];
-
-    self.ready = YES;
-    homeController = [[eeuiViewController alloc] init];
-    homeController.url = bundleUrl;
-    homeController.pageName = [Config getHomeParams:@"pageName" defaultVal:@"firstPage"];
-    homeController.pageTitle = [Config getHomeParams:@"pageTitle" defaultVal:@""];
-    homeController.pageType = [Config getHomeParams:@"pageType" defaultVal:@"app"];
-    homeController.safeAreaBottom = [Config getHomeParams:@"safeAreaBottom" defaultVal:@""];
-    homeController.params = [Config getHomeParams:@"params" defaultVal:@"{}"];
-    homeController.cache = [[Config getHomeParams:@"cache" defaultVal:@"0"] intValue];
-    homeController.loading = [[Config getHomeParams:@"loading" defaultVal:@"true"] isEqualToString:@"true"] ? YES : NO;
-    homeController.isFirstPage = YES;
-    homeController.isDisSwipeBack = YES;
-    homeController.statusBarType = [Config getHomeParams:@"statusBarType" defaultVal:@"normal"];
-    homeController.statusBarColor = [Config getHomeParams:@"statusBarColor" defaultVal:@"#3EB4FF"];
-    homeController.statusBarAlpha = [[Config getHomeParams:@"statusBarAlpha" defaultVal:@"0"] intValue];
-    homeController.statusBarStyleCustom = [Config getHomeParams:@"statusBarStyle" defaultVal:@""];
-    homeController.backgroundColor = [Config getHomeParams:@"backgroundColor" defaultVal:@"#ffffff"];
-    homeController.statusBlock = ^(NSString *status) {
-        if ([status isEqualToString:@"create"]) {
-            [Cloud appData];
-            //
-            if (pageUrl.length > 0) {
-                [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": pageUrl, @"pageType": @"app"} callback:nil];
-            }
-        }
-    };
-    [[UIApplication sharedApplication] delegate].window.rootViewController =  [[WXRootViewController alloc] initWithRootViewController:homeController];
-    [[eeuiNewPageManager sharedIntstance] setPageData:homeController.pageName vc:homeController];
+    [Config getHomeUrl:^(NSString * _Nonnull bundleUrl) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [WeexSDKManager sharedIntstance].weexUrl = bundleUrl;
+            [[WeexSDKManager sharedIntstance] setup];
+            
+            [self.activityIndicatorView setHidden:YES];
+            [self.activityIndicatorView stopAnimating];
+            
+            self.ready = YES;
+            homeController = [[eeuiViewController alloc] init];
+            homeController.url = bundleUrl;
+            homeController.pageName = [Config getHomeParams:@"pageName" defaultVal:@"firstPage"];
+            homeController.pageTitle = [Config getHomeParams:@"pageTitle" defaultVal:@""];
+            homeController.pageType = [Config getHomeParams:@"pageType" defaultVal:@"app"];
+            homeController.safeAreaBottom = [Config getHomeParams:@"safeAreaBottom" defaultVal:@""];
+            homeController.params = [Config getHomeParams:@"params" defaultVal:@"{}"];
+            homeController.cache = [[Config getHomeParams:@"cache" defaultVal:@"0"] intValue];
+            homeController.loading = [[Config getHomeParams:@"loading" defaultVal:@"true"] isEqualToString:@"true"] ? YES : NO;
+            homeController.isFirstPage = YES;
+            homeController.isDisSwipeBack = YES;
+            homeController.statusBarType = [Config getHomeParams:@"statusBarType" defaultVal:@"normal"];
+            homeController.statusBarColor = [Config getHomeParams:@"statusBarColor" defaultVal:@"#3EB4FF"];
+            homeController.statusBarAlpha = [[Config getHomeParams:@"statusBarAlpha" defaultVal:@"0"] intValue];
+            homeController.statusBarStyleCustom = [Config getHomeParams:@"statusBarStyle" defaultVal:@""];
+            homeController.backgroundColor = [Config getHomeParams:@"backgroundColor" defaultVal:@"#ffffff"];
+            homeController.statusBlock = ^(NSString *status) {
+                if ([status isEqualToString:@"create"]) {
+                    [Cloud appData];
+                    //
+                    if (pageUrl.length > 0) {
+                        [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": pageUrl, @"pageType": @"app"} callback:nil];
+                    }
+                }
+            };
+            [[UIApplication sharedApplication] delegate].window.rootViewController =  [[WXRootViewController alloc] initWithRootViewController:homeController];
+            [[eeuiNewPageManager sharedIntstance] setPageData:homeController.pageName vc:homeController];
+        });
+    }];   
 }
 
-- (void) loadUrl:(NSString*) url {
+- (void) loadUrl:(NSString*) url forceRefresh:(BOOL) forceRefresh {
     [WeexSDKManager sharedIntstance].weexUrl = url;
-    [homeController setHomeUrl: url];
+    NSString *curUrl = homeController.url;
+    if (forceRefresh || ![url isEqualToString:curUrl] || [[NSDate date] timeIntervalSince1970] - homeController.loadTime > 5) {
+        [homeController setHomeUrl: url refresh:YES];
+    }else{
+        [homeController setHomeUrl: url refresh:NO];
+    }
 }
 
 - (BOOL) isReady {
