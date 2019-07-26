@@ -534,7 +534,7 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
             //图片
             if (![self isFontIcon:unSelectedIcon]) {
                 [btn setImage:[DeviceUtil imageResize:nil andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:nil] forState:UIControlStateNormal];
-                NSString *tmpIcon = [Config verifyFile:[DeviceUtil rewriteUrl:unSelectedIcon]];
+                NSString *tmpIcon = [Config verifyFile:[DeviceUtil rewriteUrl:unSelectedIcon homePage:nil]];
                 [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:tmpIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
@@ -554,7 +554,7 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
             }
 
             if (![self isFontIcon:selectedIcon]) {
-                NSString *tmpIcon = [Config verifyFile:[DeviceUtil rewriteUrl:selectedIcon]];
+                NSString *tmpIcon = [Config verifyFile:[DeviceUtil rewriteUrl:selectedIcon homePage:nil]];
                 [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:tmpIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
@@ -818,7 +818,7 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
         NSString *tempName = [NSString stringWithFormat: @"%@:%d", tabName, arc4random() % 100000];
 
         eeuiViewController *vc = [[eeuiViewController alloc] init];
-        vc.url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url]];
+        vc.url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url] homePage:nil];
         vc.cache = cache;
         vc.params = params;
         vc.isChildSubview = YES;
@@ -1139,7 +1139,7 @@ WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
                 id params = dic[@"params"];
 
                 eeuiViewController *vc = [[eeuiViewController alloc] init];
-                vc.url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url]];
+                vc.url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url] homePage:nil];
                 vc.cache = cache;
                 vc.params = params;
                 vc.isChildSubview = YES;

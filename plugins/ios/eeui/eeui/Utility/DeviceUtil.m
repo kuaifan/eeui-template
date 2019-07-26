@@ -75,7 +75,7 @@
 }
 
 //重写url
-+ (NSString*)rewriteUrl:(NSString*)url
++ (NSString*)rewriteUrl:(NSString*)url homePage:(NSString*)homePage
 {
     if (url.length == 0) {
         return @"";
@@ -100,25 +100,27 @@
         return [self realUrl:url];
     }
 
-    NSString *topUrl = [[WeexSDKManager sharedIntstance] weexUrl];
-    eeuiViewController *top = (eeuiViewController *)[self getTopviewControler];
-    if (top && top.url) {
-        topUrl = top.url;
+    if (homePage.length == 0) {
+        homePage = [[WeexSDKManager sharedIntstance] weexUrl];
+        eeuiViewController *top = (eeuiViewController *)[self getTopviewControler];
+        if (top && top.url) {
+            homePage = top.url;
+        }
     }
-    if (topUrl.length <= 0) {
+    if (homePage.length == 0) {
         return [self realUrl:url];
     }
     
     if ([url hasPrefix:@"root://"]) {
         NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
-        if ([topUrl hasPrefix:tempUrl]) {
+        if ([homePage hasPrefix:tempUrl]) {
             return [self realUrl:[NSString stringWithFormat:@"%@/eeui/%@", tempUrl, [url substringFromIndex:7]]];
         }else{
             url = [NSString stringWithFormat:@"/%@", [url substringFromIndex:7]];
         }
     }else if ([url hasPrefix:@"root:"]) {
         NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
-        if ([topUrl hasPrefix:tempUrl]) {
+        if ([homePage hasPrefix:tempUrl]) {
             return [self realUrl:[NSString stringWithFormat:@"%@/eeui/%@", tempUrl, [url substringFromIndex:5]]];
         }else{
             url = [NSString stringWithFormat:@"/%@", [url substringFromIndex:5]];
@@ -137,7 +139,7 @@
         return [self realUrl:url];
     }
 
-    NSURL *URL = [NSURL URLWithString:topUrl];
+    NSURL *URL = [NSURL URLWithString:homePage];
     NSString *scheme = [URL scheme];
     NSString *host = [URL host];
     NSInteger port = [[URL port] integerValue];
@@ -152,7 +154,7 @@
     NSString *newUrl = [NSString stringWithFormat:@"%@://%@%@", scheme, host, port > 0 && port != 80 ? [NSString stringWithFormat:@":%ld", (long)port] : @""];
     if ([url isAbsolutePath]) {
         NSString *rootPath = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
-        if ([topUrl hasPrefix:rootPath]) {
+        if ([homePage hasPrefix:rootPath]) {
             newUrl = [rootPath stringByAppendingString:url];
         }else{
             newUrl = [newUrl stringByAppendingString:url];

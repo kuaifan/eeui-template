@@ -244,7 +244,7 @@
 
 - (NSString*)rewriteUrl:(NSString*)url
 {
-    return [DeviceUtil rewriteUrl:url];
+    return [DeviceUtil rewriteUrl:url homePage:nil];
 }
 
 #pragma mark 打开其他APP

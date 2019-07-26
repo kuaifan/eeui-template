@@ -31,7 +31,7 @@ static NSMutableDictionary * mAppboardContent;
 
 + (NSString*)suffixUrl:(NSString*)pageType url:(NSString*)url;
 
-+ (NSString*)rewriteUrl:(NSString*)url;
++ (NSString*)rewriteUrl:(NSString*)url homePage:(NSString*)homePage;
 
 + (UIImage*)getIconText:(NSString*)text font:(NSInteger)font color:(NSString*)icolor;
 

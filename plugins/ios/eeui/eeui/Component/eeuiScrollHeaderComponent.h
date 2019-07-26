@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface eeuiScrollHeaderComponent : WXComponent
 
 @property (nonatomic, strong) NSString *status;
+@property (nonatomic, assign) CGFloat bx;
+@property (nonatomic, assign) CGFloat by;
 @property (nonatomic, assign) BOOL isCallback;
 
 - (void) stateCallback:(NSString *) status;

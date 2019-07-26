@@ -14,6 +14,8 @@
 {
     self = [super initWithRef:ref type:type styles:styles attributes:attributes events:events weexInstance:weexInstance];
     if (self) {
+        _bx = -1;
+        _by = -1;
         _status = @"static";
         _isCallback = [events containsObject:@"stateChanged"];
     }    

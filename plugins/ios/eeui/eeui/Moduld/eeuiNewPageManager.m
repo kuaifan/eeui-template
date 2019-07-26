@@ -102,7 +102,7 @@
         }
     }
 
-    url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:pageType url:url]];
+    url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:pageType url:url] homePage:nil];
     NSLog(@"NewPage = %@", url);
 
     //跳转页面

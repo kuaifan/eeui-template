@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
@@ -66,6 +67,9 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
     private Runnable listUpdateRunnable;
     private Handler mHandler = new Handler();
     private ViewGroup headerViewGroup;
+
+    private boolean mShouldScroll;      //目标项是否在最后一个可见项之后
+    private int mToPosition;            //记录目标项位置
 
     public Recyler(WXSDKInstance instance, WXVContainer parent, BasicComponentData basicComponentData) {
         super(instance, parent, basicComponentData);
@@ -265,6 +269,10 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if (mShouldScroll && RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    mShouldScroll = false;
+                    smoothMoveToPosition(mToPosition);
+                }
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (!isLoading && !mAdapter.isFadeFooter() && lastVisibleItem + 1 == mAdapter.getItemCount()) {
                         loadData();
@@ -482,6 +490,33 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
         }, 300);
     }
 
+    /**
+     * 滑动到指定位置，并指定位置在顶部
+     * @param position
+     */
+    private void smoothMoveToPosition(final int position) {
+        // 第一个可见位置
+        int firstItem = v_recyler.getChildLayoutPosition(v_recyler.getChildAt(0));
+        // 最后一个可见位置
+        int lastItem = v_recyler.getChildLayoutPosition(v_recyler.getChildAt(v_recyler.getChildCount() - 1));
+        if (position < firstItem) {
+            // 第一种可能:跳转位置在第一个可见位置之前
+            v_recyler.smoothScrollToPosition(position);
+        } else if (position <= lastItem) {
+            // 第二种可能:跳转位置在第一个可见位置之后
+            int movePosition = position - firstItem;
+            if (movePosition >= 0 && movePosition < v_recyler.getChildCount()) {
+                int top = v_recyler.getChildAt(movePosition).getTop();
+                v_recyler.smoothScrollBy(0, top);
+            }
+        } else {
+            // 第三种可能:跳转位置在最后可见项之后
+            v_recyler.smoothScrollToPosition(position);
+            mToPosition = position;
+            mShouldScroll = true;
+        }
+    }
+
     /***************************************************************************************************/
     /***************************************************************************************************/
     /***************************************************************************************************/
@@ -553,18 +588,22 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
     @JSMethod
     public void itemDefaultAnimator(boolean open) {
         if (v_recyler != null) {
+            RecyclerView.ItemAnimator m = v_recyler.getItemAnimator();
+            if (m == null) {
+                return;
+            }
             if (open) {
-                v_recyler.getItemAnimator().setAddDuration(120);
-                v_recyler.getItemAnimator().setChangeDuration(250);
-                v_recyler.getItemAnimator().setMoveDuration(250);
-                v_recyler.getItemAnimator().setRemoveDuration(120);
-                ((SimpleItemAnimator) v_recyler.getItemAnimator()).setSupportsChangeAnimations(true);
+                m.setAddDuration(120);
+                m.setChangeDuration(250);
+                m.setMoveDuration(250);
+                m.setRemoveDuration(120);
+                ((SimpleItemAnimator) m).setSupportsChangeAnimations(true);
             }else{
-                v_recyler.getItemAnimator().setAddDuration(0);
-                v_recyler.getItemAnimator().setChangeDuration(0);
-                v_recyler.getItemAnimator().setMoveDuration(0);
-                v_recyler.getItemAnimator().setRemoveDuration(0);
-                ((SimpleItemAnimator) v_recyler.getItemAnimator()).setSupportsChangeAnimations(false);
+                m.setAddDuration(0);
+                m.setChangeDuration(0);
+                m.setMoveDuration(0);
+                m.setRemoveDuration(0);
+                ((SimpleItemAnimator) m).setSupportsChangeAnimations(false);
             }
         }
     }
@@ -579,6 +618,11 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
                 position = mAdapter.getItemCount() - 1;
             }
             v_recyler.scrollToPosition(position);
+            //
+            LinearLayoutManager mLayoutManager = (LinearLayoutManager) v_recyler.getLayoutManager();
+            if (mLayoutManager != null) {
+                mLayoutManager.scrollToPositionWithOffset(position, 0);
+            }
         }
     }
 
@@ -591,7 +635,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
             if (position == -1) {
                 position = mAdapter.getItemCount() - 1;
             }
-            v_recyler.smoothScrollToPosition(position);
+            smoothMoveToPosition(position);
         }
     }
 }

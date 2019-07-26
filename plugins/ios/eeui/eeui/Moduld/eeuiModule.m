@@ -303,7 +303,12 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 
 - (NSString*)rewriteUrl:(NSString*)url
 {
-    return [DeviceUtil rewriteUrl:url];
+    NSString *homePage = nil;
+    if ([weexInstance.viewController isKindOfClass:[eeuiViewController class]]) {
+        eeuiViewController *top = (eeuiViewController *) weexInstance.viewController;
+        homePage = top.url;
+    }
+    return [DeviceUtil rewriteUrl:url homePage:homePage];
 }
 
 #pragma mark 打开其他APP

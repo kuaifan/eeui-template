@@ -46,7 +46,6 @@ static NSString * const cellID = @"cellID";
 @property (nonatomic, strong) UICollectionView *collectionView;
 
 @property (nonatomic, strong) UIView *headerView;
-@property (nonatomic, strong) NSMutableArray *headerData;
 
 @end
 
@@ -85,8 +84,6 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
         self.subViews = [NSMutableArray arrayWithCapacity:5];
         self.lastVisibleItem = 0;
         self.scrolledY = 0;
-        
-        self.headerData = [[NSMutableArray alloc] init];
 
         _isRefreshListener = [events containsObject:@"refreshListener"];
         _isPullLoadListener = [events containsObject:@"pullLoadListener"];
@@ -312,35 +309,26 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
         for (WXView *view in scrollView.subviews) {
             if ([[view wx_component] isKindOfClass:[eeuiScrollHeaderComponent class]]) {
                 if (scrollView.contentOffset.y >= view.frame.origin.y) {
-                    [_headerData addObject:@{ @"tag": @(view.tag), @"x": @(view.frame.origin.x), @"y": @(view.frame.origin.y) }];
-                    CGRect temp = view.frame;
-                    temp.origin.x = 0;
-                    temp.origin.y = 0;
-                    [view setFrame:temp];
+                    eeuiScrollHeaderComponent *tempComponent = (eeuiScrollHeaderComponent *)[view wx_component];
+                    tempComponent.bx = view.frame.origin.x;
+                    tempComponent.by = view.frame.origin.y;
+                    [view setFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
                     [view removeFromSuperview];
                     [_headerView addSubview:view];
-                    [(eeuiScrollHeaderComponent *)[view wx_component] stateCallback:@"float"];
-                    _headerView.frame = CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, view.frame.size.height);
+                    [_headerView setFrame:CGRectMake(_view.frame.origin.x, _view.frame.origin.y, _view.frame.size.width, view.frame.size.height)];
+                    [tempComponent stateCallback:@"float"];
                 }
             }
         }
         //从header删除
-        for (id obj in _headerData) {
-            if ([obj isKindOfClass:[NSDictionary class]]) {
-                if (scrollView.contentOffset.y < [WXConvert NSInteger:obj[@"y"]]) {
-                    for (WXView *view in _headerView.subviews) {
-                        if (view.tag == [WXConvert NSInteger:obj[@"tag"]]) {
-                            CGRect temp = view.frame;
-                            temp.origin.x = [WXConvert NSInteger:obj[@"x"]];
-                            temp.origin.y = [WXConvert NSInteger:obj[@"y"]];
-                            [view setFrame:temp];
-                            [view removeFromSuperview];
-                            [scrollView addSubview:view];
-                            [(eeuiScrollHeaderComponent *)[view wx_component] stateCallback:@"static"];
-                            break;
-                        }
-                    }
-                    [_headerData removeObject:obj];
+        for (WXView *view in _headerView.subviews) {
+            if ([[view wx_component] isKindOfClass:[eeuiScrollHeaderComponent class]]) {
+                eeuiScrollHeaderComponent *tempComponent = (eeuiScrollHeaderComponent *)[view wx_component];
+                if (scrollView.contentOffset.y < tempComponent.by) {
+                    [view setFrame:CGRectMake(tempComponent.bx, tempComponent.by, view.frame.size.width, view.frame.size.height)];
+                    [view removeFromSuperview];
+                    [scrollView addSubview:view];
+                    [tempComponent stateCallback:@"static"];
                 }
             }
         }
@@ -468,8 +456,15 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
         if (!scrollerComponent) {
             return;
         }
-
+        
         @try{
+            if ([toComponent isKindOfClass:[eeuiScrollHeaderComponent class]]) {
+                eeuiScrollHeaderComponent *tempComponent = (eeuiScrollHeaderComponent *)toComponent;
+                if (tempComponent.bx != -1 && tempComponent.by != -1) {
+                    [_collectionView setContentOffset:CGPointMake(tempComponent.bx, tempComponent.by) animated:animated];
+                    return;
+                }
+            }
             [scrollerComponent scrollToComponent:toComponent withOffset:0 animated:animated];
         }@catch (NSException *exception) {
             NSLog(@"NSException = %@", exception);
