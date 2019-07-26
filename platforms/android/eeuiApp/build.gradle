@@ -45,8 +45,8 @@ subprojects {
         versionCode = 1
         versionName = "1.0"
 
-        eeuiVersionCode = 5
-        eeuiVersionName = "1.0.5"
+        eeuiVersionCode = 6
+        eeuiVersionName = "1.0.6"
 
         compileSdkVersion = 28
         appMinSdkVersion = 16
