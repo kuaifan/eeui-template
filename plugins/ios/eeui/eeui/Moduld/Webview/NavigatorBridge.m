@@ -22,8 +22,7 @@
     }
     info = [params mutableCopy];
     info[@"pageTitle"] = info[@"pageTitle"] ? [WXConvert NSString:info[@"pageTitle"]] : @" ";
-    [eeuiNewPageManager sharedIntstance].weexInstance = [[WXSDKManager bridgeMgr] topInstance];
-    [[eeuiNewPageManager sharedIntstance] openPage:info callback:callback];
+    [[eeuiNewPageManager sharedIntstance] openPage:info weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (void)pop:(id)params callback:(WXModuleKeepAliveCallback)callback
@@ -41,7 +40,7 @@
         info[@"listenerName"] = @"__navigatorPop";
         [[eeuiNewPageManager sharedIntstance] setPageStatusListener:info callback:callback];
     }
-    [[eeuiNewPageManager sharedIntstance] closePage:info];
+    [[eeuiNewPageManager sharedIntstance] closePage:info weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 @end

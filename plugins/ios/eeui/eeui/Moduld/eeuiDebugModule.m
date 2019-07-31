@@ -27,11 +27,25 @@ WX_EXPORT_METHOD(@selector(closeConsole))
 - (void)addLog:(NSString*)type :(id)log
 {
 #if DEBUG
+    NSString *pageUrl = nil;
+    if ([weexInstance.viewController isKindOfClass:[eeuiViewController class]]) {
+        eeuiViewController *top = (eeuiViewController *) weexInstance.viewController;
+        pageUrl = top.url;
+    }
+    if (pageUrl.length == 0) {
+        pageUrl = @"";
+    }else{
+        NSRange range = [pageUrl rangeOfString:@"/pages/"];
+        if (range.location != NSNotFound) {
+            pageUrl = [pageUrl substringFromIndex:range.location + 1];
+        }
+    }
+    //
     if (historys == nil) {
         historys = [NSMutableArray new];
     }
     NSInteger time = [[NSDate date] timeIntervalSince1970];
-    NSDictionary *data = @{@"type":type, @"text": log, @"time":@(time)};
+    NSDictionary *data = @{@"type":type, @"text": log, @"page": pageUrl, @"time":@(time)};
     if (mJSCallback != nil) {
         mJSCallback(data, YES);
     }
@@ -46,6 +60,19 @@ WX_EXPORT_METHOD(@selector(closeConsole))
         historys = tmpLists;
     }
     [historys addObject:data];
+    //
+    if (pageUrl.length > 0) {
+        pageUrl = [[NSString alloc] initWithFormat:@" (%@)", pageUrl];
+    }
+    if ([type isEqualToString:@"log"]) {
+        NSLog(@"D/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
+    }else if ([type isEqualToString:@"info"]) {
+        NSLog(@"I/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
+    }else if ([type isEqualToString:@"warn"]) {
+        NSLog(@"W/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
+    }else if ([type isEqualToString:@"error"]) {
+        NSLog(@"E/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
+    }
 #endif
 }
 
@@ -117,6 +144,35 @@ WX_EXPORT_METHOD(@selector(closeConsole))
         eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
         [vc hideFixedConsole];
     }
+}
+
+-(NSString *)descriptionWithLocale:(id)locale {
+    if (![locale isKindOfClass:[NSArray class]]) {
+        return [WXConvert NSString:locale];
+    }
+    
+    NSMutableString *string = [NSMutableString string];
+    // 开头有个[
+    [string appendString:@"["];
+    
+    // 遍历所有的元素
+    [locale enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if ([obj isKindOfClass:[NSString class]]) {
+            [string appendFormat:@"\"%@\",", obj];
+        }else{
+            [string appendFormat:@"%@,", obj];
+        }
+    }];
+    
+    // 结尾有个]
+    [string appendString:@"]"];
+    
+    // 查找最后一个逗号
+    NSRange range = [string rangeOfString:@"," options:NSBackwardsSearch];
+    if (range.location != NSNotFound)
+        [string deleteCharactersInRange:range];
+    
+    return string;
 }
 
 @end

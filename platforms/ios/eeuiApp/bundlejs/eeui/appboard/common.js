@@ -132,10 +132,10 @@ Vue.mixin({
          */
         getMiddle(string, start, end) {
             string += "";
-            if (this.ishave(start) && this.strExists(string, start)) {
+            if (this.isHave(start) && this.strExists(string, start)) {
                 string = string.substring(string.indexOf(start) + start.length);
             }
-            if (this.ishave(end) && this.strExists(string, end)) {
+            if (this.isHave(end) && this.strExists(string, end)) {
                 string = string.substring(0, string.indexOf(end));
             }
             return string;
@@ -150,7 +150,7 @@ Vue.mixin({
          */
         subString(string, start, end) {
             string += "";
-            if (!this.ishave(end)) {
+            if (!this.isHave(end)) {
                 end = string.length;
             }
             return string.substring(start, end);
@@ -177,7 +177,7 @@ Vue.mixin({
          * @param set
          * @returns {boolean}
          */
-        ishave(set) {
+        isHave(set) {
             return !!(set !== null && set !== "null" && set !== undefined && set !== "undefined" && set);
         },
 
@@ -261,7 +261,7 @@ Vue.mixin({
          * @returns {boolean}
          */
         isMobile(str) {
-            return /^1(3|4|5|7|8)\d{9}$/.test(str);
+            return /^1(3|4|5|6|7|8|9)\d{9}$/.test(str);
         },
 
         /**
@@ -492,6 +492,58 @@ Vue.mixin({
                 }
             }
             return false;
-        }
+        },
+
+        /**
+         * 添加全局监听事件（用于跨页面通信）
+         * @param name
+         * @param [alias]
+         * @param callback(message) => {}
+         */
+        setBroadListener(name, alias, callback) {
+            let lists = this.jsonParse(eeui.getVariate("__boad::listener", "{}"));
+            if (typeof lists[name] === 'undefined') lists[name] = [];
+            //
+            if (this.isFunction(alias)) {
+                callback = alias;
+                alias = "";
+            }
+            if (this.isFunction(callback)) {
+                let pageName = this.getObject(eeui.getPageInfo(), "pageName");
+                let listenerName = name + "::" + pageName + "::" + alias;
+                if (lists[name].indexOf(listenerName) === -1) {
+                    lists[name].push(listenerName);
+                    eeui.setVariate("__boad::listener", this.jsonStringify(lists))
+                }
+                eeui.setPageStatusListener({
+                    listenerName: listenerName,
+                    pageName: pageName,
+                }, (res) => {
+                    if (res.status === listenerName) {
+                        callback(res.extra);
+                    }
+                });
+            }
+        },
+
+        /**
+         * 触发全局事件（用于跨页面通信）
+         * @param name
+         * @param message
+         */
+        onBroadListener(name, message) {
+            let lists = this.jsonParse(eeui.getVariate("__boad::listener", "{}"));
+            if (typeof lists[name] === 'undefined') {
+                return;
+            }
+            this.each(lists[name], (index, listenerName) => {
+                let pageName = this.getMiddle(listenerName, "::", "::");
+                eeui.onPageStatusListener({
+                    listenerName: listenerName,
+                    pageName: pageName,
+                    extra: message
+                }, listenerName);
+            });
+        },
     }
 });

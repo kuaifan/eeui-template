@@ -587,7 +587,7 @@ static int easyNavigationButtonTag = 8000;
     }else if (tapGesture.view.tag == 2000) {
         [self refreshPage];
     }else if (tapGesture.view.tag == 3000) {
-        [[eeuiNewPageManager sharedIntstance] closePage:nil];
+        [[eeuiNewPageManager sharedIntstance] closePage:nil weexInstance:_instance];
     }
 }
 

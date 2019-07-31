@@ -43,8 +43,12 @@ static NSMutableDictionary * mAppboardContent;
 
 + (void)setAppboardContent:(NSString *)key content:(NSString *)content;
 
++ (void)clearAppboardContent;
+
 + (void)downloadScript:(NSString *)url appboard:(NSString *)appboard cache:(NSInteger)cache callback:(void(^)(NSString* path))callback;
 
 + (NSString *)timesFromString:(NSString *)timestamp;
+
++ (NSDictionary*) dictionaryWithJsonString:(NSString *)jsonString;
 
 @end

@@ -1517,7 +1517,7 @@ public class PageActivity extends AppCompatActivity {
         });
 
         if (!mPageInfo.isFirstPage() && titleBarLeftNull) {
-            setNavigationItems(eeuiJson.parseObject("{'icon':'tb-back', 'iconSize': 36}"), "left", result -> eeuiPage.closeWin(mPageInfo.getPageName()));
+            setNavigationItems(eeuiJson.parseObject("{'icon':'tb-back', 'iconSize': 36, 'width': 98}"), "left", result -> eeuiPage.closeWin(mPageInfo.getPageName()));
         }
     }
 
@@ -1799,7 +1799,7 @@ public class PageActivity extends AppCompatActivity {
         }
         deBugSocketWsManager = new WsManager.Builder(this)
                 .client(new OkHttpClient().newBuilder().pingInterval(15, TimeUnit.SECONDS).retryOnConnectionFailure(true).build())
-                .wsUrl("ws://" + host + ":" + port + "?mode=" + mode)
+                .wsUrl("ws://" + host + ":" + port + "?mode=" + mode + "&version=2")
                 .needReconnect(false)
                 .build();
         deBugSocketWsManager.setWsStatusListener(deBugWsStatusListener);
@@ -1929,6 +1929,7 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 4: {
+                                eeuiPage.mAppboardContent = new HashMap<>();
                                 reload();
                                 break;
                             }
@@ -1973,6 +1974,7 @@ public class PageActivity extends AppCompatActivity {
                                         Map<String, Object> retData = eeuiMap.objectToMap(data);
                                         if (eeuiParse.parseStr(retData.get("status")).equals("click") && eeuiParse.parseStr(retData.get("title")).equals("确定")) {
                                             eeuiCommon.setVariate("__deBugSocket:Init", 0);
+                                            eeuiPage.mAppboardContent = new HashMap<>();
                                             eeuiBase.cloud.reboot();
                                         }
                                     }
@@ -2086,100 +2088,120 @@ public class PageActivity extends AppCompatActivity {
         }
 
         private void handleMessage(String text) {
-            Log.d("[socket]", "onMessage: " + text);
             //
-            if (text.startsWith("HOMEPAGE:")) {
-                List<Activity> activityList = eeui.getActivityList();
-                if (activityList.size() >= 2 && activityList.get(0).getClass().getName().endsWith(".WelcomeActivity")) {
-                    activityList.remove(0);
+            JSONObject data = eeuiJson.parseObject(text);
+            String type = eeuiJson.getString(data, "type");
+            String value = eeuiJson.getString(data, "value");
+            int version = eeuiJson.getInt(data, "version");
+            if (version < 2) {
+                Toast.makeText(PageActivity.this, "eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli");
+                return;
+            }
+            Log.d("[socket]", "onMessage: " + type + ":" + value);
+            if (type.equals("HOMEPAGE")) {
+                eeuiPage.mAppboardContent = new HashMap<>();
+            }
+            JSONArray appboards = eeuiJson.parseArray(data.getJSONArray("appboards"));
+            if (appboards.size() > 0) {
+                for (int i = 0; i < appboards.size(); i++) {
+                    JSONObject appboardItem = eeuiJson.parseObject(appboards.get(i));
+                    eeuiPage.mAppboardContent.put(eeuiJson.getString(appboardItem, "path"), eeuiJson.getString(appboardItem, "content"));
                 }
-                for (int i = activityList.size() - 1; i >= 0; --i) {
-                    Activity activity = activityList.get(i);
-                    if (i == 0) {
-                        if (activity instanceof PageActivity) {
-                            PageActivity mActivity = ((PageActivity) activity);
-                            String homePage = eeuiCommon.getCachesString(PageActivity.this, "__deBugSocket", "homePage");
-                            String mHomePage = text.substring(9);
-                            if (!homePage.equals(mHomePage))  {
-                                eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", mHomePage, 2);
-                                mHandler.postDelayed(()-> {
-                                    String curUrl = mActivity.mPageInfo.getUrl();
-                                    mActivity.mPageInfo.setUrl(mHomePage);
-                                    if (!mHomePage.contentEquals(curUrl) || eeuiCommon.timeStamp() - mActivity.mPageInfo.getLoadTime() > 5) {
-                                        mActivity.reload();
-                                    }
-                                    BGAKeyboardUtil.closeKeyboard(PageActivity.this);
-                                }, 300);
-                            }
-                        }
-                    }else{
-                        activity.finish();
+            }
+            //
+            switch (type) {
+                case "HOMEPAGE": {
+                    List<Activity> activityList = eeui.getActivityList();
+                    if (activityList.size() >= 2 && activityList.get(0).getClass().getName().endsWith(".WelcomeActivity")) {
+                        activityList.remove(0);
                     }
+                    for (int i = activityList.size() - 1; i >= 0; --i) {
+                        Activity activity = activityList.get(i);
+                        if (i == 0) {
+                            if (activity instanceof PageActivity) {
+                                PageActivity mActivity = ((PageActivity) activity);
+                                String homePage = eeuiCommon.getCachesString(PageActivity.this, "__deBugSocket", "homePage");
+                                if (!homePage.equals(value)) {
+                                    eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", value, 2);
+                                    mHandler.postDelayed(() -> {
+                                        String curUrl = mActivity.mPageInfo.getUrl();
+                                        mActivity.mPageInfo.setUrl(value);
+                                        if (!value.contentEquals(curUrl) || eeuiCommon.timeStamp() - mActivity.mPageInfo.getLoadTime() > 5) {
+                                            mActivity.reload();
+                                        }
+                                        BGAKeyboardUtil.closeKeyboard(PageActivity.this);
+                                    }, 300);
+                                }
+                            }
+                        } else {
+                            activity.finish();
+                        }
+                    }
+                    break;
                 }
-            }else if (text.startsWith("HOMEPAGEBACK:")) {
-                List<Activity> activityList = eeui.getActivityList();
-                Activity activity = activityList.get(0);
-                if (activity instanceof PageActivity) {
-                    PageActivity mActivity = ((PageActivity) activity);
-                    String mHomePage = text.substring(13);
-                    eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", mHomePage, 2);
-                    mActivity.mPageInfo.setUrl(mHomePage);
-                    mActivity.reload();
-                    BGAKeyboardUtil.closeKeyboard(PageActivity.this);
-                }
-            }else if (text.startsWith("RECONNECT:")) {
-                String urlHost = getHostPort(text.substring(10));
-                String nowHost = "";
-                Activity activity = eeui.getActivityList().getLast();
-                if (activity instanceof PageActivity) {
-                    PageActivity mActivity = ((PageActivity) activity);
-                    nowHost = getHostPort(mActivity.getPageInfo().getUrl());
-                }
-                if (!urlHost.equals(nowHost)) {
-                    handleMessage("HOMEPAGE:" + text.substring(10));
-                }
-            }else if (text.startsWith("RELOADPAGE:")) {
-                String url = text.substring(11);
-                List<Activity> activityList = eeui.getActivityList();
-                boolean already = false;
-                int size = activityList.size() - 1;
-                for (int i = size; i >= 0; --i) {
-                    Activity activity = activityList.get(i);
+                case "HOMEPAGEBACK": {
+                    List<Activity> activityList = eeui.getActivityList();
+                    Activity activity = activityList.get(0);
                     if (activity instanceof PageActivity) {
                         PageActivity mActivity = ((PageActivity) activity);
-                        if (eeuiPage.realUrl(mActivity.mPageInfo.getUrl()).startsWith(url)) {
-                            if (i == size) {
-                                mActivity.reload();
-                                BGAKeyboardUtil.closeKeyboard(PageActivity.this);
-                            }else{
-                                mActivity.getPageInfo().setResumeUrl(url);
+                        eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", value, 2);
+                        mActivity.mPageInfo.setUrl(value);
+                        mActivity.reload();
+                        BGAKeyboardUtil.closeKeyboard(PageActivity.this);
+                    }
+                    break;
+                }
+                case "RECONNECT": {
+                    String urlHost = getHostPort(value);
+                    String nowHost = "";
+                    Activity activity = eeui.getActivityList().getLast();
+                    if (activity instanceof PageActivity) {
+                        PageActivity mActivity = ((PageActivity) activity);
+                        nowHost = getHostPort(mActivity.getPageInfo().getUrl());
+                    }
+                    if (!urlHost.equals(nowHost)) {
+                        data.put("type", "HOMEPAGE");
+                        handleMessage(data.toJSONString());
+                    }
+                    break;
+                }
+                case "RELOADPAGE": {
+                    List<Activity> activityList = eeui.getActivityList();
+                    boolean already = false;
+                    int size = activityList.size() - 1;
+                    for (int i = size; i >= 0; --i) {
+                        Activity activity = activityList.get(i);
+                        if (activity instanceof PageActivity) {
+                            PageActivity mActivity = ((PageActivity) activity);
+                            if (eeuiPage.realUrl(mActivity.mPageInfo.getUrl()).startsWith(value)) {
+                                if (i == size) {
+                                    mActivity.reload();
+                                    BGAKeyboardUtil.closeKeyboard(PageActivity.this);
+                                } else {
+                                    mActivity.getPageInfo().setResumeUrl(value);
+                                }
+                                already = true;
                             }
-                            already = true;
                         }
                     }
-                }
-                if (!already) {
-                    for (int i = 0; i < tabViewDebug.size(); i++) {
-                        ResultCallback<String> call = tabViewDebug.get(i);
-                        if (call != null) {
-                            call.onReceiveResult(url);
+                    if (!already) {
+                        for (int i = 0; i < tabViewDebug.size(); i++) {
+                            ResultCallback<String> call = tabViewDebug.get(i);
+                            if (call != null) {
+                                call.onReceiveResult(value);
+                            }
                         }
                     }
+                    break;
                 }
-            }else if (text.startsWith("APPBOARDCONTENT:")) {
-                String[] temp = text.substring(16).split("::");
-                eeuiPage.mAppboardContent.put(temp[0], text.substring(16 + 2 + temp[0].length()));
-                //
-                Activity activity = eeui.getActivityList().getLast();
-                if (activity instanceof PageActivity) {
-                    PageActivity mActivity = ((PageActivity) activity);
-                    mActivity.reload();
-                }
-            }else if (text.contentEquals("REFRESH")) {
-                Activity activity = eeui.getActivityList().getLast();
-                if (activity instanceof PageActivity) {
-                    PageActivity mActivity = ((PageActivity) activity);
-                    mActivity.reload();
+                case "REFRESH": {
+                    Activity activity = eeui.getActivityList().getLast();
+                    if (activity instanceof PageActivity) {
+                        PageActivity mActivity = ((PageActivity) activity);
+                        mActivity.reload();
+                    }
+                    break;
                 }
             }
         }

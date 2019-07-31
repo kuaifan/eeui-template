@@ -292,6 +292,12 @@
     [mAppboardContent setValue:content forKey:key];
 }
 
+//清空Appboard内容
++ (void)clearAppboardContent
+{
+    mAppboardContent = [NSMutableDictionary dictionary];
+}
+
 //下载文件
 + (void)downloadScript:(NSString *)url appboard:(NSString *)appboard cache:(NSInteger)cache callback:(void(^)(NSString* path))callback
 {
@@ -363,6 +369,21 @@
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSString *strTime = [dateFormatter stringFromDate:timeData];
     return strTime;
+}
+
+//NSString转NSDictionary
++ (NSDictionary*) dictionaryWithJsonString:(NSString *)jsonString
+{
+    if (jsonString == nil) {
+        return nil;
+    }
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err;
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&err];
+    if (err) {
+        return nil;
+    }
+    return dic;
 }
 
 @end

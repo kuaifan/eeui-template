@@ -41,7 +41,7 @@
     return self;
 }
 
-- (NSString *) getPageName:(id)params
+- (NSString *) getPageName:(id)params weexInstance:(WXSDKInstance*)weexInstance
 {
     NSString *name = @"";
     if (params) {
@@ -52,13 +52,17 @@
         }
     }
     if (name.length == 0) {
-        name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        if (weexInstance.viewController.navigationController && [weexInstance.viewController isKindOfClass:[eeuiViewController class]]) {
+            name = [(eeuiViewController*)weexInstance.viewController pageName];
+        }else{
+            name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        }
     }
     return name;
 }
 
 #pragma mark openPage
-- (void)openPage:(NSDictionary*)params callback:(WXModuleKeepAliveCallback)callback
+- (void)openPage:(NSDictionary*)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback
 {
     NSString *url = params[@"url"] ? [WXConvert NSString:params[@"url"]] : @"";
 
@@ -84,7 +88,7 @@
     NSString *backgroundColor = params[@"backgroundColor"] ? [WXConvert NSString:params[@"backgroundColor"]] : @"";
     BOOL backPressedClose = params[@"backPressedClose"] ? [WXConvert BOOL:params[@"backPressedClose"]] : YES;
 
-    NSDictionary *currentInfo = [self getPageInfo:nil];
+    NSDictionary *currentInfo = [self getPageInfo:nil weexInstance:weexInstance];
     if (statusBarColor.length == 0) {
         if (currentInfo!= nil) {
             statusBarColor = currentInfo[@"statusBarColor"];
@@ -137,8 +141,8 @@
         }
     };
 
-    if (self.weexInstance.viewController.navigationController) {
-        [self.weexInstance.viewController.navigationController pushViewController:mainVC animated:animated];
+    if (weexInstance.viewController.navigationController) {
+        [weexInstance.viewController.navigationController pushViewController:mainVC animated:animated];
     } else if ([[DeviceUtil getTopviewControler] navigationController]) {
         [[[DeviceUtil getTopviewControler] navigationController] pushViewController:mainVC animated:animated];
     } else {
@@ -149,9 +153,9 @@
     [self setPageData:pageName vc:mainVC];
 }
 
-- (NSDictionary*)getPageInfo:(id)params
+- (NSDictionary*)getPageInfo:(id)params weexInstance:(WXSDKInstance*)weexInstance
 {
-    NSString *name = [self getPageName:params];
+    NSString *name = [self getPageName:params weexInstance:weexInstance];
     if (name.length > 0) {
         NSDictionary *data = self.pageData[name];
         if (data) {
@@ -161,20 +165,20 @@
     return nil;
 }
 
-- (void)getPageInfoAsync:(id)params callback:(WXModuleCallback)callback
+- (void)getPageInfoAsync:(id)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleCallback)callback
 {
     if (callback == nil) {
         return;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        callback([self getPageInfo:params]);
+        callback([self getPageInfo:params weexInstance:weexInstance]);
     });
 }
 
-- (void)reloadPage:(id)params
+- (void)reloadPage:(id)params weexInstance:(WXSDKInstance*)weexInstance
 {
     eeuiViewController *vc = nil;
-    NSString *name = [self getPageName:params];
+    NSString *name = [self getPageName:params weexInstance:weexInstance];
     if (name.length > 0) {
         id data = self.viewData[name];
         if (data && [data isKindOfClass:[UIViewController class]]) {
@@ -190,10 +194,10 @@
     [(eeuiViewController*)vc refreshPage];
 }
 
-- (void)setSoftInputMode:(id)params modo:(NSString*)modo
+- (void)setSoftInputMode:(id)params modo:(NSString*)modo weexInstance:(WXSDKInstance*)weexInstance
 {
     eeuiViewController *vc = nil;
-    NSString *name = [self getPageName:params];
+    NSString *name = [self getPageName:params weexInstance:weexInstance];
     if (name.length > 0) {
         id data = self.viewData[name];
         if (data && [data isKindOfClass:[UIViewController class]]) {
@@ -228,10 +232,10 @@
     //    }
 }
 
-- (void)setOnRefreshListener:(id)params callback:(WXModuleKeepAliveCallback)callback
+- (void)setOnRefreshListener:(id)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback
 {
     eeuiViewController *vc = nil;
-    NSString *name = [self getPageName:params];
+    NSString *name = [self getPageName:params weexInstance:weexInstance];
     id data = self.viewData[name];
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
@@ -240,10 +244,10 @@
     }
 }
 
-- (void)setRefreshing:(id)params refreshing:(BOOL)refreshing
+- (void)setRefreshing:(id)params refreshing:(BOOL)refreshing weexInstance:(WXSDKInstance*)weexInstance
 {
     eeuiViewController *vc = nil;
-    NSString *name = [self getPageName:params];
+    NSString *name = [self getPageName:params weexInstance:weexInstance];
     id data = self.viewData[name];
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
@@ -397,7 +401,7 @@
     }
 }
 
-- (void)closePage:(id)params
+- (void)closePage:(id)params weexInstance:(WXSDKInstance*)weexInstance
 {
     NSString *name = @"";
     BOOL animated = YES;
@@ -437,7 +441,7 @@
         [self.viewData removeObjectForKey:name];
     }
 
-    NSMutableArray *array = [NSMutableArray arrayWithArray:self.weexInstance.viewController.navigationController.viewControllers];
+    NSMutableArray *array = [NSMutableArray arrayWithArray:weexInstance.viewController.navigationController.viewControllers];
     BOOL isDeviceUtil = NO;
     if (array.count == 0) {
         array = [NSMutableArray arrayWithArray:[[DeviceUtil getTopviewControler] navigationController].viewControllers];
@@ -450,14 +454,14 @@
                 if (isDeviceUtil) {
                     [[[DeviceUtil getTopviewControler] navigationController] popViewControllerAnimated:animated];
                 } else {
-                    [self.weexInstance.viewController.navigationController popViewControllerAnimated:animated];
+                    [weexInstance.viewController.navigationController popViewControllerAnimated:animated];
                 }
             } else {
                 [array removeObjectAtIndex:i];
                 if (isDeviceUtil) {
                     [[DeviceUtil getTopviewControler] navigationController].viewControllers = array;
                 } else {
-                    self.weexInstance.viewController.navigationController.viewControllers = array;
+                    weexInstance.viewController.navigationController.viewControllers = array;
                 }
             }
             break;
@@ -465,7 +469,7 @@
     }
 }
 
-- (void)closePageTo:(id)params
+- (void)closePageTo:(id)params weexInstance:(WXSDKInstance*)weexInstance
 {
     NSString *name = @"";
     if (params) {
@@ -492,7 +496,7 @@
         return;
     }
 
-    NSMutableArray *array = [NSMutableArray arrayWithArray:self.weexInstance.viewController.navigationController.viewControllers];
+    NSMutableArray *array = [NSMutableArray arrayWithArray:weexInstance.viewController.navigationController.viewControllers];
     BOOL isDeviceUtil = NO;
     if (array.count == 0) {
         array = [NSMutableArray arrayWithArray:[[DeviceUtil getTopviewControler] navigationController].viewControllers];
@@ -519,12 +523,12 @@
         if (isDeviceUtil) {
             [[DeviceUtil getTopviewControler] navigationController].viewControllers = array;
         } else {
-            self.weexInstance.viewController.navigationController.viewControllers = array;
+            weexInstance.viewController.navigationController.viewControllers = array;
         }
     }
 
     if (isClose) {
-        [self closePage:nil];
+        [self closePage:nil weexInstance:weexInstance];
     }
 }
 

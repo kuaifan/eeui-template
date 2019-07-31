@@ -14,27 +14,24 @@ static NSMutableDictionary *tabViewDebug;
 
 @interface eeuiNewPageManager : NSObject
 
-@property (nonatomic, strong) WXSDKInstance *weexInstance;
-
 + (eeuiNewPageManager *)sharedIntstance;
 
-- (void)openPage:(NSDictionary*)params callback:(WXModuleKeepAliveCallback)callback;
-
-- (NSDictionary*)getPageInfo:(id)params;
-- (void)getPageInfoAsync:(id)params callback:(WXModuleCallback)callback;
-- (void)reloadPage:(id)params;
-- (void)setSoftInputMode:(id)params modo:(NSString*)modo;
+- (void)openPage:(NSDictionary*)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback;
+- (NSDictionary*)getPageInfo:(id)params weexInstance:(WXSDKInstance*)weexInstance;
+- (void)getPageInfoAsync:(id)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleCallback)callback;
+- (void)reloadPage:(id)params weexInstance:(WXSDKInstance*)weexInstance;
+- (void)setSoftInputMode:(id)params modo:(NSString*)modo weexInstance:(WXSDKInstance*)weexInstance;
 - (void)setStatusBarStyle:(BOOL)isLight;
 - (void)setPageBackPressed:(id)params callback:(WXModuleKeepAliveCallback)callback;
-- (void)setOnRefreshListener:(id)params callback:(WXModuleKeepAliveCallback)callback;
-- (void)setRefreshing:(id)params refreshing:(BOOL)refreshing;
+- (void)setOnRefreshListener:(id)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback;
+- (void)setRefreshing:(id)params refreshing:(BOOL)refreshing weexInstance:(WXSDKInstance*)weexInstance;
 - (void)setPageStatusListener:(id)params callback:(WXModuleKeepAliveCallback)callback;
 - (void)clearPageStatusListener:(id)params;
 - (void)onPageStatusListener:(id)params status:(NSString*)status;
 - (void)getCacheSizePage:(WXModuleKeepAliveCallback)callback;
 - (void)clearCachePage;
-- (void)closePage:(id)params;
-- (void)closePageTo:(id)params;
+- (void)closePage:(id)params weexInstance:(WXSDKInstance*)weexInstance;
+- (void)closePageTo:(id)params weexInstance:(WXSDKInstance*)weexInstance;
 - (void)openWeb:(NSString*)url;
 - (void)goDesktop;
 - (void)removePageData:(NSString*)pageName;

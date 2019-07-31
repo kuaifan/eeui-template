@@ -51,10 +51,9 @@
 - (void)openURL
 {
     if ([_params[@"url"] isEqualToString:@"-1"]) {
-        [[eeuiNewPageManager sharedIntstance] closePage:nil];
+        [[eeuiNewPageManager sharedIntstance] closePage:nil weexInstance:weexInstance];
     }else if (![_params[@"url"] isEqualToString:@""]){
-        [eeuiNewPageManager sharedIntstance].weexInstance = weexInstance;
-        [[eeuiNewPageManager sharedIntstance] openPage:_params callback:nil];
+        [[eeuiNewPageManager sharedIntstance] openPage:_params weexInstance:weexInstance callback:nil];
     }
 }
 

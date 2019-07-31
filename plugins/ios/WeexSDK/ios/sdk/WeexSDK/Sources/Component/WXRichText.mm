@@ -498,8 +498,7 @@ do {\
                                                             completion:
                                                             withContainer:)]) {
             //eeui dev start
-            [eeuiNewPageManager sharedIntstance].weexInstance = self.weexInstance;
-            [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": URL.absoluteString} callback:nil];
+            [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": URL.absoluteString} weexInstance:self.weexInstance callback:nil];
             //[navigationHandler pushViewControllerWithParam:@{@"url":URL.absoluteString} completion:^(NSString *code, NSDictionary *responseData) {
             //} withContainer:self.weexInstance.viewController];
             //eeui dev end

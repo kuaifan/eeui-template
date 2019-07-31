@@ -197,28 +197,27 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 
 - (void)openPage:(NSDictionary*)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [eeuiNewPageManager sharedIntstance].weexInstance = weexInstance;
-    [[eeuiNewPageManager sharedIntstance] openPage:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] openPage:params weexInstance:weexInstance callback:callback];
 }
 
 - (NSDictionary*)getPageInfo:(id)params
 {
-    return [[eeuiNewPageManager sharedIntstance] getPageInfo:params];
+    return [[eeuiNewPageManager sharedIntstance] getPageInfo:params weexInstance:weexInstance];
 }
 
 - (void)getPageInfoAsync:(id)params callback:(WXModuleCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] getPageInfoAsync:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] getPageInfoAsync:params weexInstance:weexInstance callback:callback];
 }
 
 - (void)reloadPage:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] reloadPage:params];
+    [[eeuiNewPageManager sharedIntstance] reloadPage:params weexInstance:weexInstance];
 }
 
 - (void)setSoftInputMode:(id)params modo:(NSString*)modo
 {
-    [[eeuiNewPageManager sharedIntstance] setSoftInputMode:params modo:modo];
+    [[eeuiNewPageManager sharedIntstance] setSoftInputMode:params modo:modo weexInstance:weexInstance];
 }
 
 - (void)setStatusBarStyle:(BOOL)isLight
@@ -238,12 +237,12 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 
 - (void)setOnRefreshListener:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] setOnRefreshListener:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] setOnRefreshListener:params weexInstance:weexInstance callback:callback];
 }
 
 - (void)setRefreshing:(id)params refreshing:(BOOL)refreshing
 {
-    [[eeuiNewPageManager sharedIntstance] setRefreshing:params refreshing:refreshing];
+    [[eeuiNewPageManager sharedIntstance] setRefreshing:params refreshing:refreshing weexInstance:weexInstance];
 }
 
 - (void)setPageStatusListener:(id)params callback:(WXModuleKeepAliveCallback)callback
@@ -273,12 +272,12 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 
 - (void)closePage:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] closePage:params];
+    [[eeuiNewPageManager sharedIntstance] closePage:params weexInstance:weexInstance];
 }
 
 - (void)closePageTo:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] closePageTo:params];
+    [[eeuiNewPageManager sharedIntstance] closePageTo:params weexInstance:weexInstance];
 }
 
 - (void)openWeb:(NSString*)url

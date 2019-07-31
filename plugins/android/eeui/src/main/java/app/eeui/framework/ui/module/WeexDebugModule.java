@@ -1,5 +1,8 @@
 package app.eeui.framework.ui.module;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.annotation.JSMethod;
@@ -8,7 +11,9 @@ import com.taobao.weex.common.WXModule;
 
 import app.eeui.framework.BuildConfig;
 import app.eeui.framework.activity.PageActivity;
+import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.module.eeuiJson;
+import app.eeui.framework.extend.module.eeuiParse;
 
 
 public class WeexDebugModule extends WXModule {
@@ -19,12 +24,29 @@ public class WeexDebugModule extends WXModule {
     @JSMethod
     public void addLog(String type, Object log) {
         if (BuildConfig.DEBUG) {
+            String pageUrl = null;
+            if (mWXSDKInstance.getContext() instanceof PageActivity) {
+                PageBean mPageBean = ((PageActivity) mWXSDKInstance.getContext()).getPageInfo();
+                if (mPageBean != null) {
+                    pageUrl = mPageBean.getUrl();
+                }
+            }
+            if (pageUrl == null) {
+                pageUrl = "";
+            }else{
+                int pos = pageUrl.indexOf("/pages/");
+                if (pos > 0) {
+                    pageUrl = pageUrl.substring(pos + 1);
+                }
+            }
             if (historys == null) {
                 historys = new JSONArray();
             }
+            //
             JSONObject data = new JSONObject();
             data.put("type", type);
             data.put("text", log);
+            data.put("page", pageUrl);
             data.put("time", (int) (System.currentTimeMillis() / 1000));
             if (mJSCallback != null) {
                 mJSCallback.invokeAndKeepAlive(data);
@@ -39,6 +61,19 @@ public class WeexDebugModule extends WXModule {
                 historys = tmpLists;
             }
             historys.add(data);
+            //
+            if (!TextUtils.isEmpty(pageUrl)) {
+                pageUrl = " (" + pageUrl + ")";
+            }
+            if (type.contentEquals("log")) {
+                Log.d("jsLog", eeuiParse.parseStr(log) + pageUrl);
+            }else if (type.contentEquals("info")) {
+                Log.i("jsLog", eeuiParse.parseStr(log) + pageUrl);
+            }else if (type.contentEquals("warn")) {
+                Log.w("jsLog", eeuiParse.parseStr(log) + pageUrl);
+            }else if (type.contentEquals("error")) {
+                Log.e("jsLog", eeuiParse.parseStr(log) + pageUrl);
+            }
         }
     }
 

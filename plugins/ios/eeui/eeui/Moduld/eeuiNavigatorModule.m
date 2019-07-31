@@ -26,8 +26,7 @@ WX_EXPORT_METHOD(@selector(pop:callback:))
     }
     info = [params mutableCopy];
     info[@"pageTitle"] = [info objectForKey:@"pageTitle"] ? [WXConvert NSString:info[@"pageTitle"]] : @" ";
-    [eeuiNewPageManager sharedIntstance].weexInstance = weexInstance;
-    [[eeuiNewPageManager sharedIntstance] openPage:info callback:callback];
+    [[eeuiNewPageManager sharedIntstance] openPage:info weexInstance:weexInstance callback:callback];
 }
 
 - (void)pop:(id)params callback:(WXModuleKeepAliveCallback)callback
@@ -45,7 +44,7 @@ WX_EXPORT_METHOD(@selector(pop:callback:))
         info[@"listenerName"] = @"__navigatorPop";
         [[eeuiNewPageManager sharedIntstance] setPageStatusListener:info callback:callback];
     }
-    [[eeuiNewPageManager sharedIntstance] closePage:info];
+    [[eeuiNewPageManager sharedIntstance] closePage:info weexInstance:weexInstance];
 }
 
 @end

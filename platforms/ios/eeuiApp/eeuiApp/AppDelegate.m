@@ -246,6 +246,7 @@ NSDictionary *mLaunchOptions;
         [self openScan];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"刷新" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [DeviceUtil clearAppboardContent];
         [self refresh];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Console" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -314,7 +315,7 @@ NSDictionary *mLaunchOptions;
 - (void) pageInfo {
     if ([[DeviceUtil getTopviewControler] isKindOfClass:[eeuiViewController class]]) {
         eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-        NSDictionary *info = [[eeuiNewPageManager sharedIntstance] getPageInfo:vc.pageName];
+        NSDictionary *info = [[eeuiNewPageManager sharedIntstance] getPageInfo:vc.pageName weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
         NSError *error;
         NSData *data = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:&error];
         if(data && !error){
@@ -353,8 +354,7 @@ NSDictionary *mLaunchOptions;
                 }
 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [eeuiNewPageManager sharedIntstance].weexInstance = [[WXSDKManager bridgeMgr] topInstance];
-                    [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": url, @"pageType": @"auto"} callback:^(NSDictionary *result, BOOL keepAlive) {
+                    [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": url, @"pageType": @"auto"} weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:^(NSDictionary *result, BOOL keepAlive) {
                         if ([result[@"status"] isEqualToString:@"create"]) {
                             if (host.length && port.length) {
                                 socketHost = host;
@@ -372,7 +372,7 @@ NSDictionary *mLaunchOptions;
 
 //刷新当前页面
 - (void) refresh {
-    [[eeuiNewPageManager sharedIntstance] reloadPage:nil];
+    [[eeuiNewPageManager sharedIntstance] reloadPage:nil weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 //隐藏DEV按钮
@@ -428,6 +428,7 @@ NSDictionary *mLaunchOptions;
         }];
 
         [Cloud appData];
+        [DeviceUtil clearAppboardContent];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([Cloud welcome:self.window click:nil] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [Cloud welcomeClose];
             [self initDebug:0];
@@ -466,7 +467,7 @@ NSDictionary *mLaunchOptions;
         return;
     }
 
-    NSString *wsUrl = [NSString stringWithFormat:@"ws://%@:%@?mode=%@", socketHost, socketPort, param];
+    NSString *wsUrl = [NSString stringWithFormat:@"ws://%@:%@?mode=%@&version=2", socketHost, socketPort, param];
     self.webSocket = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:wsUrl]]];
     self.webSocket.delegate = self;
     [self.webSocket open];
@@ -488,27 +489,48 @@ NSDictionary *mLaunchOptions;
 }
 
 //长链接收到消息
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message{
-    NSString *msg = (NSString *)message;
-    NSLog(@"[socket] onMessage: %@", msg);
-    //
-    if ([msg hasPrefix:@"HOMEPAGE:"]) {
+- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
+    NSDictionary *data = [DeviceUtil dictionaryWithJsonString:(NSString *)message];
+    if (data == nil) {
+        NSLog(@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli");
+        [[eeuiToastManager sharedIntstance] toast:@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli"];
+        return;
+    }
+    NSString *type = [WXConvert NSString:data[@"type"]];
+    NSString *value = [WXConvert NSString:data[@"value"]];
+    NSInteger version = [WXConvert NSInteger:data[@"version"]];
+    if (version < 2) {
+        NSLog(@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli");
+        [[eeuiToastManager sharedIntstance] toast:@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli"];
+        return;
+    }
+    NSLog(@"[socket] onMessage: %@:%@", type, value);
+    if ([type isEqualToString:@"HOMEPAGE"]) {
+        [DeviceUtil clearAppboardContent];
+    }
+    NSArray *appboards = data[@"appboards"];
+    if ([appboards count] > 0) {
+        for (NSDictionary *appboardItem in appboards) {
+            [DeviceUtil setAppboardContent:appboardItem[@"path"] content:appboardItem[@"content"]];
+        }
+    }
+    if ([type isEqualToString:@"HOMEPAGE"]) {
         [[[DeviceUtil getTopviewControler] navigationController] popToRootViewControllerAnimated:NO];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [mController loadUrl:[msg substringFromIndex:9] forceRefresh:NO];
+            [mController loadUrl:value forceRefresh:NO];
         });
-    }else if ([msg hasPrefix:@"HOMEPAGEBACK:"]) {
-        [mController loadUrl:[msg substringFromIndex:13] forceRefresh:YES];
-    }else if ([msg hasPrefix:@"RECONNECT:"]) {
-        NSURL *url = [NSURL URLWithString:[msg substringFromIndex:10]];
+    }else if ([type isEqualToString:@"HOMEPAGEBACK"]) {
+        [mController loadUrl:value forceRefresh:YES];
+    }else if ([type isEqualToString:@"RECONNECT"]) {
+        NSURL *url = [NSURL URLWithString:value];
         NSURL *nowUrl = [NSURL URLWithString:[(eeuiViewController*)[DeviceUtil getTopviewControler] url]];
         NSString *urlHost = [NSString stringWithFormat:@"%@:%ld", [url host], (long)[[url port] integerValue]];
         NSString *nowHost = [NSString stringWithFormat:@"%@:%ld", [nowUrl host], (long)[[nowUrl port] integerValue]];
         if (![nowHost isEqualToString:urlHost]) {
             [self webSocket:webSocket didReceiveMessage:[NSString stringWithFormat:@"HOMEPAGE:%@", [url absoluteString]]];
         }
-    }else if ([msg hasPrefix:@"RELOADPAGE:"]) {
-        NSString *url = [msg substringFromIndex:11];
+    }else if ([type isEqualToString:@"RELOADPAGE"]) {
+        NSString *url = value;
         NSString *nowUrl = [(eeuiViewController*)[DeviceUtil getTopviewControler] url];
         if ([nowUrl hasPrefix:url]) {
             [self refresh];
@@ -535,12 +557,7 @@ NSDictionary *mLaunchOptions;
                 }
             }
         }
-    }else if ([msg hasPrefix:@"APPBOARDCONTENT:"]) {
-        NSArray *temp = [[msg substringFromIndex:16] componentsSeparatedByString:@"::"];
-        NSString *key = [WXConvert NSString:temp[0]];
-        [DeviceUtil setAppboardContent:key content:[msg substringFromIndex:16 + 2 + key.length]];
-        [self refresh];
-    }else if ([msg isEqualToString:@"REFRESH"]) {
+    }else if ([type isEqualToString:@"REFRESH"]) {
         [self refresh];
     }
 }

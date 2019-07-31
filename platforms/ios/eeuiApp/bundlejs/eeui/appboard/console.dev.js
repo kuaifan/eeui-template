@@ -5,7 +5,7 @@ const console = {
 
     _: function(e) {
         return e.map(function(e) {
-            return e = "[object object]" === Object.prototype.toString.call(e).toLowerCase() ? JSON.stringify(e) : String(e)
+            return e = "[object object]" === Object.prototype.toString.call(e).toLowerCase() ? JSON.stringify(e) : e
         })
     },
 

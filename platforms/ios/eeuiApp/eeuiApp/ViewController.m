@@ -95,7 +95,7 @@ eeuiViewController *homeController;
                     [Cloud appData];
                     //
                     if (pageUrl.length > 0) {
-                        [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": pageUrl, @"pageType": @"app"} callback:nil];
+                        [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": pageUrl, @"pageType": @"app"} weexInstance:nil callback:nil];
                     }
                 }
             };

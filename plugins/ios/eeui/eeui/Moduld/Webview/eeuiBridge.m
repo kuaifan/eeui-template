@@ -138,28 +138,27 @@
 
 - (void)openPage:(NSDictionary*)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [eeuiNewPageManager sharedIntstance].weexInstance = [[WXSDKManager bridgeMgr] topInstance];
-    [[eeuiNewPageManager sharedIntstance] openPage:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] openPage:params weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (NSDictionary*)getPageInfo:(id)params
 {
-    return [[eeuiNewPageManager sharedIntstance] getPageInfo:params];
+    return [[eeuiNewPageManager sharedIntstance] getPageInfo:params weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)getPageInfoAsync:(id)params callback:(WXModuleCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] getPageInfoAsync:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] getPageInfoAsync:params weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (void)reloadPage:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] reloadPage:params];
+    [[eeuiNewPageManager sharedIntstance] reloadPage:params weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)setSoftInputMode:(id)params modo:(NSString*)modo
 {
-    [[eeuiNewPageManager sharedIntstance] setSoftInputMode:params modo:modo];
+    [[eeuiNewPageManager sharedIntstance] setSoftInputMode:params modo:modo weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)setStatusBarStyle:(BOOL)isLight
@@ -179,12 +178,12 @@
 
 - (void)setOnRefreshListener:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] setOnRefreshListener:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] setOnRefreshListener:params weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (void)setRefreshing:(id)params refreshing:(BOOL)refreshing
 {
-    [[eeuiNewPageManager sharedIntstance] setRefreshing:params refreshing:refreshing];
+    [[eeuiNewPageManager sharedIntstance] setRefreshing:params refreshing:refreshing weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)setPageStatusListener:(id)params callback:(WXModuleKeepAliveCallback)callback
@@ -214,12 +213,12 @@
 
 - (void)closePage:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] closePage:params];
+    [[eeuiNewPageManager sharedIntstance] closePage:params weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)closePageTo:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] closePageTo:params];
+    [[eeuiNewPageManager sharedIntstance] closePageTo:params weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)openWeb:(NSString*)url
