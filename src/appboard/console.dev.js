@@ -1,6 +1,6 @@
-const debug = app.requireModule('debug');
+var debug = app.requireModule('debug');
 
-const console = {
+console = {
     open: true,
 
     _: function(e) {

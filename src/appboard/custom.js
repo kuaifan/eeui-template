@@ -1,4 +1,4 @@
-const eeui = app.requireModule('eeui');
+var eeui = app.requireModule('eeui');
 
 Vue.mixin({
     data() {
