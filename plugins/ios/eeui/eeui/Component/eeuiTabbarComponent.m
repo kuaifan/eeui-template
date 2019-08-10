@@ -109,7 +109,7 @@ WX_EXPORT_METHOD(@selector(setTabIconWidth:))
 WX_EXPORT_METHOD(@selector(setTabIconHeight:))
 WX_EXPORT_METHOD(@selector(setSideline:))
 WX_EXPORT_METHOD(@selector(setTabPageAnimated:))
-WX_EXPORT_METHOD(@selector(setSlideSwitch:))
+WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
 - (instancetype)initWithRef:(NSString *)ref type:(NSString *)type styles:(NSDictionary *)styles attributes:(NSDictionary *)attributes events:(NSArray *)events weexInstance:(WXSDKInstance *)weexInstance
 {
@@ -352,8 +352,8 @@ WX_EXPORT_METHOD(@selector(setSlideSwitch:))
         _tabWidth = SCALEFLOAT([WXConvert CGFloat:value]);
     } else if ([key isEqualToString:@"tabPageAnimated"]) {
         _tabPageAnimated = [WXConvert BOOL:value];
-    } else if ([key isEqualToString:@"slideSwitch"]) {
-        [self setSlideSwitch:[WXConvert BOOL:value]];
+    } else if ([key isEqualToString:@"tabSlideSwitch"]) {
+        [self setTabSlideSwitch:[WXConvert BOOL:value]];
     } else if ([key isEqualToString:@"indicatorStyle"]) {
         _indicatorStyle = [WXConvert NSInteger:value];
     } else if ([key isEqualToString:@"indicatorGravity"]) {
@@ -1264,7 +1264,7 @@ WX_EXPORT_METHOD(@selector(setSlideSwitch:))
 {
     _tabPageAnimated = isAnimated;
 }
-- (void)setSlideSwitch:(BOOL)slideSwitch
+- (void)setTabSlideSwitch:(BOOL)slideSwitch
 {
     if (_bodyView != nil) {
         _bodyView.scrollEnabled = slideSwitch;

@@ -268,8 +268,8 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                 setTabPageAnimated(eeuiParse.parseBool(val, false));
                 return true;
 
-            case "slideSwitch":
-                setSlideSwitch(eeuiParse.parseBool(val, false));
+            case "tabSlideSwitch":
+                setTabSlideSwitch(eeuiParse.parseBool(val, false));
                 return true;
 
             case "indicatorColor":
@@ -1060,7 +1060,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
      * 滑动切换
      */
     @JSMethod
-    public void setSlideSwitch(boolean slideSwitch) {
+    public void setTabSlideSwitch(boolean slideSwitch) {
         if (mViewPager == null) {
             return;
         }
