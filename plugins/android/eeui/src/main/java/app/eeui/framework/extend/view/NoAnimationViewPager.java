@@ -3,6 +3,7 @@ package app.eeui.framework.extend.view;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.taobao.weex.bridge.WXBridgeManager;
@@ -23,6 +24,7 @@ import app.eeui.framework.ui.component.tabbar.bean.WXSDKBean;
 public class NoAnimationViewPager extends ViewPager {
 
     public boolean smoothScroll = false;
+    public boolean slideSwitch = true;
 
     public NoAnimationViewPager(Context context) {
         super(context);
@@ -41,6 +43,30 @@ public class NoAnimationViewPager extends ViewPager {
     @Override
     public void setCurrentItem(int item) {
         super.setCurrentItem(item, smoothScroll);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (!slideSwitch) {
+            return false;
+        }
+        return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            performClick();
+        }
+        if (!slideSwitch) {
+            return false;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
     }
 
     public void setSmoothScroll(boolean smoothScroll) {

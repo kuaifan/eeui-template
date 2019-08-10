@@ -1974,6 +1974,7 @@ public class PageActivity extends AppCompatActivity {
                                         Map<String, Object> retData = eeuiMap.objectToMap(data);
                                         if (eeuiParse.parseStr(retData.get("status")).equals("click") && eeuiParse.parseStr(retData.get("title")).equals("确定")) {
                                             eeuiCommon.setVariate("__deBugSocket:Init", 0);
+                                            eeuiCommon.setVariate("__deBugSocket:Status", 0);
                                             eeuiPage.mAppboardContent = new HashMap<>();
                                             eeuiBase.cloud.reboot();
                                         }

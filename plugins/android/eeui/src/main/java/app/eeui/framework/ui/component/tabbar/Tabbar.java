@@ -15,22 +15,8 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
-import app.eeui.framework.BuildConfig;
-import app.eeui.framework.activity.PageActivity;
-import app.eeui.framework.extend.module.eeuiBase;
-import app.eeui.framework.extend.module.eeuiConstants;
-
-import app.eeui.framework.extend.module.eeuiMap;
-import app.eeui.framework.extend.module.eeuiPage;
-import app.eeui.framework.extend.module.eeuiParse;
-import app.eeui.framework.extend.module.eeuiScreenUtils;
-import app.eeui.framework.extend.view.tablayout.CommonTabLayout;
-import app.eeui.framework.extend.view.tablayout.SlidingTabLayout;
-import app.eeui.framework.extend.view.tablayout.listener.CustomTabEntity;
-import app.eeui.framework.extend.view.tablayout.listener.OnTabSelectListener;
-
 import com.taobao.weex.IWXRenderListener;
+import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.annotation.JSMethod;
 import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.bridge.ResultCallback;
@@ -40,20 +26,32 @@ import com.taobao.weex.common.WXRenderStrategy;
 import com.taobao.weex.dom.CSSShorthand;
 import com.taobao.weex.ui.action.BasicComponentData;
 import com.taobao.weex.ui.component.WXComponent;
-import app.eeui.framework.R;
-import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.ui.component.WXVContainer;
-import app.eeui.framework.extend.module.eeuiCommon;
-import app.eeui.framework.extend.module.eeuiJson;
-import app.eeui.framework.ui.component.tabbar.adapter.TabbarAdapter;
-import app.eeui.framework.extend.view.NoAnimationViewPager;
-import app.eeui.framework.ui.component.tabbar.bean.TabbarBean;
-import app.eeui.framework.ui.component.tabbar.bean.WXSDKBean;
-import app.eeui.framework.ui.component.tabbar.entity.TabbarEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import app.eeui.framework.BuildConfig;
+import app.eeui.framework.R;
+import app.eeui.framework.activity.PageActivity;
+import app.eeui.framework.extend.module.eeuiBase;
+import app.eeui.framework.extend.module.eeuiCommon;
+import app.eeui.framework.extend.module.eeuiConstants;
+import app.eeui.framework.extend.module.eeuiJson;
+import app.eeui.framework.extend.module.eeuiMap;
+import app.eeui.framework.extend.module.eeuiPage;
+import app.eeui.framework.extend.module.eeuiParse;
+import app.eeui.framework.extend.module.eeuiScreenUtils;
+import app.eeui.framework.extend.view.NoAnimationViewPager;
+import app.eeui.framework.extend.view.tablayout.CommonTabLayout;
+import app.eeui.framework.extend.view.tablayout.SlidingTabLayout;
+import app.eeui.framework.extend.view.tablayout.listener.CustomTabEntity;
+import app.eeui.framework.extend.view.tablayout.listener.OnTabSelectListener;
+import app.eeui.framework.ui.component.tabbar.adapter.TabbarAdapter;
+import app.eeui.framework.ui.component.tabbar.bean.TabbarBean;
+import app.eeui.framework.ui.component.tabbar.bean.WXSDKBean;
+import app.eeui.framework.ui.component.tabbar.entity.TabbarEntity;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -268,6 +266,10 @@ public class Tabbar extends WXVContainer<ViewGroup> {
 
             case "tabPageAnimated":
                 setTabPageAnimated(eeuiParse.parseBool(val, false));
+                return true;
+
+            case "slideSwitch":
+                setSlideSwitch(eeuiParse.parseBool(val, false));
                 return true;
 
             case "indicatorColor":
@@ -1052,5 +1054,16 @@ public class Tabbar extends WXVContainer<ViewGroup> {
             return;
         }
         this.mViewPager.setSmoothScroll(animated);
+    }
+
+    /**
+     * 滑动切换
+     */
+    @JSMethod
+    public void setSlideSwitch(boolean slideSwitch) {
+        if (mViewPager == null) {
+            return;
+        }
+        this.mViewPager.slideSwitch = slideSwitch;
     }
 }
