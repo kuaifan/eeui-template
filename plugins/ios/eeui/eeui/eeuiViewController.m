@@ -57,9 +57,12 @@ static int easyNavigationButtonTag = 8000;
     [super viewDidLoad];
 
     [self setFd_prefersNavigationBarHidden:YES];
-    [self setFd_interactivePopMaxAllowedInitialDistanceToLeftEdge:35.0f];
+    
+    if (!_isDisSwipeFullBack) {
+        [self setFd_interactivePopMaxAllowedInitialDistanceToLeftEdge:35.0f];
+    }
 
-    if (_isDisSwipeBack) {
+    if (_isDisSwipeBack || [_animatedType isEqualToString:@"present"]) {
         [self setFd_interactivePopDisabled:YES];
     }
 
@@ -689,18 +692,6 @@ static int easyNavigationButtonTag = 8000;
         self.liftCycleLastStatusChild = @"resume";
     }
 }
-
-#pragma mark action
-//- (void)edgePanGesture:(UIScreenEdgePanGestureRecognizer*)edgePanGestureRecognizer
-//{
-//    if (self.navigationController && [self.navigationController.viewControllers count] == 1) {
-//        return;
-//    }
-//
-//    if (!_isDisSwipeBack) {
-//        [self.navigationController popViewControllerAnimated:YES];
-//    }
-//}
 
 - (void)stopLoading
 {

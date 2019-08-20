@@ -437,9 +437,17 @@ public class eeui {
         if (json.getBoolean("swipeBack") != null) {
             mBean.setSwipeBack(json.getBoolean("swipeBack"));
         }
+        //是否支持全屏滑动返回（可选，默认：false）
+        if (json.getBoolean("swipeFullBack") != null) {
+            mBean.setSwipeFullBack(json.getBoolean("swipeFullBack"));
+        }
         //是否进入页面需要动画效果（默认：true）
         if (json.getBoolean("animated") != null) {
             mBean.setAnimated(json.getBoolean("animated"));
+        }
+        //页面动画效果类型（默认：跟随系统）
+        if (json.getString("animatedType") != null) {
+            mBean.setAnimatedType(json.getString("animatedType"));
         }
         //状态栏样式（可选，等于fullscreen|immersion时statusBarType、statusBarAlpha无效）
         if (json.getString("statusBarType") != null) {

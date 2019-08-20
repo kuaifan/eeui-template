@@ -19,6 +19,7 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 
 @property (nonatomic, assign) BOOL isFirstPage;//是否系统第一页
 @property (nonatomic, assign) BOOL isDisSwipeBack;//禁止滑动返回
+@property (nonatomic, assign) BOOL isDisSwipeFullBack;//禁止全屏滑动返回
 @property (nonatomic, assign) BOOL isDisItemBack;//禁止点击返回按钮
 @property (nonatomic, assign) BOOL loading;//显示等待加载图
 @property (nonatomic, assign) BOOL showNavigationBar;//导航栏
@@ -36,6 +37,7 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 @property (nonatomic, strong) NSString *backgroundColor;
 @property (nonatomic, strong) NSString *softInputMode;
 @property (nonatomic, strong) NSString *safeAreaBottom;//底部安全距离
+@property (nonatomic, strong) NSString *animatedType;//页面动画效果类型
 @property (nonatomic, assign) long loadTime;//最后加载时间
 
 @property (nonatomic, strong) NSString *url;

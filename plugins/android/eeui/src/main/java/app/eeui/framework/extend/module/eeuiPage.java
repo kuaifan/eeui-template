@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.eeui.framework.BuildConfig;
+import app.eeui.framework.R;
 import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.activity.PageActivityNoTransparent;
 import app.eeui.framework.activity.PageActivityTransparent;
@@ -103,6 +104,12 @@ public class eeuiPage {
         //
         if (!mBean.isAnimated()) {
             ((Activity) context).overridePendingTransition(0, 0);
+        }else{
+            if ("present".contentEquals(mBean.getAnimatedType())) {
+                ((Activity) context).overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
+            }else if ("push".contentEquals(mBean.getAnimatedType())) {
+                ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
         }
     }
 

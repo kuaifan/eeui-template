@@ -10,6 +10,7 @@
 #import "DeviceUtil.h"
 #import "CustomWeexSDKManager.h"
 #import "WeexSDKManager.h"
+#import "UIViewController+HHTransition.h"
 
 @interface eeuiNewPageManager ()
 
@@ -76,6 +77,7 @@
     BOOL loading = params[@"loading"] ? [WXConvert BOOL:params[@"loading"]] : YES;
 
     BOOL swipeBack = params[@"swipeBack"] ? [WXConvert BOOL:params[@"swipeBack"]] : YES;
+    BOOL swipeFullBack = params[@"swipeFullBack"] ? [WXConvert BOOL:params[@"swipeFullBack"]] : NO;
     BOOL animated = params[@"animated"] ? [WXConvert BOOL:params[@"animated"]] : YES;
     NSString *statusBarType = params[@"statusBarType"] ? [WXConvert NSString:params[@"statusBarType"]] : @"normal";
     NSString *statusBarColor = params[@"statusBarColor"] ? [WXConvert NSString:params[@"statusBarColor"]] : @"";
@@ -83,6 +85,7 @@
     NSString *statusBarStyle = params[@"statusBarStyle"] ? [WXConvert NSString:params[@"statusBarStyle"]] : @"";
 
     NSString *softInputMode = params[@"softInputMode"] ? [WXConvert NSString:params[@"softInputMode"]] : @"auto";
+    NSString *animatedType = params[@"animatedType"] ? [WXConvert NSString:params[@"animatedType"]] : @"";
     //BOOL translucent = params[@"translucent"] ? [WXConvert BOOL:params[@"translucent"]] : NO;
 
     NSString *backgroundColor = params[@"backgroundColor"] ? [WXConvert NSString:params[@"backgroundColor"]] : @"";
@@ -119,6 +122,7 @@
     mainVC.url = url;
     mainVC.cache = cache;
     mainVC.isDisSwipeBack = !swipeBack;
+    mainVC.isDisSwipeFullBack = swipeFullBack;
     mainVC.isDisItemBack = !backPressedClose;
     mainVC.loading = loading;
     mainVC.statusBarType = statusBarType;
@@ -127,6 +131,7 @@
     mainVC.statusBarStyleCustom = statusBarStyle;
     mainVC.backgroundColor = backgroundColor;
     mainVC.softInputMode = softInputMode;
+    mainVC.animatedType = animatedType;
 
     mainVC.statusBlock = ^(NSString *status) {
         if (callback) {
@@ -142,9 +147,17 @@
     };
 
     if (weexInstance.viewController.navigationController) {
-        [weexInstance.viewController.navigationController pushViewController:mainVC animated:animated];
+        if ([animatedType isEqualToString:@"present"]) {
+            [weexInstance.viewController.navigationController hh_pushViewController:mainVC style:AnimationStyleBottom swipeFullBack:swipeFullBack];
+        }else{
+            [weexInstance.viewController.navigationController pushViewController:mainVC animated:animated];
+        }
     } else if ([[DeviceUtil getTopviewControler] navigationController]) {
-        [[[DeviceUtil getTopviewControler] navigationController] pushViewController:mainVC animated:animated];
+        if ([animatedType isEqualToString:@"present"]) {
+            [[[DeviceUtil getTopviewControler] navigationController] hh_pushViewController:mainVC style:AnimationStyleBottom swipeFullBack:swipeFullBack];
+        }else{
+            [[[DeviceUtil getTopviewControler] navigationController] pushViewController:mainVC animated:animated];
+        }
     } else {
         [[UIApplication sharedApplication] delegate].window.rootViewController =  [[WXRootViewController alloc] initWithRootViewController:mainVC];
     }

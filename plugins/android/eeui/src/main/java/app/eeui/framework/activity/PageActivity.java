@@ -354,6 +354,12 @@ public class PageActivity extends AppCompatActivity {
         super.finish();
         if (!mPageInfo.isAnimatedClose()) {
             this.overridePendingTransition(0, 0);
+        }else{
+            if ("present".contentEquals(mPageInfo.getAnimatedType())) {
+                this.overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_bottom);
+            }else if ("push".contentEquals(mPageInfo.getAnimatedType())) {
+                this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }
         }
     }
 
@@ -844,7 +850,7 @@ public class PageActivity extends AppCompatActivity {
         // 设置滑动返回是否可用。默认值为 true
         mSwipeBackHelper.setSwipeBackEnable(true);
         // 设置是否仅仅跟踪左侧边缘的滑动返回。默认值为 true
-        mSwipeBackHelper.setIsOnlyTrackingLeftEdge(true);
+        mSwipeBackHelper.setIsOnlyTrackingLeftEdge(!mPageInfo.isSwipeFullBack());
         // 设置是否是微信滑动返回样式。默认值为 true
         mSwipeBackHelper.setIsWeChatStyle(true);
         // 设置阴影资源 id。默认值为 R.drawable.bga_sbl_shadow
@@ -1341,6 +1347,18 @@ public class PageActivity extends AppCompatActivity {
         }
         mPageInfo.setSwipeBack(var);
         mSwipeBackHelper.setSwipeBackEnable(var);
+    }
+
+    /**
+     * 设置是否支持全屏滑动返回
+     * @param var
+     */
+    public void setSwipeFullBackEnable(Boolean var) {
+        if (mPageInfo == null || mSwipeBackHelper == null) {
+            return;
+        }
+        mPageInfo.setSwipeFullBack(var);
+        mSwipeBackHelper.setIsOnlyTrackingLeftEdge(!var);
     }
 
     /**

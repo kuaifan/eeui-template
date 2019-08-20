@@ -85,6 +85,7 @@ eeuiViewController *homeController;
             homeController.loading = [[Config getHomeParams:@"loading" defaultVal:@"true"] isEqualToString:@"true"] ? YES : NO;
             homeController.isFirstPage = YES;
             homeController.isDisSwipeBack = YES;
+            homeController.isDisSwipeFullBack = NO;
             homeController.statusBarType = [Config getHomeParams:@"statusBarType" defaultVal:@"normal"];
             homeController.statusBarColor = [Config getHomeParams:@"statusBarColor" defaultVal:@"#3EB4FF"];
             homeController.statusBarAlpha = [[Config getHomeParams:@"statusBarAlpha" defaultVal:@"0"] intValue];

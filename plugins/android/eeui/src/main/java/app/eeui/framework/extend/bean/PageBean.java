@@ -27,7 +27,9 @@ public class PageBean {
         temp.put("loading", isLoading());
         temp.put("loadTime", getLoadTime());
         temp.put("swipeBack", isSwipeBack());
+        temp.put("swipeFullBack", isSwipeFullBack());
         temp.put("animated", isAnimated());
+        temp.put("animatedType", getAnimatedType());
         temp.put("animatedClose", isAnimatedClose());
         temp.put("statusBarType", getStatusBarType());
         temp.put("statusBarColor", getStatusBarColor());
@@ -49,7 +51,9 @@ public class PageBean {
      * cache :              缓存时间（可选，单位：毫秒，仅weex有效，默认：0不启用）
      * loading :            是否显示等待（可选，默认：true）
      * swipeBack :          是否支持滑动返回（可选，默认：true）
+     * swipeFullBack :      是否支持全屏滑动返回（可选，默认：false）
      * animated :           是否进入页面需要动画效果（可选，默认：true）
+     * animatedType :       页面动画效果类型（可选，默认：跟随系统）
      * animatedClose :      是否关闭页面需要动画效果（可选，默认：true）
      * statusBarType :      状态栏样式（可选，等于fullscreen|immersion时statusBarType、statusBarAlpha无效）
      * statusBarColor :     状态栏颜色值（可选，默认：#3EB4FF）
@@ -75,7 +79,9 @@ public class PageBean {
     private long cache = 0;
     private boolean loading = true;
     private boolean swipeBack = true;
+    private boolean swipeFullBack = false;
     private boolean animated = true;
+    private String animatedType = "";
     private boolean animatedClose = true;
     private String statusBarType = "default";
     private String statusBarColor = "";
@@ -160,12 +166,28 @@ public class PageBean {
         this.swipeBack = swipeBack;
     }
 
+    public boolean isSwipeFullBack() {
+        return swipeFullBack;
+    }
+
+    public void setSwipeFullBack(boolean swipeFullBack) {
+        this.swipeFullBack = swipeFullBack;
+    }
+
     public boolean isAnimated() {
         return animated;
     }
 
     public void setAnimated(boolean animated) {
         this.animated = animated;
+    }
+
+    public String getAnimatedType() {
+        return animatedType;
+    }
+
+    public void setAnimatedType(String animatedType) {
+        this.animatedType = animatedType;
     }
 
     public boolean isAnimatedClose() {
