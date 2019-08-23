@@ -216,6 +216,7 @@ static ClickWelcome myClickWelcome;
         [manager GET:tempUrl parameters:nil progress:nil success:nil failure:nil];
     }
     [Config clear];
+    [Config clearCustomConfig];
     //
     NSString *reboot = [NSString stringWithFormat:@"%@", data[@"reboot"]];
     if ([reboot isEqualToString:@"1"]) {

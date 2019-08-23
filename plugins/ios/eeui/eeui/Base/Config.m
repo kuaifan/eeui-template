@@ -7,6 +7,8 @@
 
 #import "Config.h"
 #import "IpUtil.h"
+#import "DeviceUtil.h"
+#import "eeuiStorageManager.h"
 #import <CommonCrypto/CommonDigest.h>
 
 @implementation Config
@@ -24,6 +26,10 @@ static NSMutableArray *verifyDir;
         NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:fileData options:kNilOptions error:nil];
         configData = [NSMutableDictionary dictionaryWithDictionary:jsonObject];
     }
+    //自定义配置
+    [[self getCustomConfig] enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        [configData setValue:obj forKey:key];
+    }];
     return configData;
 }
 
@@ -41,7 +47,7 @@ static NSMutableArray *verifyDir;
     if (json == nil) {
         return defaultVal;
     }
-    NSString *str = [NSString stringWithFormat:@"%@", json[key]];
+    NSString *str = [NSString stringWithFormat:@"%@", [self getRawValue:key]];
     if (str == nil) {
         return defaultVal;
     }
@@ -57,11 +63,7 @@ static NSMutableArray *verifyDir;
 //获取配置值
 + (NSMutableDictionary *) getObject:(NSString*)key
 {
-    NSMutableDictionary *json = [self get];
-    if (json == nil) {
-        return nil;
-    }
-    return [json objectForKey:key];
+    return [self getRawValue:key];
 }
 
 //获取配置原始值
@@ -81,6 +83,9 @@ static NSMutableArray *verifyDir;
     NSString *homePage = [self getString:@"homePage" defaultVal:@""];
     if (homePage.length == 0) {
         homePage = [NSString stringWithFormat:@"file://%@", [self getResourcePath:@"bundlejs/eeui/pages/index.js"]];
+    }else{
+        homePage = [DeviceUtil suffixUrl:@"app" url:homePage];
+        homePage = [DeviceUtil rewriteUrl:homePage homePage:[NSString stringWithFormat:@"file://%@", [self getResourcePath:@"bundlejs/eeui/pages/index.js"]]];
     }
     #if DEBUG
     #else
@@ -229,6 +234,43 @@ static NSMutableArray *verifyDir;
         }
     }
     return isUpdate;
+}
+
+//设置自定义配置
++ (void) setCustomConfig:(NSString*)key value:(id)value
+{
+    NSMutableDictionary *json = [[self getCustomConfig] mutableCopy];
+    if (json == nil) {
+        return;
+    }
+    if ([value isKindOfClass:[NSString class]]) {
+        [json setValue:[WXConvert NSString:value] forKey:key];
+    } else if ([value isKindOfClass:[NSNumber class]]) {
+        [json setValue:@([WXConvert NSInteger:value]) forKey:key];
+    } else if ([value isKindOfClass:[NSDictionary class]]) {
+        [json setValue:value forKey:key];
+    } else {
+        return;
+    }
+    [json setValue:@([[NSDate date] timeIntervalSince1970]) forKey:@"__system:eeui:customTime"];
+    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:json expired:0];
+}
+
+//设置自定义配置
++ (NSDictionary *) getCustomConfig
+{
+    NSDictionary *json = [DeviceUtil dictionaryWithJsonString:[[eeuiStorageManager sharedIntstance] getCachesString:@"__system:eeui:customConfig" defaultVal:@{}]];
+    if (json == nil) {
+        return [NSMutableDictionary dictionary];
+    }else{
+        return json;
+    }
+}
+
+//清空自定义配置
++ (void) clearCustomConfig
+{
+    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:@{} expired:0];
 }
 
 //******************************************************************************************

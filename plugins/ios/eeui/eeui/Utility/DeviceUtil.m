@@ -377,6 +377,9 @@
     if (jsonString == nil) {
         return nil;
     }
+    if ([jsonString isKindOfClass:[NSDictionary class]]) {
+        return (NSDictionary *) jsonString;
+    }
     NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSError *err;
     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&err];

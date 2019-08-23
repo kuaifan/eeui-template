@@ -236,6 +236,21 @@
     return [Config getString:key defaultVal:@""];
 }
 
+- (void)setCustomConfig:(NSString*)key params:(id)params
+{
+    [Config setCustomConfig:key value:params];
+}
+
+- (NSDictionary*)getCustomConfig
+{
+    return [Config getCustomConfig];
+}
+
+- (void)clearCustomConfig
+{
+    [Config clearCustomConfig];
+}
+
 - (NSString*)realUrl:(NSString*)url
 {
     return [DeviceUtil realUrl:url];

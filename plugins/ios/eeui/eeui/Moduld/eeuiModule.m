@@ -193,6 +193,9 @@ WX_EXPORT_METHOD(@selector(openWeb:))
 WX_EXPORT_METHOD(@selector(goDesktop))
 WX_EXPORT_METHOD_SYNC(@selector(getConfig:))
 WX_EXPORT_METHOD_SYNC(@selector(getConfigString:))
+WX_EXPORT_METHOD_SYNC(@selector(setCustomConfig:params:))
+WX_EXPORT_METHOD_SYNC(@selector(getCustomConfig))
+WX_EXPORT_METHOD_SYNC(@selector(clearCustomConfig))
 WX_EXPORT_METHOD_SYNC(@selector(realUrl:))
 WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 
@@ -299,6 +302,21 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 - (NSString*)getConfigString:(NSString*)key
 {
     return [Config getString:key defaultVal:@""];
+}
+
+- (void)setCustomConfig:(NSString*)key params:(id)params
+{
+    [Config setCustomConfig:key value:params];
+}
+
+- (NSDictionary*)getCustomConfig
+{
+    return [Config getCustomConfig];
+}
+
+- (void)clearCustomConfig
+{
+    [Config clearCustomConfig];
 }
 
 - (NSString*)realUrl:(NSString*)url

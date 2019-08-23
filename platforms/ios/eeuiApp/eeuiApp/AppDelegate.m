@@ -261,6 +261,7 @@ NSDictionary *mLaunchOptions;
     if ([Config verifyIsUpdate]) {
         [alertController addAction:[UIAlertAction actionWithTitle:@"清除热更新数据" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [Cloud clearUpdate];
+            [Config clearCustomConfig];
         }]];
     }
 
