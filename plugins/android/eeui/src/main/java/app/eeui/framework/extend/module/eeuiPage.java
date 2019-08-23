@@ -238,7 +238,7 @@ public class eeuiPage {
      * @param url
      * @return
      */
-    public static String rewriteUrl(Context context, String url) {
+    public static String rewriteUrl(Object context, String url) {
         return eeuiHtml.repairUrl(context, url);
     }
 

@@ -195,8 +195,8 @@ public class WebModule {
      * @param key
      * @return
      */
-    public Object getConfig(ExtendWebView webView, String key) {
-        return myApp().getConfig(key);
+    public Object getConfigRaw(ExtendWebView webView, String key) {
+        return myApp().getConfigRaw(key);
     }
     /**
      * 获取eeui.config.js配置指定参数
@@ -206,6 +206,29 @@ public class WebModule {
      */
     public String getConfigString(ExtendWebView webView, String key) {
         return myApp().getConfigString(key);
+    }
+
+    /**
+     * 设置自定义配置
+     * @param key
+     * @param value
+     */
+    public void setCustomConfig(String key, Object value) {
+        myApp().setCustomConfig(key, value);
+    }
+
+    /**
+     * 获取自定义配置
+     */
+    public Object getCustomConfig() {
+        return myApp().getCustomConfig();
+    }
+
+    /**
+     * 清空自定义配置
+     */
+    public void clearCustomConfig() {
+        myApp().clearCustomConfig();
     }
 
     /**

@@ -216,8 +216,8 @@ public class WeexModule extends WXModule {
      * @return
      */
     @JSMethod(uiThread = false)
-    public Object getConfig(String key) {
-        return myApp().getConfig(key);
+    public Object getConfigRaw(String key) {
+        return myApp().getConfigRaw(key);
     }
 
     /**
@@ -228,6 +228,32 @@ public class WeexModule extends WXModule {
     @JSMethod(uiThread = false)
     public String getConfigString(String key) {
         return myApp().getConfigString(key);
+    }
+
+    /**
+     * 设置自定义配置
+     * @param key
+     * @param value
+     */
+    @JSMethod(uiThread = false)
+    public void setCustomConfig(String key, Object value) {
+        myApp().setCustomConfig(key, value);
+    }
+
+    /**
+     * 获取自定义配置
+     */
+    @JSMethod(uiThread = false)
+    public Object getCustomConfig() {
+        return myApp().getCustomConfig();
+    }
+
+    /**
+     * 清空自定义配置
+     */
+    @JSMethod(uiThread = false)
+    public void clearCustomConfig() {
+        myApp().clearCustomConfig();
     }
 
     /**

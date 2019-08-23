@@ -79,6 +79,9 @@ public class eeuiBase {
             if (configData == null) {
                 configData = eeuiJson.parseObject(verifyAssets(eeui.getApplication(), "file://assets/eeui/config.json"));
             }
+            for (Map.Entry<String, Object> entry :  getCustomConfig().entrySet()) {
+                configData.put(entry.getKey(), entry.getValue());
+            }
             return configData;
         }
 
@@ -126,6 +129,9 @@ public class eeuiBase {
             final String[] homePage = {eeuiJson.getString(get(), "homePage")};
             if (homePage[0].length() == 0) {
                 homePage[0] = "file://assets/eeui/pages/index.js";
+            }else{
+                homePage[0] = eeuiPage.suffixUrl("app", homePage[0]);
+                homePage[0] = eeuiPage.rewriteUrl("file://assets/eeui/pages/index.js", homePage[0]);
             }
             if (!BuildConfig.DEBUG || TextUtils.isEmpty(socketHome)) {
                 mOnHomeUrlListener.result(homePage[0]);
@@ -292,6 +298,33 @@ public class eeuiBase {
                 }
             }
             return isUpdate;
+        }
+
+        /**
+         * 设置自定义配置
+         * @param key
+         * @param value
+         */
+        public static void setCustomConfig(String key, Object value) {
+            JSONObject json = getCustomConfig();
+            json.put(key, value);
+            json.put("__system:eeui:customTime", eeuiCommon.timeStamp());
+            eeuiCommon.setCachesString(eeui.getApplication(), "main", "__system:eeui:customConfig", json.toJSONString());
+        }
+
+        /**
+         * 获取自定义配置
+         * @return
+         */
+        public static JSONObject getCustomConfig() {
+            return eeuiJson.parseObject(eeuiCommon.getCachesString(eeui.getApplication(), "main", "__system:eeui:customConfig", "{}"));
+        }
+
+        /**
+         * 清空自定义配置
+         */
+        public static void clearCustomConfig() {
+            eeuiCommon.setCachesString(eeui.getApplication(), "main", "__system:eeui:customConfig", "{}");
         }
 
         /**
@@ -572,6 +605,7 @@ public class eeuiBase {
          */
         private static void checkUpdateHint(JSONArray lists, JSONObject data, int number, boolean isReboot) {
             eeuiBase.config.clear();
+            eeuiBase.config.clearCustomConfig();
             switch (eeuiJson.getInt(data, "reboot")) {
                 case 1:
                     checkUpdateLists(lists, number + 1, true);

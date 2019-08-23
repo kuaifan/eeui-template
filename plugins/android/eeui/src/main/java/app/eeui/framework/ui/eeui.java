@@ -846,7 +846,7 @@ public class eeui {
      * @param key
      * @return
      */
-    public Object getConfig(String key) {
+    public Object getConfigRaw(String key) {
         return eeuiBase.config.getRawValue(key);
     }
 
@@ -857,6 +857,30 @@ public class eeui {
      */
     public String getConfigString(String key) {
         return eeuiBase.config.getString(key, "");
+    }
+
+    /**
+     * 设置自定义配置
+     * @param key
+     * @param value
+     */
+    public void setCustomConfig(String key, Object value) {
+        eeuiBase.config.setCustomConfig(key, value);
+    }
+
+    /**
+     * 获取自定义配置
+     * @return
+     */
+    public Object getCustomConfig() {
+        return eeuiBase.config.getCustomConfig();
+    }
+
+    /**
+     * 清空自定义配置
+     */
+    public void clearCustomConfig() {
+        eeuiBase.config.clearCustomConfig();
     }
 
     /**

@@ -231,6 +231,11 @@
     [[eeuiNewPageManager sharedIntstance] goDesktop];
 }
 
+- (id)getConfigRaw:(NSString*)key
+{
+    return [Config getRawValue:key];
+}
+
 - (NSString*)getConfigString:(NSString*)key
 {
     return [Config getString:key defaultVal:@""];

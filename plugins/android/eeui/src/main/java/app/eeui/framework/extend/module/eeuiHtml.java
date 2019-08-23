@@ -79,11 +79,11 @@ public class eeuiHtml {
 
     /**
      * 补全地址
-     * @param context       上下文
+     * @param homePage      上下文或者父页地址
      * @param url           图片地址
      * @return
      */
-    public static String repairUrl(Context context, String url) {
+    public static String repairUrl(Object homePage, String url) {
         if (url == null) {
             return "";
         }
@@ -103,11 +103,13 @@ public class eeuiHtml {
         }
 
         String websiteUrl = null;
-        if (context instanceof PageActivity) {
-            PageBean mPageBean = ((PageActivity) context).getPageInfo();
+        if (homePage instanceof PageActivity) {
+            PageBean mPageBean = ((PageActivity) homePage).getPageInfo();
             if (mPageBean != null) {
                 websiteUrl = mPageBean.getUrl();
             }
+        }else if (homePage instanceof String) {
+            websiteUrl = (String) homePage;
         }
         if (websiteUrl == null) {
             return realUrl(url);
@@ -127,8 +129,8 @@ public class eeuiHtml {
             }
         }
 
-        if (url.contains("page_cache")) {
-            File cachePath = context.getExternalFilesDir("page_cache");
+        if (url.contains("page_cache") && homePage instanceof Context) {
+            File cachePath = ((Context) homePage).getExternalFilesDir("page_cache");
             if (cachePath != null) {
                 String cacheUrl = "file://" + cachePath.getPath();
                 if (url.startsWith(cacheUrl)) {

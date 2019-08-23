@@ -256,7 +256,7 @@ static NSMutableArray *verifyDir;
     [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:json expired:0];
 }
 
-//设置自定义配置
+//获取自定义配置
 + (NSDictionary *) getCustomConfig
 {
     NSDictionary *json = [DeviceUtil dictionaryWithJsonString:[[eeuiStorageManager sharedIntstance] getCachesString:@"__system:eeui:customConfig" defaultVal:@{}]];

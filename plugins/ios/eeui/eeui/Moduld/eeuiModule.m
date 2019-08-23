@@ -191,7 +191,7 @@ WX_EXPORT_METHOD(@selector(closePage:))
 WX_EXPORT_METHOD(@selector(closePageTo:))
 WX_EXPORT_METHOD(@selector(openWeb:))
 WX_EXPORT_METHOD(@selector(goDesktop))
-WX_EXPORT_METHOD_SYNC(@selector(getConfig:))
+WX_EXPORT_METHOD_SYNC(@selector(getConfigRaw:))
 WX_EXPORT_METHOD_SYNC(@selector(getConfigString:))
 WX_EXPORT_METHOD_SYNC(@selector(setCustomConfig:params:))
 WX_EXPORT_METHOD_SYNC(@selector(getCustomConfig))
@@ -294,7 +294,7 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
     [[eeuiNewPageManager sharedIntstance] goDesktop];
 }
 
-- (id)getConfig:(NSString*)key
+- (id)getConfigRaw:(NSString*)key
 {
     return [Config getRawValue:key];
 }
