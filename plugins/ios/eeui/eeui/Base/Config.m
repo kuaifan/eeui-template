@@ -64,6 +64,16 @@ static NSMutableArray *verifyDir;
     return [json objectForKey:key];
 }
 
+//获取配置原始值
++ (id) getRawValue:(NSString*)key
+{
+    NSMutableDictionary *json = [self get];
+    if (json == nil) {
+        return nil;
+    }
+    return [json objectForKey:key];
+}
+
 //获取主页地址
 + (void) getHomeUrl:(void(^)(NSString* path))callback
 {

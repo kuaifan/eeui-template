@@ -99,14 +99,22 @@ public class eeuiBase {
             return eeuiJson.getString(get(), key, defaultVal);
         }
 
-
         /**
          * 获取配置值
          * @param key
          * @return
          */
         public static JSONObject getObject(String key) {
-            return eeuiJson.parseObject(get().get(key));
+            return eeuiJson.parseObject(getRawValue(key));
+        }
+
+        /**
+         * 获取配置原始值
+         * @param key
+         * @return
+         */
+        public static Object getRawValue(String key) {
+            return get().get(key);
         }
 
         /**

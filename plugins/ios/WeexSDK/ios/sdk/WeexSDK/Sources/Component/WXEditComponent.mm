@@ -733,7 +733,7 @@ WX_EXPORT_METHOD(@selector(setTextFormatter:))
             };
         }
     }
-    if ([[CustomWeexSDKManager getSoftInputMode] isEqualToString:@"pan"]) {
+    if ([[CustomWeexSDKManager getSoftInputMode] isEqualToString:@"nothing"]) {
         //若键盘盖住输入框，页面不会自动上移
     }else{
         //若键盘盖住输入框，页面会自动上移

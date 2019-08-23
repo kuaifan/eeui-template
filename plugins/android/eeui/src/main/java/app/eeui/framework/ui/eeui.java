@@ -465,6 +465,10 @@ public class eeui {
         if (json.getString("statusBarStyle") != null) {
             mBean.setStatusBarStyle(json.getBooleanValue("statusBarStyle"));
         }
+        //键盘弹出方式
+        if (json.getString("softInputMode") != null) {
+            mBean.setSoftInputMode(eeuiJson.getString(json, "softInputMode", "auto"));
+        }
         //透明底色窗口（默认：false）
         if (json.getBoolean("translucent") != null) {
             mBean.setTranslucent(json.getBoolean("translucent"));
@@ -835,6 +839,15 @@ public class eeui {
         home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         home.addCategory(Intent.CATEGORY_HOME);
         context.startActivity(home);
+    }
+
+    /**
+     * 获取eeui.config.js配置指定参数
+     * @param key
+     * @return
+     */
+    public Object getConfig(String key) {
+        return eeuiBase.config.getRawValue(key);
     }
 
     /**

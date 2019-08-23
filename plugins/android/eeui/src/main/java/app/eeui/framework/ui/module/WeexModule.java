@@ -216,6 +216,16 @@ public class WeexModule extends WXModule {
      * @return
      */
     @JSMethod(uiThread = false)
+    public Object getConfig(String key) {
+        return myApp().getConfig(key);
+    }
+
+    /**
+     * 获取eeui.config.js配置指定参数
+     * @param key
+     * @return
+     */
+    @JSMethod(uiThread = false)
     public String getConfigString(String key) {
         return myApp().getConfigString(key);
     }

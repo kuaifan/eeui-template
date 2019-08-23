@@ -195,6 +195,15 @@ public class WebModule {
      * @param key
      * @return
      */
+    public Object getConfig(ExtendWebView webView, String key) {
+        return myApp().getConfig(key);
+    }
+    /**
+     * 获取eeui.config.js配置指定参数
+     * @param webView
+     * @param key
+     * @return
+     */
     public String getConfigString(ExtendWebView webView, String key) {
         return myApp().getConfigString(key);
     }

@@ -680,14 +680,14 @@ public class PageActivity extends AppCompatActivity {
                 //全屏
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 if (mPageInfo.getSoftInputMode().equals("auto")) {
-                    mPageInfo.setSoftInputMode("pan");
+                    mPageInfo.setSoftInputMode("nothing");
                 }
                 break;
             case "immersion":
                 //沉浸式
                 setImmersionStatusBar();
                 if (mPageInfo.getSoftInputMode().equals("auto")) {
-                    mPageInfo.setSoftInputMode("pan");
+                    mPageInfo.setSoftInputMode("nothing");
                 }
                 break;
             default:
@@ -1329,6 +1329,9 @@ public class PageActivity extends AppCompatActivity {
                 break;
             case "pan":
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                break;
+            case "nothing":
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
                 break;
             case "auto":
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED);

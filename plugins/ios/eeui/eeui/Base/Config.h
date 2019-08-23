@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) clear;
 + (NSString *) getString:(NSString*)key defaultVal:(NSString *)defaultVal;
 + (NSMutableDictionary *) getObject:(NSString*)key;
++ (id) getRawValue:(NSString*)key;
 + (void) getHomeUrl:(void(^)(NSString* path))callback;
 + (NSString *) getHomeParams:(NSString*)key defaultVal:(NSString *)defaultVal;
 + (NSString *) verifyFile:(NSString*)originalUrl;
