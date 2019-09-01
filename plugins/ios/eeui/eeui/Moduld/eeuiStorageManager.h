@@ -15,12 +15,24 @@
 
 + (eeuiStorageManager *)sharedIntstance;
 
+- (void)setCaches:(NSString*)key value:(id)value expired:(NSInteger)expired;
+
+- (id)getCaches:(NSString*)key defaultVal:(id)defaultVal;
+
 - (void)setCachesString:(NSString*)key value:(id)value expired:(NSInteger)expired;
 
-- (id)getCachesString:(NSString*)key defaultVal:(id)defaultVal;
+- (NSString*)getCachesString:(NSString*)key defaultVal:(id)defaultVal;
+
+- (id)getAllCaches;
+
+- (void)clearAllCaches;
 
 - (void)setVariate:(NSString*)key value:(id)value;
 
 - (id)getVariate:(NSString*)key defaultVal:(id)defaultVal;
+
+- (id)getAllVariate;
+
+- (void)clearAllVariate;
 
 @end

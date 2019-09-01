@@ -433,19 +433,45 @@ WX_EXPORT_METHOD(@selector(shareImage:))
 
 #pragma mark 保存数据信息
 
+WX_EXPORT_METHOD_SYNC(@selector(setCaches:value:expired:))
+WX_EXPORT_METHOD_SYNC(@selector(getCaches:defaultVal:))
 WX_EXPORT_METHOD_SYNC(@selector(setCachesString:value:expired:))
 WX_EXPORT_METHOD_SYNC(@selector(getCachesString:defaultVal:))
+WX_EXPORT_METHOD_SYNC(@selector(getAllCaches))
+WX_EXPORT_METHOD_SYNC(@selector(clearAllCaches))
 WX_EXPORT_METHOD_SYNC(@selector(setVariate:value:))
 WX_EXPORT_METHOD_SYNC(@selector(getVariate:defaultVal:))
+WX_EXPORT_METHOD_SYNC(@selector(getAllVariate))
+WX_EXPORT_METHOD_SYNC(@selector(clearAllVariate))
+
+- (void)setCaches:(NSString*)key value:(id)value expired:(NSInteger)expired
+{
+    [[eeuiStorageManager sharedIntstance] setCaches:key value:value expired:expired];
+}
+
+- (id)getCaches:key defaultVal:(id)defaultVal
+{
+    return [[eeuiStorageManager sharedIntstance] getCaches:key defaultVal:defaultVal];
+}
 
 - (void)setCachesString:(NSString*)key value:(id)value expired:(NSInteger)expired
 {
     [[eeuiStorageManager sharedIntstance] setCachesString:key value:value expired:expired];
 }
 
-- (id)getCachesString:key defaultVal:(id)defaultVal
+- (NSString*)getCachesString:key defaultVal:(id)defaultVal
 {
     return [[eeuiStorageManager sharedIntstance] getCachesString:key defaultVal:defaultVal];
+}
+
+- (id)getAllCaches
+{
+    return [[eeuiStorageManager sharedIntstance] getAllCaches];
+}
+
+- (void)clearAllCaches
+{
+    return [[eeuiStorageManager sharedIntstance] clearAllCaches];
 }
 
 - (void)setVariate:(NSString*)key value:(id)value
@@ -456,6 +482,16 @@ WX_EXPORT_METHOD_SYNC(@selector(getVariate:defaultVal:))
 - (id)getVariate:(NSString*)key defaultVal:(id)defaultVal
 {
     return [[eeuiStorageManager sharedIntstance] getVariate:key defaultVal:defaultVal];
+}
+
+- (id)getAllVariate
+{
+    return [[eeuiStorageManager sharedIntstance] getAllVariate];
+}
+
+- (void)clearAllVariate
+{
+    return [[eeuiStorageManager sharedIntstance] clearAllVariate];
 }
 
 #pragma mark 系统信息

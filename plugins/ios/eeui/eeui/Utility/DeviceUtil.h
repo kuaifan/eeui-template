@@ -16,6 +16,7 @@
 #define ScreeScale [[UIScreen mainScreen]scale]
 
 static NSMutableDictionary * mAppboardContent;
+static NSMutableDictionary * mAppboardWifi;
 
 @interface DeviceUtil : NSObject
 
@@ -44,6 +45,10 @@ static NSMutableDictionary * mAppboardContent;
 + (void)setAppboardContent:(NSString *)key content:(NSString *)content;
 
 + (void)clearAppboardContent;
+
++ (void)setAppboardWifi:(NSString *)key content:(NSString *)content;
+
++ (void)clearAppboardWifi;
 
 + (void)downloadScript:(NSString *)url appboard:(NSString *)appboard cache:(NSInteger)cache callback:(void(^)(NSString* path))callback;
 

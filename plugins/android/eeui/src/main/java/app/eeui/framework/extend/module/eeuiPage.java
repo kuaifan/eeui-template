@@ -39,6 +39,8 @@ public class eeuiPage {
 
     public static Map<String, String> mAppboardContent = new HashMap<>();
 
+    public static Map<String, String> mAppboardWifi = new HashMap<>();
+
     public static void setPageBean(String key, PageBean var) {
         mPageBean.put(key, var);
     }
@@ -288,6 +290,12 @@ public class eeuiPage {
         }
         StringBuilder appboard = new StringBuilder();
         for (Map.Entry<String, String> entry : mAppboardContent.entrySet()) {
+            if (!TextUtils.isEmpty(entry.getValue())) {
+                appboard.append(entry.getValue());
+                appboard.append(";");
+            }
+        }
+        for (Map.Entry<String, String> entry : mAppboardWifi.entrySet()) {
             if (!TextUtils.isEmpty(entry.getValue())) {
                 appboard.append(entry.getValue());
                 appboard.append(";");

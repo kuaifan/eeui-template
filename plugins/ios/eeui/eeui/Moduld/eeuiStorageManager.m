@@ -32,7 +32,7 @@
     return self;
 }
 
-- (void)setCachesString:(NSString*)key value:(id)value expired:(NSInteger)expired
+- (void)setCaches:(NSString*)key value:(id)value expired:(NSInteger)expired
 {
     if (key && value) {
         NSInteger time = expired == 0 ? 0 : [[NSDate date] timeIntervalSince1970] + expired;
@@ -51,7 +51,7 @@
     }
 }
 
-- (id)getCachesString:(NSString*)key defaultVal:(id)defaultVal
+- (id)getCaches:(NSString*)key defaultVal:(id)defaultVal
 {
     id data = [[NSUserDefaults standardUserDefaults] objectForKey:kStorageCaches];
     if (data && [data isKindOfClass:[NSDictionary class]]) {
@@ -63,12 +63,63 @@
                 //有效时间内或没有限时
                 id value = [dic objectForKey:key];
                 if (value) {
-                    return [WXConvert NSString:value];
+                    return value;
                 }
             }
         }
     }
-    return [WXConvert NSString:defaultVal];
+    return defaultVal;
+}
+
+- (void)setCachesString:(NSString*)key value:(id)value expired:(NSInteger)expired
+{
+    [self setCaches:key value:value expired:expired];
+}
+
+- (NSString*)getCachesString:(NSString*)key defaultVal:(id)defaultVal
+{
+    return [WXConvert NSString:[self getCaches:key defaultVal:defaultVal]];
+}
+
+- (id)getAllCaches
+{
+    id data = [[NSUserDefaults standardUserDefaults] objectForKey:kStorageCaches];
+    if (data && [data isKindOfClass:[NSDictionary class]]) {
+        NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+        [data enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            NSString *name = [WXConvert NSString:key];
+            if (obj && [obj isKindOfClass:[NSDictionary class]] && name && ![name hasPrefix:@"__system:"]) {    //获取缓存过滤系统缓存
+                NSInteger time = [WXConvert NSInteger:obj[kStorageExpired]];
+                NSDate *temp = [NSDate dateWithTimeIntervalSince1970:time];
+                if ([temp compare:[NSDate date]] == NSOrderedDescending || time == 0) {
+                    [json setValue:obj[name] forKey:name];
+                }
+            }
+        }];
+        return json;
+    }
+    return @{};
+}
+
+- (void)clearAllCaches
+{
+    id data = [[NSUserDefaults standardUserDefaults] objectForKey:kStorageCaches];
+    if (data && [data isKindOfClass:[NSDictionary class]]) {
+        NSMutableDictionary *json = [[NSMutableDictionary alloc] init];
+        [data enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            NSString *name = [WXConvert NSString:key];
+            if (obj && [obj isKindOfClass:[NSDictionary class]] && name && [name hasPrefix:@"__system:"]) {     //清空缓存保留系统缓存
+                NSInteger time = [WXConvert NSInteger:obj[kStorageExpired]];
+                NSDate *temp = [NSDate dateWithTimeIntervalSince1970:time];
+                if ([temp compare:[NSDate date]] == NSOrderedDescending || time == 0) {
+                    [json setValue:obj[name] forKey:name];
+                }
+            }
+        }];
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults setObject:json forKey:kStorageCaches];
+        [userDefaults synchronize];
+    }
 }
 
 - (void)setVariate:(NSString*)key value:(id)value
@@ -98,5 +149,18 @@
     return defaultVal;
 }
 
+- (id)getAllVariate
+{
+    id data = [[eeuiStorageManager sharedIntstance].variateDic objectForKey:kStorageVariate];
+    if (data && [data isKindOfClass:[NSDictionary class]]) {
+        return data;
+    }
+    return @{};
+}
+
+- (void)clearAllVariate
+{
+    [[eeuiStorageManager sharedIntstance].variateDic setObject:@{} forKey:kStorageVariate];
+}
 
 @end

@@ -1,5 +1,6 @@
 package app.eeui.framework.ui.module;
 
+import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.annotation.JSMethod;
 import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.common.WXModule;
@@ -405,6 +406,27 @@ public class WeexModule extends WXModule {
      * @param expired
      */
     @JSMethod(uiThread = false)
+    public void setCaches(String key, Object value, Long expired) {
+        myApp().setCaches(mWXSDKInstance.getContext(), key, value, expired);
+    }
+
+    /**
+     * 获取缓存信息
+     * @param key
+     * @param defaultVal
+     */
+    @JSMethod(uiThread = false)
+    public Object getCaches(String key, Object defaultVal) {
+        return myApp().getCaches(mWXSDKInstance.getContext(), key, defaultVal);
+    }
+
+    /**
+     * 保存缓存信息
+     * @param key
+     * @param value
+     * @param expired
+     */
+    @JSMethod(uiThread = false)
     public void setCachesString(String key, String value, Long expired) {
         myApp().setCachesString(mWXSDKInstance.getContext(), key, value, expired);
     }
@@ -420,13 +442,29 @@ public class WeexModule extends WXModule {
     }
 
     /**
+     * 获取全部缓存信息
+     */
+    @JSMethod(uiThread = false)
+    public JSONObject getAllCaches() {
+        return myApp().getAllCaches(mWXSDKInstance.getContext());
+    }
+
+    /**
+     * 清除缓存信息
+     */
+    @JSMethod(uiThread = false)
+    public void clearAllCaches() {
+        myApp().clearAllCaches(mWXSDKInstance.getContext());
+    }
+
+    /**
      * 设置全局变量
      * @param key
      * @param value
      */
     @JSMethod(uiThread = false)
-    public void setVariate(String key, String value) {
-        myApp().setVariate(mWXSDKInstance.getContext(), key, value);
+    public void setVariate(String key, Object value) {
+        myApp().setVariate(key, value);
     }
 
     /**
@@ -435,8 +473,24 @@ public class WeexModule extends WXModule {
      * @param defaultVal
      */
     @JSMethod(uiThread = false)
-    public String getVariate(String key, String defaultVal) {
-        return myApp().getVariate(mWXSDKInstance.getContext(), key, defaultVal);
+    public Object getVariate(String key, Object defaultVal) {
+        return myApp().getVariate(key, defaultVal);
+    }
+
+    /**
+     * 获取全部变量
+     */
+    @JSMethod(uiThread = false)
+    public JSONObject getAllVariate() {
+        return myApp().getAllVariate();
+    }
+
+    /**
+     * 清除全部变量
+     */
+    @JSMethod(uiThread = false)
+    public void clearAllVariate() {
+        myApp().clearAllVariate();
     }
 
     /****************************************************************************************/

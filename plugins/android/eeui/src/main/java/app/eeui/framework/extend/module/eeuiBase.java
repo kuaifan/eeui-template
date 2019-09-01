@@ -317,7 +317,7 @@ public class eeuiBase {
             JSONObject json = getCustomConfig();
             json.put(key, value);
             json.put("__system:eeui:customTime", eeuiCommon.timeStamp());
-            eeuiCommon.setCachesString(eeui.getApplication(), "main", "__system:eeui:customConfig", json.toJSONString());
+            eeuiCommon.setCachesString(eeui.getApplication(), "__system:eeui:customConfig", json.toJSONString(), 0);
         }
 
         /**
@@ -325,14 +325,14 @@ public class eeuiBase {
          * @return
          */
         public static JSONObject getCustomConfig() {
-            return eeuiJson.parseObject(eeuiCommon.getCachesString(eeui.getApplication(), "main", "__system:eeui:customConfig", "{}"));
+            return eeuiJson.parseObject(eeuiCommon.getCachesString(eeui.getApplication(), "__system:eeui:customConfig", "{}"));
         }
 
         /**
          * 清空自定义配置
          */
         public static void clearCustomConfig() {
-            eeuiCommon.setCachesString(eeui.getApplication(), "main", "__system:eeui:customConfig", "{}");
+            eeuiCommon.setCachesString(eeui.getApplication(), "__system:eeui:customConfig", "{}", 0);
         }
 
         /**
@@ -379,12 +379,12 @@ public class eeuiBase {
          * @return
          */
         public static int welcome(Activity activity, OnWelcomeListener onWelcomeListener) {
-            String welcome_image = eeuiCommon.getCachesString(eeui.getApplication(), "main", "welcome_image");
+            String welcome_image = eeuiCommon.getCachesString(eeui.getApplication(), "__system:welcome_image", "");
             if (welcome_image.isEmpty()) {
                 return 0;
             }
-            JSONObject appInfo = eeuiJson.parseObject(eeuiCommon.getCachesString(eeui.getApplication(), "main", "appInfo", "{}"));
-            int welcome_wait = eeuiParse.parseInt(eeuiCommon.getCachesString(eeui.getApplication(), "main", "welcome_wait")); welcome_wait = welcome_wait > 100 ? welcome_wait : 2000;
+            JSONObject appInfo = eeuiJson.parseObject(eeuiCommon.getCachesString(eeui.getApplication(), "__system:appInfo", "{}"));
+            int welcome_wait = eeuiParse.parseInt(eeuiCommon.getCachesString(eeui.getApplication(), "__system:welcome_wait", "0")); welcome_wait = welcome_wait > 100 ? welcome_wait : 2000;
             boolean welcome_skip = eeuiJson.getBoolean(appInfo, "welcome_skip");
             String welcome_jump = eeuiJson.getString(appInfo, "welcome_jump");
             long welcome_limit_s = eeuiJson.getLong(appInfo, "welcome_limit_s");
@@ -467,7 +467,7 @@ public class eeuiBase {
                     JSONObject json = eeuiJson.parseObject(resData);
                     if (json.getIntValue("ret") == 1) {
                         JSONObject retData = json.getJSONObject("data");
-                        eeuiCommon.setCachesString(eeui.getApplication(), "main", "appInfo", retData.toString());
+                        eeuiCommon.setCachesString(eeui.getApplication(), "__system:appInfo", retData.toString(), 0);
                         saveWelcomeImage(retData.getString("welcome_image"), retData.getIntValue("welcome_wait"));
                         checkUpdateLists(retData.getJSONArray("uplists"), 0, false);
                     }
@@ -496,16 +496,16 @@ public class eeuiBase {
                     try {
                         Bitmap resource = Glide.with(eeui.getApplication()).asBitmap().load(url).apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)).submit().get();
                         if (resource != null) {
-                            eeuiCommon.saveImageToGallery(null, resource, "welcome_image", null, path -> eeuiCommon.setCachesString(eeui.getApplication(), "main", "welcome_image", path));
+                            eeuiCommon.saveImageToGallery(null, resource, "welcome_image", null, path -> eeuiCommon.setCachesString(eeui.getApplication(), "__system:welcome_image", path, 0));
                         }
                     } catch (Exception ignored) {
-                        eeuiCommon.removeCachesString(eeui.getApplication(), "main", "welcome_image");
+                        eeuiCommon.setCachesString(eeui.getApplication(), "__system:welcome_image", null, 0);
                     }
                 }).start();
             }else{
-                eeuiCommon.removeCachesString(eeui.getApplication(), "main", "welcome_image");
+                eeuiCommon.setCachesString(eeui.getApplication(), "__system:welcome_image", null, 0);
             }
-            eeuiCommon.setCachesString(eeui.getApplication(), "main", "welcome_wait", String.valueOf(wait));
+            eeuiCommon.setCachesString(eeui.getApplication(), "__system:welcome_wait", String.valueOf(wait), 0);
         }
 
         /**

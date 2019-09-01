@@ -84,12 +84,12 @@ WX_EXPORT_METHOD(@selector(goForward:))
         originalUserAgent = _customUserAgent;
     }else{
         eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
-        originalUserAgent = [storage getCachesString:@"__::originalUserAgent" defaultVal:@""];
+        originalUserAgent = [storage getCachesString:@"__system:originalUserAgent" defaultVal:@""];
         if (![originalUserAgent containsString:@";ios_kuaifan_eeui/"]) {
             UIWebView *webView = [[UIWebView alloc] init];
             NSString *versionName = (NSString*)[[[NSBundle mainBundle] infoDictionary]  objectForKey:@"CFBundleShortVersionString"];
             originalUserAgent = [NSString stringWithFormat:@"%@;ios_kuaifan_eeui/%@", [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"], versionName];
-            [storage setCachesString:@"__::originalUserAgent" value:originalUserAgent expired:0];
+            [storage setCachesString:@"__system:originalUserAgent" value:originalUserAgent expired:0];
             webView =  nil;
         }
         if (_userAgent.length > 0) {

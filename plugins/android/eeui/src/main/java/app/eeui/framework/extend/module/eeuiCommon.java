@@ -2,13 +2,11 @@ package app.eeui.framework.extend.module;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -19,8 +17,6 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -29,13 +25,10 @@ import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.ui.action.BasicComponentData;
 import com.taobao.weex.utils.WXFileUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -66,117 +59,126 @@ import app.eeui.framework.ui.eeui;
 
 public class eeuiCommon {
 
-    private static Map<String, Object> variate = new HashMap<>();
+    private static JSONObject variate = new JSONObject();
 
-    /**
-     * 保存缓存信息
-     *
-     * @param context
-     * @param index
-     * @param key
-     * @param data
-     * @return
-     */
-    public static JSONObject setCaches(Context context, String index, String key, String data) {
+    private static void setCachesJson(Context context, String index, String key, JSONObject data) {
+        if (data == null) {
+            data = new JSONObject();
+        }
         SharedPreferences sharedPreferences = context.getSharedPreferences(index, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(key, data);
+        editor.putString(key, data.toJSONString());
         editor.apply();
-        return eeuiJson.parseObject(data);
     }
 
-    /**
-     * 获取缓存信息
-     *
-     * @param context
-     * @param index
-     * @param key
-     * @return
-     */
-    public static JSONObject getCaches(Context context, String index, String key) {
+    private static JSONObject getCachesJson(Context context, String index, String key) {
         try {
             SharedPreferences sharedPreferences = context.getSharedPreferences(index, Context.MODE_PRIVATE);
             String data = sharedPreferences.getString(key, "");
             return eeuiJson.parseObject(data);
         }catch (NullPointerException e) {
-            return eeuiJson.parseObject(null);
+            return new JSONObject();
         }
     }
 
     /**
      * 保存缓存信息
-     *
      * @param context
-     * @param index
      * @param key
      * @param data
-     * @return
+     * @param expired
      */
-    public static String setCachesString(Context context, String index, String key, String data) {
-        return setCachesString(context, index, key, data, 0);
-    }
-
-    /**
-     * 删除缓存信息
-     *
-     * @param context
-     * @param index
-     * @param key
-     * @return
-     */
-    public static String removeCachesString(Context context, String index, String key) {
-        return setCachesString(context, index, key, "", 0);
-    }
-
-    /**
-     * 保存缓存信息
-     *
-     * @param context
-     * @param index
-     * @param key
-     * @param data
-     * @return
-     */
-    public static String setCachesString(Context context, String index, String key, String data, long expired) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(index, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(key, data);
-        editor.putLong(key + "::expired", expired > 0 ? (expired + timeStamp()) : expired);
-        editor.apply();
-        return data;
+    public static void setCaches(Context context, String key, Object data, long expired) {
+        JSONObject json = new JSONObject();
+        json.put(key, data);
+        json.put("expired", expired > 0 ? (expired + timeStamp()) : expired);
+        //
+        JSONObject cachesJson = getCachesJson(context, "eeuiCaches", "eeuiCaches");
+        cachesJson.put(key, json);
+        setCachesJson(context, "eeuiCaches", "eeuiCaches", cachesJson);
     }
 
     /**
      * 获取缓存信息
-     *
      * @param context
-     * @param index
      * @param key
+     * @param defaultVal
      * @return
      */
-    public static String getCachesString(Context context, String index, String key, String defaultVal) {
-        try {
-            SharedPreferences sharedPreferences = context.getSharedPreferences(index, Context.MODE_PRIVATE);
-            long expired = sharedPreferences.getLong(key + "::expired", 0);
-            if (expired > 0 && expired < timeStamp()) {
-                return defaultVal;
-            }
-            return sharedPreferences.getString(key, defaultVal);
-        }catch (NullPointerException e) {
+    public static Object getCaches(Context context, String key, Object defaultVal) {
+        JSONObject cachesJson = getCachesJson(context, "eeuiCaches", "eeuiCaches");
+        JSONObject data  = cachesJson.getJSONObject(key);
+        if (data == null) {
             return defaultVal;
         }
+        long expired = data.getLongValue("expired");
+        if (expired > 0 && expired < timeStamp()) {
+            return defaultVal;
+        }
+        return data.get(key);
+    }
+
+    /**
+     * 保存缓存信息
+     * @param context
+     * @param key
+     * @param data
+     * @param expired
+     */
+    public static void setCachesString(Context context, String key, String data, long expired) {
+        setCaches(context, key, data, expired);
     }
 
     /**
      * 获取缓存信息
-     *
      * @param context
-     * @param index
      * @param key
+     * @param defaultVal
      * @return
      */
-    public static String getCachesString(Context context, String index, String key) {
-        return getCachesString(context, index, key, "");
+    public static String getCachesString(Context context, String key, String defaultVal) {
+        return eeuiParse.parseStr(getCaches(context, key, defaultVal));
+    }
+
+    /**
+     * 获取全部缓存
+     * @param context
+     * @return
+     */
+    public static JSONObject getAllCaches(Context context) {
+        JSONObject json = new JSONObject();
+        JSONObject data = getCachesJson(context, "eeuiCaches", "eeuiCaches");
+        for(Map.Entry<String, Object> entry : data.entrySet()){
+            String key = entry.getKey();
+            if (entry.getValue() instanceof JSONObject && !key.startsWith("__system:")) {
+                JSONObject obj = (JSONObject) entry.getValue();
+                long expired = obj.getLongValue("expired");
+                if (expired == 0 || expired > timeStamp()) {
+                    json.put(key, obj.get(key));
+                }
+            }
+        }
+        return json;
+    }
+
+    /**
+     * 清除全部缓存
+     * @param context
+     */
+    public static void clearAllCaches(Context context) {
+        JSONObject json = new JSONObject();
+        JSONObject data = getCachesJson(context, "eeuiCaches", "eeuiCaches");
+        for(Map.Entry<String, Object> entry : data.entrySet()){
+            String key = entry.getKey();
+            if (entry.getValue() instanceof JSONObject && key.startsWith("__system:")) {
+                JSONObject obj = (JSONObject) entry.getValue();
+                long expired = obj.getLongValue("expired");
+                if (expired == 0 || expired > timeStamp()) {
+                    json.put(key, obj.get(key));
+                }
+            }
+        }
+        setCachesJson(context, "eeuiCaches", "eeuiCaches", json);
     }
 
     /**
@@ -202,21 +204,49 @@ public class eeuiCommon {
             return null;
         }
     }
-
-    public static String getVariateStr(String key) {
-        return eeuiParse.parseStr(getVariate(key), "");
+    public static Object getVariate(String key, Object defaultVal) {
+        Object value = getVariate(key);
+        if (value == null) {
+            return defaultVal;
+        }
+        return value;
     }
 
-    public static String getVariateStr(String key, String defaultVal) {
-        return eeuiParse.parseStr(getVariate(key), defaultVal);
+    /**
+     * 获取全部变量
+     * @return
+     */
+    public static JSONObject getAllVariate() {
+        JSONObject json = new JSONObject();
+        for(Map.Entry<String, Object> entry : variate.entrySet()){
+            String key = entry.getKey();
+            if (!key.startsWith("__system:")) {
+                json.put(key, entry.getValue());
+            }
+        }
+        return json;
+    }
+
+    /**
+     * 清除全部变量
+     */
+    public static void clearAllVariate() {
+        JSONObject json = new JSONObject();
+        for(Map.Entry<String, Object> entry : variate.entrySet()){
+            String key = entry.getKey();
+            if (key.startsWith("__system:")) {
+                json.put(key, entry.getValue());
+            }
+        }
+        variate = json;
+    }
+
+    public static String getVariateStr(String key) {
+        return eeuiParse.parseStr(getVariate(key, ""));
     }
 
     public static int getVariateInt(String key) {
-        return eeuiParse.parseInt(getVariate(key), 0);
-    }
-
-    public static long getVariateLong(String key) {
-        return eeuiParse.parseLong(getVariate(key), 0);
+        return eeuiParse.parseInt(getVariate(key, 0));
     }
 
     /**

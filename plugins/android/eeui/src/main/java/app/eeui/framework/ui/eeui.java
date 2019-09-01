@@ -909,10 +909,10 @@ public class eeui {
      * 获取状态栏高度（屏幕像素）
      */
     public int getStatusBarHeight(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getStatusBarHeight");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getStatusBarHeight");
         if (var == null) {
             var = eeuiCommon.getStatusBarHeight(context);
-            eeuiCommon.setVariate("__eeuiModule::getStatusBarHeight", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getStatusBarHeight", var);
         }
         return eeuiParse.parseInt(var);
     }
@@ -921,10 +921,10 @@ public class eeui {
      * 获取状态栏高度（weexPX单位）
      */
     public int getStatusBarHeightPx(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getStatusBarHeightPx");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getStatusBarHeightPx");
         if (var == null) {
             var = eeuiScreenUtils.weexDp2px(null, eeuiCommon.getStatusBarHeight(context));
-            eeuiCommon.setVariate("__eeuiModule::getStatusBarHeightPx", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getStatusBarHeightPx", var);
         }
         return eeuiParse.parseInt(var);
     }
@@ -947,10 +947,10 @@ public class eeui {
      * 获取eeui版本号
      */
     public int getVersion(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getVersion");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getVersion");
         if (var == null) {
             var = BuildConfig.VERSION_CODE;
-            eeuiCommon.setVariate("__eeuiModule::getVersion", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getVersion", var);
         }
         return eeuiParse.parseInt(var);
     }
@@ -959,10 +959,10 @@ public class eeui {
      * 获取eeui版本号名称
      */
     public String getVersionName(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getVersionName");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getVersionName");
         if (var == null) {
             var = BuildConfig.VERSION_NAME;
-            eeuiCommon.setVariate("__eeuiModule::getVersionName", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getVersionName", var);
         }
         return eeuiParse.parseStr(var);
     }
@@ -971,10 +971,10 @@ public class eeui {
      * 获取本地软件版本号
      */
     public int getLocalVersion(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getLocalVersion");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getLocalVersion");
         if (var == null) {
             var = eeuiCommon.getLocalVersion(context);
-            eeuiCommon.setVariate("__eeuiModule::getLocalVersion", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getLocalVersion", var);
         }
         return eeuiParse.parseInt(var);
     }
@@ -983,10 +983,10 @@ public class eeui {
      * 获取本地软件版本号名称
      */
     public String getLocalVersionName(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getLocalVersionName");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getLocalVersionName");
         if (var == null) {
             var = eeuiCommon.getLocalVersionName(context);
-            eeuiCommon.setVariate("__eeuiModule::getLocalVersionName", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getLocalVersionName", var);
         }
         return eeuiParse.parseStr(var);
     }
@@ -1010,11 +1010,11 @@ public class eeui {
      * 获取手机的IMEI
      */
     public String getImei(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getImei");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getImei");
         if (var == null) {
             var = eeuiCommon.getImei(context);
             if (!TextUtils.isEmpty(eeuiParse.parseStr(var))) {
-                eeuiCommon.setVariate("__eeuiModule::getImei", var);
+                eeuiCommon.setVariate("__system:eeuiModule:getImei", var);
             }
         }
         return eeuiParse.parseStr(var);
@@ -1031,10 +1031,10 @@ public class eeui {
      * 获取设备系统版本号
      */
     public int getSDKVersionCode(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getSDKVersionCode");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getSDKVersionCode");
         if (var == null) {
             var = DeviceUtils.getSDKVersionCode();
-            eeuiCommon.setVariate("__eeuiModule::getSDKVersionCode", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getSDKVersionCode", var);
         }
         return eeuiParse.parseInt(var);
     }
@@ -1043,10 +1043,10 @@ public class eeui {
      * 获取设备系统版本名称
      */
     public String getSDKVersionName(Context context) {
-        Object var = eeuiCommon.getVariate("__eeuiModule::getSDKVersionName");
+        Object var = eeuiCommon.getVariate("__system:eeuiModule:getSDKVersionName");
         if (var == null) {
             var = DeviceUtils.getSDKVersionName();
-            eeuiCommon.setVariate("__eeuiModule::getSDKVersionName", var);
+            eeuiCommon.setVariate("__system:eeuiModule:getSDKVersionName", var);
         }
         return eeuiParse.parseStr(var);
     }
@@ -1068,11 +1068,36 @@ public class eeui {
      * @param value
      * @param expired
      */
+    public void setCaches(Context context, String key, Object value, Long expired) {
+        if (key == null || value == null) {
+            return;
+        }
+        eeuiCommon.setCaches(context, key, value, eeuiParse.parseLong(expired));
+    }
+
+    /**
+     * 获取缓存信息
+     * @param key
+     * @param defaultVal
+     */
+    public Object getCaches(Context context, String key, Object defaultVal) {
+        if (key == null) {
+            return defaultVal;
+        }
+        return eeuiCommon.getCaches(context, key, defaultVal);
+    }
+
+    /**
+     * 保存缓存信息
+     * @param key
+     * @param value
+     * @param expired
+     */
     public void setCachesString(Context context, String key, String value, Long expired) {
         if (key == null || value == null) {
             return;
         }
-        eeuiCommon.setCachesString(context, "eeuiCaches", key, value, eeuiParse.parseLong(expired));
+        eeuiCommon.setCachesString(context, key, value, eeuiParse.parseLong(expired));
     }
 
     /**
@@ -1084,7 +1109,21 @@ public class eeui {
         if (key == null) {
             return defaultVal;
         }
-        return eeuiCommon.getCachesString(context, "eeuiCaches", key, defaultVal);
+        return eeuiCommon.getCachesString(context, key, defaultVal);
+    }
+
+    /**
+     * 获取全部缓存信息
+     */
+    public JSONObject getAllCaches(Context context) {
+        return eeuiCommon.getAllCaches(context);
+    }
+
+    /**
+     * 清除缓存信息
+     */
+    public void clearAllCaches(Context context) {
+        eeuiCommon.clearAllCaches(context);
     }
 
     /**
@@ -1092,7 +1131,7 @@ public class eeui {
      * @param key
      * @param value
      */
-    public void setVariate(Context context, String key, String value) {
+    public void setVariate(String key, Object value) {
         if (key == null || value == null) {
             return;
         }
@@ -1104,11 +1143,25 @@ public class eeui {
      * @param key
      * @param defaultVal
      */
-    public String getVariate(Context context, String key, String defaultVal) {
+    public Object getVariate(String key, Object defaultVal) {
         if (key == null) {
             return defaultVal;
         }
-        return eeuiCommon.getVariateStr(key, defaultVal);
+        return eeuiCommon.getVariate(key, defaultVal);
+    }
+
+    /**
+     * 获取全部变量
+     */
+    public JSONObject getAllVariate() {
+        return eeuiCommon.getAllVariate();
+    }
+
+    /**
+     * 清除全部变量
+     */
+    public void clearAllVariate() {
+        eeuiCommon.clearAllVariate();
     }
 
     /****************************************************************************************/

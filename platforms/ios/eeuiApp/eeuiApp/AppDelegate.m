@@ -507,12 +507,12 @@ NSDictionary *mLaunchOptions;
     }
     NSLog(@"[socket] onMessage: %@:%@", type, value);
     if ([type isEqualToString:@"HOMEPAGE"]) {
-        [DeviceUtil clearAppboardContent];
+        [DeviceUtil clearAppboardWifi];
     }
     NSArray *appboards = data[@"appboards"];
     if ([appboards count] > 0) {
         for (NSDictionary *appboardItem in appboards) {
-            [DeviceUtil setAppboardContent:appboardItem[@"path"] content:appboardItem[@"content"]];
+            [DeviceUtil setAppboardWifi:appboardItem[@"path"] content:appboardItem[@"content"]];
         }
     }
     if ([type isEqualToString:@"HOMEPAGE"]) {

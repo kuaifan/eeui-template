@@ -243,6 +243,9 @@
     if (mAppboardContent == nil) {
         mAppboardContent = [NSMutableDictionary dictionary];
     }
+    if (mAppboardWifi == nil) {
+        mAppboardWifi = [NSMutableDictionary dictionary];
+    }
     NSString *path = [Config getResourcePath:@"bundlejs/eeui/appboard"];
     NSFileManager * fileManger = [NSFileManager defaultManager];
     BOOL isDir = NO;
@@ -275,6 +278,12 @@
             appboard = [NSString stringWithFormat:@"%@%@;", appboard, value];
         }
     }
+    for (NSString *key in mAppboardWifi) {
+        NSString *value = mAppboardWifi[key];
+        if (value.length > 0) {
+            appboard = [NSString stringWithFormat:@"%@%@;", appboard, value];
+        }
+    }
     if (appboard.length > 0) {
         if (![appboard hasPrefix:@"// { \"framework\": \"Vue\"}"]) {
             appboard = [NSString stringWithFormat:@"%@%@", @"// { \"framework\": \"Vue\"}\nif(typeof app==\"undefined\"){app=weex}\n", appboard];
@@ -296,6 +305,21 @@
 + (void)clearAppboardContent
 {
     mAppboardContent = [NSMutableDictionary dictionary];
+}
+
+//设置Appboard内容 (WIFI同步)
++ (void)setAppboardWifi:(NSString *)key content:(NSString *)content
+{
+    if (mAppboardWifi == nil) {
+        mAppboardWifi = [NSMutableDictionary dictionary];
+    }
+    [mAppboardWifi setValue:content forKey:key];
+}
+
+//清空Appboard内容 (WIFI同步)
++ (void)clearAppboardWifi
+{
+    mAppboardWifi = [NSMutableDictionary dictionary];
 }
 
 //下载文件

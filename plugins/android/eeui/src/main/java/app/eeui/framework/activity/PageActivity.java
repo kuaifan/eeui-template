@@ -515,7 +515,7 @@ public class PageActivity extends AppCompatActivity {
         }
         if (BuildConfig.DEBUG) {
             if (eeui.getActivityList().size() == 1) {
-                eeuiCommon.setVariate("__deBugSocket:Init", 0);
+                eeuiCommon.setVariate("__system:deBugSocket:Init", 0);
                 if (PageActivity.hideDev) {
                     PageActivity.hideDev = false;
                 }
@@ -1731,7 +1731,7 @@ public class PageActivity extends AppCompatActivity {
         deBugButton.setTextColor(Color.WHITE);
         deBugButton.setTextSize(14);
         deBugButton.setGravity(Gravity.CENTER);
-        if (eeuiCommon.getVariateInt("__deBugSocket:Status") == 1) {
+        if (eeuiCommon.getVariateInt("__system:deBugSocket:Status") == 1) {
             deBugButton.setBackgroundResource(R.drawable.debug_button_success);
         }else{
             deBugButton.setBackgroundResource(R.drawable.debug_button_connect);
@@ -1742,14 +1742,14 @@ public class PageActivity extends AppCompatActivity {
         deBugButton.setOnClickListener(deBugClickListener);
         FloatDragView.Builder mFloatDragView = new FloatDragView.Builder();
         mFloatDragView.setActivity(this)
-                .setDefaultLeft(eeuiParse.parseInt(eeuiCommon.getVariate("__pageActivity::FloatDrag:Left"), ScreenUtils.getScreenWidth() - deBugButtonSize))
-                .setDefaultTop(eeuiParse.parseInt(eeuiCommon.getVariate("__pageActivity::FloatDrag:Top"), (ScreenUtils.getScreenHeight() - deBugButtonSize) / 2))
+                .setDefaultLeft(eeuiParse.parseInt(eeuiCommon.getVariate("__system:pageActivity:FloatDrag:Left"), ScreenUtils.getScreenWidth() - deBugButtonSize))
+                .setDefaultTop(eeuiParse.parseInt(eeuiCommon.getVariate("__system:pageActivity:FloatDrag:Top"), (ScreenUtils.getScreenHeight() - deBugButtonSize) / 2))
                 .setNeedNearEdge(true)
                 .setSize(deBugButtonSize)
                 .setView(deBugButton)
                 .setUpdateListener((left, top) -> {
-                    eeuiCommon.setVariate("__pageActivity::FloatDrag:Left", left);
-                    eeuiCommon.setVariate("__pageActivity::FloatDrag:Top", top);
+                    eeuiCommon.setVariate("__system:pageActivity:FloatDrag:Left", left);
+                    eeuiCommon.setVariate("__system:pageActivity:FloatDrag:Top", top);
                 })
                 .build();
     }
@@ -1764,17 +1764,17 @@ public class PageActivity extends AppCompatActivity {
         }
         if (status == 1) {
             deBugButton.setBackgroundResource(R.drawable.debug_button_success);
-            eeuiCommon.setVariate("__deBugSocket:Status", 1);
+            eeuiCommon.setVariate("__system:deBugSocket:Status", 1);
         }else if (status == 2) {
             deBugButton.setBackgroundResource(R.drawable.debug_button_connect);
-            eeuiCommon.setVariate("__deBugSocket:Status", 2);
+            eeuiCommon.setVariate("__system:deBugSocket:Status", 2);
         }else if (status == 3) {
             deBugButton.setVisibility(View.GONE);
             return;
         }
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(deBugButtonSize, deBugButtonSize);
-        int left = eeuiParse.parseInt(eeuiCommon.getVariate("__pageActivity::FloatDrag:Left"), ScreenUtils.getScreenWidth() - deBugButtonSize);
-        int top = eeuiParse.parseInt(eeuiCommon.getVariate("__pageActivity::FloatDrag:Top"), (ScreenUtils.getScreenHeight() - deBugButtonSize) / 2);
+        int left = eeuiParse.parseInt(eeuiCommon.getVariate("__system:pageActivity:FloatDrag:Left"), ScreenUtils.getScreenWidth() - deBugButtonSize);
+        int top = eeuiParse.parseInt(eeuiCommon.getVariate("__system:pageActivity:FloatDrag:Top"), (ScreenUtils.getScreenHeight() - deBugButtonSize) / 2);
         layoutParams.setMargins(left, top, 0, 0);
         deBugButton.setLayoutParams(layoutParams);
     }
@@ -1786,12 +1786,12 @@ public class PageActivity extends AppCompatActivity {
         if (deBugButton == null) {
             return;
         }
-        if (eeuiCommon.getVariateInt("__deBugSocket:Init") == 0) {
-            eeuiCommon.setVariate("__deBugSocket:Init", 1);
+        if (eeuiCommon.getVariateInt("__system:deBugSocket:Init") == 0) {
+            eeuiCommon.setVariate("__system:deBugSocket:Init", 1);
             //
             JSONObject jsonData = eeuiJson.parseObject(eeuiCommon.getAssetsFile(this, "file://assets/eeui/config.json"));
-            eeuiCommon.setVariate("__deBugSocket:Host", eeuiJson.getString(jsonData, "socketHost"));
-            eeuiCommon.setVariate("__deBugSocket:Port", eeuiJson.getString(jsonData, "socketPort"));
+            eeuiCommon.setVariate("__system:deBugSocket:Host", eeuiJson.getString(jsonData, "socketHost"));
+            eeuiCommon.setVariate("__system:deBugSocket:Port", eeuiJson.getString(jsonData, "socketPort"));
             if (PermissionUtils.isShowApply || PermissionUtils.isShowRationale || PermissionUtils.isShowOpenAppSetting) {
                 if (deBugSocketTimer != null) {
                     deBugSocketTimer.cancel();
@@ -1828,8 +1828,8 @@ public class PageActivity extends AppCompatActivity {
             deBugSocketWsManager.stopConnect();
             deBugSocketWsManager = null;
         }
-        String host = eeuiCommon.getVariateStr("__deBugSocket:Host");
-        String port = eeuiCommon.getVariateStr("__deBugSocket:Port");
+        String host = eeuiCommon.getVariateStr("__system:deBugSocket:Host");
+        String port = eeuiCommon.getVariateStr("__system:deBugSocket:Port");
         if (host.length() == 0 || port.length() == 0) {
             return;
         }
@@ -1849,7 +1849,7 @@ public class PageActivity extends AppCompatActivity {
      */
     private View.OnClickListener deBugClickListener = v -> {
         List<ActionItem> mActionItem = new ArrayList<>();
-        mActionItem.add(new ActionItem(1, eeuiCommon.getVariateInt("__deBugSocket:Status") == 1 ? "WiFi真机同步 [已连接]" : "WiFi真机同步"));
+        mActionItem.add(new ActionItem(1, eeuiCommon.getVariateInt("__system:deBugSocket:Status") == 1 ? "WiFi真机同步 [已连接]" : "WiFi真机同步"));
         mActionItem.add(new ActionItem(2, deBugKeepScreen.contentEquals("ON") ? "屏幕常亮 [已开启]" : "屏幕常亮"));
         mActionItem.add(new ActionItem(3, "页面信息"));
         mActionItem.add(new ActionItem(4, "扫一扫"));
@@ -1875,8 +1875,8 @@ public class PageActivity extends AppCompatActivity {
                     public void onActionButtonClick(ActionSheet actionSheet, int index) {
                         switch (index) {
                             case 0: {
-                                String host = eeuiCommon.getVariateStr("__deBugSocket:Host");
-                                String port = eeuiCommon.getVariateStr("__deBugSocket:Port");
+                                String host = eeuiCommon.getVariateStr("__system:deBugSocket:Host");
+                                String port = eeuiCommon.getVariateStr("__system:deBugSocket:Port");
                                 String inputObject = "{title:\"WiFi真机同步配置\",message:\"配置成功后，可实现真机同步实时预览\",buttons:[\"取消\",\"连接\"],inputs:[{type:'text',placeholder:'请输入IP地址',value:'" + host + "',autoFocus:true},{type:'number',placeholder:'请输入端口号',value:'" + port + "'}]}";
                                 eeuiAlertDialog.input(PageActivity.this, eeuiJson.parseObject(inputObject), new JSCallback() {
                                     @Override
@@ -1884,8 +1884,8 @@ public class PageActivity extends AppCompatActivity {
                                         Map<String, Object> retData = eeuiMap.objectToMap(data);
                                         if (eeuiParse.parseStr(retData.get("status")).equals("click") && eeuiParse.parseStr(retData.get("title")).equals("连接")) {
                                             JSONArray dData = eeuiJson.parseArray(retData.get("data"));
-                                            eeuiCommon.setVariate("__deBugSocket:Host", dData.getString(0));
-                                            eeuiCommon.setVariate("__deBugSocket:Port", dData.getString(1));
+                                            eeuiCommon.setVariate("__system:deBugSocket:Host", dData.getString(0));
+                                            eeuiCommon.setVariate("__system:deBugSocket:Port", dData.getString(1));
                                             List<Activity> activityList = eeui.getActivityList();
                                             Activity activity = activityList.get(0);
                                             if (activity instanceof PageActivity) {
@@ -1944,8 +1944,8 @@ public class PageActivity extends AppCompatActivity {
                                                     eeuiPage.openWin(PageActivity.this, mPageBean);
                                                     //
                                                     if (host.length() > 0 && port.length() > 0) {
-                                                        eeuiCommon.setVariate("__deBugSocket:Host", host);
-                                                        eeuiCommon.setVariate("__deBugSocket:Port", port);
+                                                        eeuiCommon.setVariate("__system:deBugSocket:Host", host);
+                                                        eeuiCommon.setVariate("__system:deBugSocket:Port", port);
                                                         List<Activity> activityList = eeui.getActivityList();
                                                         for (int i = activityList.size() - 1; i >= 0; --i) {
                                                             Activity activity = activityList.get(i);
@@ -2009,8 +2009,8 @@ public class PageActivity extends AppCompatActivity {
                                     public void invoke(Object data) {
                                         Map<String, Object> retData = eeuiMap.objectToMap(data);
                                         if (eeuiParse.parseStr(retData.get("status")).equals("click") && eeuiParse.parseStr(retData.get("title")).equals("确定")) {
-                                            eeuiCommon.setVariate("__deBugSocket:Init", 0);
-                                            eeuiCommon.setVariate("__deBugSocket:Status", 0);
+                                            eeuiCommon.setVariate("__system:deBugSocket:Init", 0);
+                                            eeuiCommon.setVariate("__system:deBugSocket:Status", 0);
                                             eeuiPage.mAppboardContent = new HashMap<>();
                                             eeuiBase.cloud.reboot();
                                         }
@@ -2024,7 +2024,7 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 8: {
-                                eeuiCommon.setVariate("__deBugSocket:Init", 0);
+                                eeuiCommon.setVariate("__system:deBugSocket:Init", 0);
                                 eeuiBase.cloud.clearUpdate();
                                 break;
                             }
@@ -2097,8 +2097,8 @@ public class PageActivity extends AppCompatActivity {
         public void onFailure(Throwable t, Response response) {
             super.onFailure(t, response);
             //
-            String host = eeuiCommon.getVariateStr("__deBugSocket:Host");
-            String port = eeuiCommon.getVariateStr("__deBugSocket:Port");
+            String host = eeuiCommon.getVariateStr("__system:deBugSocket:Host");
+            String port = eeuiCommon.getVariateStr("__system:deBugSocket:Port");
             if (deBugWsOpenUrl.contentEquals(host + ":" + port)) {
                 mHandler.postDelayed(()-> {
                     Log.d("[socket]", "reconnect");
@@ -2106,9 +2106,9 @@ public class PageActivity extends AppCompatActivity {
                 }, 3000);
             } else {
                 String statusRand = eeuiCommon.randomString(6);
-                eeuiCommon.setVariate("__deBugSocket:statusRand", statusRand);
+                eeuiCommon.setVariate("__system:deBugSocket:statusRand", statusRand);
                 mHandler.postDelayed(()-> {
-                    if (eeuiCommon.getVariateInt("__deBugSocket:Status") != 1 && statusRand.contentEquals(eeuiCommon.getVariateStr("__deBugSocket:statusRand"))) {
+                    if (eeuiCommon.getVariateInt("__system:deBugSocket:Status") != 1 && statusRand.contentEquals(eeuiCommon.getVariateStr("__system:deBugSocket:statusRand"))) {
                         Log.d("[socket]", "onFailure");
                         Toast.makeText(PageActivity.this, "WiFi同步连接失败：" + t.getMessage(), LENGTH_SHORT).show();
                     }
@@ -2137,13 +2137,13 @@ public class PageActivity extends AppCompatActivity {
             }
             Log.d("[socket]", "onMessage: " + type + ":" + value);
             if (type.equals("HOMEPAGE")) {
-                eeuiPage.mAppboardContent = new HashMap<>();
+                eeuiPage.mAppboardWifi = new HashMap<>();
             }
             JSONArray appboards = eeuiJson.parseArray(data.getJSONArray("appboards"));
             if (appboards.size() > 0) {
                 for (int i = 0; i < appboards.size(); i++) {
                     JSONObject appboardItem = eeuiJson.parseObject(appboards.get(i));
-                    eeuiPage.mAppboardContent.put(eeuiJson.getString(appboardItem, "path"), eeuiJson.getString(appboardItem, "content"));
+                    eeuiPage.mAppboardWifi.put(eeuiJson.getString(appboardItem, "path"), eeuiJson.getString(appboardItem, "content"));
                 }
             }
             //
@@ -2158,9 +2158,9 @@ public class PageActivity extends AppCompatActivity {
                         if (i == 0) {
                             if (activity instanceof PageActivity) {
                                 PageActivity mActivity = ((PageActivity) activity);
-                                String homePage = eeuiCommon.getCachesString(PageActivity.this, "__deBugSocket", "homePage");
+                                String homePage = eeuiCommon.getCachesString(PageActivity.this, "__system:homePage", "");
                                 if (!homePage.equals(value)) {
-                                    eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", value, 2);
+                                    eeuiCommon.setCachesString(PageActivity.this, "__system:homePage", value, 2);
                                     mHandler.postDelayed(() -> {
                                         String curUrl = mActivity.mPageInfo.getUrl();
                                         mActivity.mPageInfo.setUrl(value);
@@ -2182,7 +2182,7 @@ public class PageActivity extends AppCompatActivity {
                     Activity activity = activityList.get(0);
                     if (activity instanceof PageActivity) {
                         PageActivity mActivity = ((PageActivity) activity);
-                        eeuiCommon.setCachesString(PageActivity.this, "__deBugSocket", "homePage", value, 2);
+                        eeuiCommon.setCachesString(PageActivity.this, "__system:homePage", value, 2);
                         mActivity.mPageInfo.setUrl(value);
                         mActivity.reload();
                         BGAKeyboardUtil.closeKeyboard(PageActivity.this);

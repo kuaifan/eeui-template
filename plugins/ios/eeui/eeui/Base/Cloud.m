@@ -27,7 +27,7 @@ static ClickWelcome myClickWelcome;
 + (NSInteger) welcome:(nullable UIView *) view click:(nullable ClickWelcome) click
 {
     eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
-    NSString *welcome_image = [storage getCachesString:@"welcome_image" defaultVal:@""];
+    NSString *welcome_image = [storage getCachesString:@"__system:welcome_image" defaultVal:@""];
     if (welcome_image.length == 0 || ![welcome_image hasPrefix:@"http"]) {
         return 0;
     }
@@ -55,7 +55,7 @@ static ClickWelcome myClickWelcome;
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickWelcome:)];
         [view addGestureRecognizer:tapGesture];
     }
-    NSInteger welcome_wait = [[storage getCachesString:@"welcome_wait" defaultVal:@"2000"] intValue];
+    NSInteger welcome_wait = [[storage getCachesString:@"__system:welcome_wait" defaultVal:@"2000"] intValue];
     welcome_wait = welcome_wait > 100 ? welcome_wait : 2000;
     return welcome_wait / 1000;
 }
@@ -107,8 +107,8 @@ static ClickWelcome myClickWelcome;
                 if ([[responseObject objectForKey:@"ret"] integerValue] == 1) {
                     NSDictionary *data = responseObject[@"data"];
                     NSMutableDictionary *jsonData = [NSMutableDictionary dictionaryWithDictionary:data];
-                    [[eeuiStorageManager sharedIntstance] setCachesString:@"main::appInfo" value:jsonData expired:0];
-                    [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[[jsonData objectForKey:@"welcome_wait"] integerValue]];
+                    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:appInfo" value:jsonData expired:0];
+                    [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[[jsonData objectForKey:@"__system:welcome_wait"] integerValue]];
                     [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0 isReboot:NO];
                 }
             }
@@ -118,7 +118,7 @@ static ClickWelcome myClickWelcome;
 
 //获取云数据缓存
 + (NSMutableDictionary *) getAppInfo {
-    id jsonString = [[eeuiStorageManager sharedIntstance] getCachesString:@"main::appInfo" defaultVal:@""];
+    id jsonString = [[eeuiStorageManager sharedIntstance] getCachesString:@"__system:appInfo" defaultVal:@""];
     NSMutableDictionary *appInfo = [NSMutableDictionary new];
     if ([jsonString isKindOfClass:[NSString class]]) {
         NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
@@ -140,13 +140,13 @@ static ClickWelcome myClickWelcome;
     if ([url hasPrefix:@"http"]) {
         [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:url] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
             if (finished) {
-                [storage setCachesString:@"welcome_image" value:[NSString stringWithFormat:@"%@", url] expired:0];
+                [storage setCachesString:@"__system:welcome_image" value:[NSString stringWithFormat:@"%@", url] expired:0];
             }
         }];
     }else{
-        [storage setCachesString:@"welcome_image" value:@"" expired:0];
+        [storage setCachesString:@"__system:welcome_image" value:@"" expired:0];
     }
-    [storage setCachesString:@"welcome_wait" value:[NSString stringWithFormat:@"%ld", (long)wait] expired:0];
+    [storage setCachesString:@"__system:welcome_wait" value:[NSString stringWithFormat:@"%ld", (long)wait] expired:0];
 }
 
 //更新部分
