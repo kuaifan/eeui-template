@@ -343,9 +343,7 @@ public class PageActivity extends AppCompatActivity {
                 initDefaultPage();
                 break;
         }
-        if (mPageInfo.getPageTitle() != null && !mPageInfo.getPageTitle().isEmpty()) {
-            setNavigationTitle(mPageInfo.getPageTitle(), null);
-        }
+        setupNaviBar();
         invokeAndKeepAlive("create", null);
     }
 
@@ -1301,6 +1299,9 @@ public class PageActivity extends AppCompatActivity {
             titleBarLeftNull = true;
             titleBarLeft.removeAllViews();
             titleBarRight.removeAllViews();
+            titleBarTitle.setVisibility(View.GONE);
+            titleBarSubtitle.setVisibility(View.GONE);
+            setupNaviBar();
         }
         //
         switch (mPageInfo.getPageType()) {
@@ -1476,6 +1477,15 @@ public class PageActivity extends AppCompatActivity {
     }
 
     /**
+     * 页面名称设置标题栏
+     */
+    private void setupNaviBar() {
+        if (mPageInfo.getPageTitle() != null && !mPageInfo.getPageTitle().isEmpty()) {
+            setNavigationTitle(mPageInfo.getPageTitle(), null);
+        }
+    }
+
+    /**
      * 标题栏组件初始化
      */
     private void navigationInit() {
@@ -1517,9 +1527,14 @@ public class PageActivity extends AppCompatActivity {
         titleBar.setBackgroundColor(Color.parseColor(navigationBarBackgroundColor));
         showNavigation();
 
-        titleBarTitle.setText(title);
-        titleBarTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, eeuiScreenUtils.weexPx2dp(mWXSDKInstance, titleSize));
-        titleBarTitle.setTextColor(Color.parseColor(titleColor));
+        if ("".equals(title)) {
+            titleBarTitle.setVisibility(View.GONE);
+        }else{
+            titleBarTitle.setVisibility(View.VISIBLE);
+            titleBarTitle.setText(title);
+            titleBarTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, eeuiScreenUtils.weexPx2dp(mWXSDKInstance, titleSize));
+            titleBarTitle.setTextColor(Color.parseColor(titleColor));
+        }
 
         if ("".equals(subtitle)) {
             titleBarSubtitle.setVisibility(View.GONE);

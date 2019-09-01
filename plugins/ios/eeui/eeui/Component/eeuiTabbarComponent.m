@@ -60,6 +60,7 @@
 
 @property (nonatomic, assign) BOOL tabPageAnimated;
 @property (nonatomic, assign) BOOL tabSpaceEqual;
+@property (nonatomic, assign) BOOL tabSlideSwitch;
 @property (nonatomic, assign) BOOL indicatorAnimEnable;
 @property (nonatomic, assign) BOOL indicatorBounceEnable;
 @property (nonatomic, assign) BOOL iconVisible;
@@ -148,6 +149,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         _iconMargin = SCALEFLOAT(10);
         _ksideLine = 1;
         _tabPageAnimated = YES;
+        _tabSlideSwitch = YES;
         _tabSpaceEqual = YES;
         _indicatorAnimEnable = YES;
         _indicatorBounceEnable = YES;
@@ -208,6 +210,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
     self.lifeTabPages = [NSMutableDictionary dictionaryWithCapacity:5];
 
     self.bodyView = [[FDFullscreenScrollView alloc] init];
+    self.bodyView.scrollEnabled = _tabSlideSwitch;
     self.bodyView.pagingEnabled = YES;
     self.bodyView.showsHorizontalScrollIndicator = NO;
     self.bodyView.bounces = NO;
@@ -1266,11 +1269,9 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 }
 - (void)setTabSlideSwitch:(BOOL)slideSwitch
 {
+    _tabSlideSwitch = slideSwitch;
     if (_bodyView != nil) {
         _bodyView.scrollEnabled = slideSwitch;
     }
 }
-
-
-
 @end

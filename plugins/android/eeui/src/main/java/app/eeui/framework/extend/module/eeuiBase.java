@@ -62,6 +62,14 @@ public class eeuiBase {
         void result(String var);
     }
 
+    private static eeui __obj;
+
+    private static eeui myApp() {
+        if (__obj == null) {
+            __obj = new eeui();
+        }
+        return __obj;
+    }
 
     /**
      * 配置类
@@ -517,6 +525,7 @@ public class eeuiBase {
             String id = eeuiJson.getString(data, "id");
             String url = eeuiJson.getString(data, "path");
             int valid = eeuiJson.getInt(data, "valid");
+            int clearCache = eeuiJson.getInt(data, "clear_cache");
             if (!url.startsWith("http")) {
                 checkUpdateLists(lists, number + 1, isReboot);
                 return;
@@ -557,6 +566,12 @@ public class eeuiBase {
                                 //
                                 eeuiIhttp.get("checkUpdateLists", apiUrl + "api/client/update/success?id=" + id, null, null);
                                 checkUpdateHint(lists, data, number, isReboot);
+                                if (clearCache == 1) {
+                                    eeuiBase.config.clearCustomConfig();
+                                    myApp().clearCacheDir(eeui.getApplication(), null);
+                                    myApp().clearCachePage(eeui.getApplication());
+                                    myApp().clearCacheAjax(eeui.getApplication());
+                                }
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -595,6 +610,12 @@ public class eeuiBase {
                 }
                 eeuiIhttp.get("checkUpdateLists", apiUrl + "api/client/update/delete?id=" + id, null, null);
                 checkUpdateHint(lists, data, number, isReboot);
+                if (clearCache == 1) {
+                    eeuiBase.config.clearCustomConfig();
+                    myApp().clearCacheDir(eeui.getApplication(), null);
+                    myApp().clearCachePage(eeui.getApplication());
+                    myApp().clearCacheAjax(eeui.getApplication());
+                }
             }
         }
 
@@ -605,7 +626,6 @@ public class eeuiBase {
          */
         private static void checkUpdateHint(JSONArray lists, JSONObject data, int number, boolean isReboot) {
             eeuiBase.config.clear();
-            eeuiBase.config.clearCustomConfig();
             switch (eeuiJson.getInt(data, "reboot")) {
                 case 1:
                     checkUpdateLists(lists, number + 1, true);

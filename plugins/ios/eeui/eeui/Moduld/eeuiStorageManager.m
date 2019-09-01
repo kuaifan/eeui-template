@@ -63,12 +63,12 @@
                 //有效时间内或没有限时
                 id value = [dic objectForKey:key];
                 if (value) {
-                    return value;
+                    return [WXConvert NSString:value];
                 }
             }
         }
     }
-    return defaultVal;
+    return [WXConvert NSString:defaultVal];
 }
 
 - (void)setVariate:(NSString*)key value:(id)value

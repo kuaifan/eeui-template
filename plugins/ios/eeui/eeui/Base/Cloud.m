@@ -12,6 +12,8 @@
 #import "SSZipArchive.h"
 #import "eeuiStorageManager.h"
 #import "eeuiNewPageManager.h"
+#import "eeuiCachesManager.h"
+#import "eeuiAjaxManager.h"
 #import "WeexSDKManager.h"
 #import "UIImageView+WebCache.h"
 
@@ -160,6 +162,7 @@ static ClickWelcome myClickWelcome;
     NSString *id = [NSString stringWithFormat:@"%@", data[@"id"]];
     NSString *url = [NSString stringWithFormat:@"%@", data[@"path"]];
     NSInteger valid = [WXConvert NSInteger:data[@"valid"]];
+    NSInteger clearCache = [WXConvert NSInteger:data[@"clear_cache"]];
     if (![url hasPrefix:@"http"]) {
         [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
         return;
@@ -216,7 +219,12 @@ static ClickWelcome myClickWelcome;
         [manager GET:tempUrl parameters:nil progress:nil success:nil failure:nil];
     }
     [Config clear];
-    [Config clearCustomConfig];
+    if (clearCache == 1) {
+        [Config clearCustomConfig];
+        [[eeuiCachesManager sharedIntstance] clearCacheDir:nil];
+        [[eeuiNewPageManager sharedIntstance] clearCachePage];
+        [[eeuiAjaxManager sharedIntstance] clearCacheAjax];
+    }
     //
     NSString *reboot = [NSString stringWithFormat:@"%@", data[@"reboot"]];
     if ([reboot isEqualToString:@"1"]) {

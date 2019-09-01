@@ -342,11 +342,12 @@ static int easyNavigationButtonTag = 8000;
 - (void)setupActivityView
 {
     //加载图
-    self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    self.activityIndicatorView.center = self.view.center;
-    [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
-    [self.view addSubview:self.activityIndicatorView];
-
+    if (self.activityIndicatorView == nil) {
+        self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+        self.activityIndicatorView.center = self.view.center;
+        [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
+        [self.view addSubview:self.activityIndicatorView];
+    }
     [self startLoading];
 }
 
@@ -814,16 +815,21 @@ static int easyNavigationButtonTag = 8000;
 - (void)refreshPageExecution
 {
     self.identify = [NSString stringWithFormat: @"%d", arc4random() % 100000];
-    self.navigationItem.leftBarButtonItem = nil;
-    self.navigationItem.rightBarButtonItem = nil;
-    [self hideNavigation];
     
-    if ([_pageType isEqualToString:@"web"]) {
-        [self.webView reload];
-    } else {
-        [self renderView];
-        [self updateStatus:@"restart"];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self hideNavigation];
+        self.navigationItem.leftBarButtonItem = nil;
+        self.navigationItem.rightBarButtonItem = nil;
+        self.navigationItem.titleView = nil;
+        [self setupNaviBar];
+        
+        if ([self->_pageType isEqualToString:@"web"]) {
+            [self.webView reload];
+        } else {
+            [self renderView];
+            [self updateStatus:@"restart"];
+        }
+    });    
 }
 
 #pragma mark - notification
