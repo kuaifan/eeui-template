@@ -351,7 +351,7 @@
                     url: this.resourceUrl + 'module_system.js',
                 }, {
                     title: '数据缓存',
-                    title_en: 'caches',
+                    title_en: 'storage',
                     icon: 'md-beaker',
                     url: this.resourceUrl + 'module_caches.js',
                 }, {
@@ -446,10 +446,10 @@
                     icon: 'logo-github',
                     url: 'https://github.com/kuaifan/eeui',
                 }, {
-                    title: '个人博客',
-                    title_en: 'http://kuaifan.vip',
+                    title: '交流社区',
+                    title_en: 'https://bbs.eeui.app',
                     icon: 'logo-rss',
-                    url: 'http://kuaifan.vip',
+                    url: 'https://bbs.eeui.app',
                 }, {
                     title: 'EEUI版本',
                     title_en: eeui.getVersionName(),
