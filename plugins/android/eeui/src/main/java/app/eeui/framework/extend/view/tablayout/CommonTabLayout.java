@@ -18,7 +18,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -30,6 +29,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import app.eeui.framework.R;
 import app.eeui.framework.extend.integration.glide.Glide;
 import app.eeui.framework.extend.integration.glide.load.DataSource;
 import app.eeui.framework.extend.integration.glide.load.engine.DiskCacheStrategy;
@@ -38,8 +42,6 @@ import app.eeui.framework.extend.integration.glide.request.RequestListener;
 import app.eeui.framework.extend.integration.glide.request.RequestOptions;
 import app.eeui.framework.extend.integration.glide.request.target.Target;
 import app.eeui.framework.extend.integration.iconify.widget.IconTextView;
-
-import app.eeui.framework.R;
 import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiColorUtils;
 import app.eeui.framework.extend.module.eeuiPage;
@@ -49,10 +51,6 @@ import app.eeui.framework.extend.view.tablayout.listener.OnTabSelectListener;
 import app.eeui.framework.extend.view.tablayout.utils.FragmentChangeManager;
 import app.eeui.framework.extend.view.tablayout.utils.UnreadMsgUtils;
 import app.eeui.framework.extend.view.tablayout.widget.MsgView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /** 没有继承HorizontalScrollView不能滑动,对于ViewPager无依赖 */
@@ -1043,7 +1041,8 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
                 return;
             }
             String finalIconUrl = iconUrl;
-            Glide.with(icon.getContext()).load(eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(mContext, iconUrl))).apply(myOptions).listener(new RequestListener<Drawable>() {
+            String loadUrl = loadAssetsUrl(eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(mContext, iconUrl)));
+            Glide.with(icon.getContext()).load(loadUrl).apply(myOptions).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     return false;
@@ -1074,5 +1073,14 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
         }
         String val = var.toLowerCase();
         return !val.contains("//") && !val.startsWith("data:") && !val.endsWith(".png") && !val.endsWith(".jpg") && !val.endsWith(".jpeg") && !val.endsWith(".gif");
+    }
+
+    private String loadAssetsUrl(String url) {
+        if (url.startsWith("file://assets/")) {
+            url = "file:///android_asset/" + url.substring(14);
+        }else if (url.startsWith("file:///assets/")) {
+            url = "file:///android_asset/" + url.substring(15);
+        }
+        return url;
     }
 }

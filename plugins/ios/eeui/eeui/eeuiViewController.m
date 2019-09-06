@@ -442,28 +442,32 @@ static int easyNavigationButtonTag = 8000;
     };
 
     _instance.onJSRuntimeException = ^(WXJSExceptionInfo *jsException) {
-        [weakSelf stopLoading];
-        [weakSelf updateStatus:@"error"];
-        [weakSelf showErrorBox:jsException.errorCode];
-        weakSelf.errorContent = jsException.exception;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf stopLoading];
+            [weakSelf updateStatus:@"error"];
+            [weakSelf showErrorBox:jsException.errorCode];
+            weakSelf.errorContent = jsException.exception;
+        });
     };
 
     _instance.onFailed = ^(NSError *error) {
-        [weakSelf stopLoading];
-        [weakSelf updateStatus:@"error"];
-
-        if ([[error domain] isEqualToString:@"1"]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSMutableString *errMsg=[NSMutableString new];
-                [errMsg appendFormat:@"ErrorType:%@\n",[error domain]];
-                [errMsg appendFormat:@"ErrorCode:%ld\n",(long)[error code]];
-                [errMsg appendFormat:@"ErrorInfo:%@\n", [error userInfo]];
-                NSLog(@"%@", errMsg);
-            });
-        }
-
-        [weakSelf showErrorBox:[NSString stringWithFormat: @"%ld", (long)[error code]]];
-        weakSelf.errorContent = [error description];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf stopLoading];
+            [weakSelf updateStatus:@"error"];
+            
+            if ([[error domain] isEqualToString:@"1"]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSMutableString *errMsg=[NSMutableString new];
+                    [errMsg appendFormat:@"ErrorType:%@\n",[error domain]];
+                    [errMsg appendFormat:@"ErrorCode:%ld\n",(long)[error code]];
+                    [errMsg appendFormat:@"ErrorInfo:%@\n", [error userInfo]];
+                    NSLog(@"%@", errMsg);
+                });
+            }
+            
+            [weakSelf showErrorBox:[NSString stringWithFormat: @"%ld", (long)[error code]]];
+            weakSelf.errorContent = [error description];
+        });        
     };
 
     _instance.renderFinish = ^(UIView *view) {

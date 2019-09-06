@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ValueCallback;
 
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.WXSDKInstance;
@@ -259,14 +258,17 @@ public class WebView extends WXVContainer<ViewGroup> {
     @JSMethod
     public void setContent(String content){
         if (v_webview != null) {
-            v_webview.loadDataWithBaseURL("about:blank", "<html>" +
-                    "<header>" +
-                    "<meta charset='utf-8'>" +
-                    "<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no'>" +
-                    "<style type='text/css'>" + ExtendWebView.commonStyle() + "</style>" +
-                    "</header>" +
-                    "<body>" + content + "</body>" +
-                    "</html>", "text/html", "utf-8", null);
+            if (!content.contains("</html>") && !content.contains("</HTML>")) {
+                content = "<html>" +
+                        "<header>" +
+                        "<meta charset='utf-8'>" +
+                        "<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no'>" +
+                        "<style type='text/css'>" + ExtendWebView.commonStyle() + "</style>" +
+                        "</header>" +
+                        "<body>" + content + "</body>" +
+                        "</html>";
+            }
+            v_webview.loadDataWithBaseURL("about:blank", content, "text/html", "utf-8", null);
         }
     }
 

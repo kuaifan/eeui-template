@@ -56,4 +56,6 @@ static NSMutableDictionary * mAppboardWifi;
 
 + (NSDictionary*) dictionaryWithJsonString:(NSString *)jsonString;
 
++ (NSString *) webCommonStyle;
+
 @end

@@ -462,21 +462,23 @@ public class Tabbar extends WXVContainer<ViewGroup> {
 
         @Override
         public void onPageSelected(int position) {
-            mTabLayoutTop.setCurrentTab(position);
-            //mTabLayoutSlidingTop.setCurrentTab(position);
-            mTabLayoutBottom.setCurrentTab(position);
-            //
-            if (getEvents().contains(eeuiConstants.Event.PAGE_SELECTED)) {
-                Map<String, Object> data = new HashMap<>();
-                data.put("position", position);
-                fireEvent(eeuiConstants.Event.PAGE_SELECTED, data);
-            }
-            loadedView(position);
-            //
-            mViewPager.lifecycleListener(prevSelectedPosition, "pause");
-            mViewPager.lifecycleListener(position, "resume");
-            //
-            prevSelectedPosition = position;
+            mTabLayoutTop.post(()-> {
+                mTabLayoutTop.setCurrentTab(position);
+                //mTabLayoutSlidingTop.setCurrentTab(position);
+                mTabLayoutBottom.setCurrentTab(position);
+                //
+                if (getEvents().contains(eeuiConstants.Event.PAGE_SELECTED)) {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("position", position);
+                    fireEvent(eeuiConstants.Event.PAGE_SELECTED, data);
+                }
+                loadedView(position);
+                //
+                mViewPager.lifecycleListener(prevSelectedPosition, "pause");
+                mViewPager.lifecycleListener(position, "resume");
+                //
+                prevSelectedPosition = position;
+            });
         }
 
         @Override

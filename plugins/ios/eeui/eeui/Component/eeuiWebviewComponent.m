@@ -133,7 +133,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
     }
 
     if (_content.length > 0) {
-        [webView loadHTMLString:_content baseURL:nil];
+        [self setContent:_content];
     }
 
     [self fireEvent:@"ready" params:nil];
@@ -336,6 +336,11 @@ WX_EXPORT_METHOD(@selector(goForward:))
 - (void)setContent:(NSString*)content
 {
     eeuiWebView *webView = (eeuiWebView*)self.view;
+    if (![content containsString:@"</html>"] && ![content containsString:@"</HTML>"]) {
+        NSString *html = @"<html><header><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no'><style type='text/css'>{commonStyle}</style></header><body>{content}</body></html>";
+        html = [html stringByReplacingOccurrencesOfString:@"{commonStyle}" withString:[DeviceUtil webCommonStyle]];
+        content = [html stringByReplacingOccurrencesOfString:@"{content}" withString:content];
+    }
     [webView loadHTMLString:content baseURL:nil];
 }
 
