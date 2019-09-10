@@ -1038,4 +1038,21 @@ public class eeuiCommon {
         }
         return "";
     }
+
+    /**
+     * 获取设备中的文件内容，如果不存在则获取assets文件夹下文件内容
+     * @param context
+     * @param fileName
+     * @return
+     */
+    public static String getFileOrAsset(Context context, String fileName) {
+        if (!TextUtils.isEmpty(fileName) && fileName.startsWith("file://assets/")) {
+            return getAssetsFile(context, fileName);
+        }
+        Uri uri = Uri.parse(fileName);
+        if (uri != null && uri.getPath() != null) {
+            return WXFileUtils.loadFileOrAsset(uri.getPath().replaceFirst("/", ""), context);
+        }
+        return "";
+    }
 }

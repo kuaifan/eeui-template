@@ -109,7 +109,9 @@ static ClickWelcome myClickWelcome;
                     NSMutableDictionary *jsonData = [NSMutableDictionary dictionaryWithDictionary:data];
                     [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:appInfo" value:[DeviceUtil dictionaryToJson:jsonData] expired:0];
                     [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[[jsonData objectForKey:@"__system:welcome_wait"] integerValue]];
-                    [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0 isReboot:NO];
+                    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                        [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0 isReboot:NO];
+                    });
                 }
             }
         }@catch (NSException *exception) { }

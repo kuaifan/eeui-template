@@ -341,7 +341,7 @@ public class eeuiPage {
         String appboard = eeuiPage.getAppboardContent(context);
         if (cache >= 1000 || !TextUtils.isEmpty(appboard)) {
             if (url.startsWith("file://")) {
-                String tempUrl = saveCachePage(context, url, appboard + eeuiCommon.getAssetsFile(context, url));
+                String tempUrl = saveCachePage(context, url, appboard + eeuiCommon.getFileOrAsset(context, url));
                 if (tempUrl == null) {
                     Log.d(TAG, "cachePage assetsError: " + url);
                     mOnCachePageCallback.success(resParams, url);
