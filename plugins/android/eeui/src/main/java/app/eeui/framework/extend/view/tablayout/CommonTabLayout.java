@@ -1041,7 +1041,7 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
                 return;
             }
             String finalIconUrl = iconUrl;
-            String loadUrl = loadAssetsUrl(eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(mContext, iconUrl)));
+            String loadUrl = loadAssetsUrl(eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(icon, iconUrl)));
             Glide.with(icon.getContext()).load(loadUrl).apply(myOptions).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

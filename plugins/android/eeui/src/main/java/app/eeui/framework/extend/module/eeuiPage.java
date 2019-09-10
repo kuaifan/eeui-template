@@ -245,6 +245,15 @@ public class eeuiPage {
     }
 
     /**
+     * 获取父级地址（获取页面地址）
+     * @param pageUrl
+     * @return
+     */
+    public static String getWebsiteUrl(Object pageUrl) {
+        return eeuiHtml.getWebsiteUrl(pageUrl);
+    }
+
+    /**
      * url添加js后缀
      * @param pageType
      * @param url

@@ -29,7 +29,7 @@ public class WebModule {
      * @param callback
      */
     public static void openPage(ExtendWebView webView, String object, JsCallback callback) {
-        myApp().openPage(webView.getContext(), object, eeui.MCallback(callback));
+        myApp().openPage(webView, object, eeui.MCallback(callback));
     }
 
     /**
@@ -250,7 +250,7 @@ public class WebModule {
      * @return
      */
     public String rewriteUrl(ExtendWebView webView, String url) {
-        return myApp().rewriteUrl(webView.getContext(), url);
+        return myApp().rewriteUrl(webView, url);
     }
 
     /****************************************************************************************/
@@ -738,115 +738,5 @@ public class WebModule {
      */
     public static Boolean keyboardStatus(ExtendWebView webView) {
         return (Boolean) myApp().keyboardUtils(webView.getContext(), "isSoftInputVisible");
-    }
-
-    /***************************************************************************************************/
-    /***************************************************************************************************/
-    /***************************************************************************************************/
-
-    /**
-     * App 相关
-     * @param method
-     * @return
-     */
-    public static Object appUtils(ExtendWebView webView, String method, Object var0, Object var1) {
-        return myApp().appUtils(webView.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 设备相关
-     * @param method
-     * @return
-     */
-    public static Object deviceUtils(ExtendWebView webView, String method) {
-        return myApp().deviceUtils(webView.getContext(), method);
-    }
-
-    /**
-     * 键盘相关
-     * @param method
-     * @return
-     */
-    public static Object keyboardUtils(ExtendWebView webView, String method) {
-        return myApp().keyboardUtils(webView.getContext(), method);
-    }
-
-    /**
-     * 网络相关
-     * @param method
-     * @return
-     */
-    public static Object networkUtils(ExtendWebView webView, String method, Object var0, Object var1) {
-        return myApp().networkUtils(webView.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 权限相关
-     * @param method
-     * @return
-     */
-    public static Object permissionUtils(ExtendWebView webView, String method, Object var0, Object var1) {
-        return myApp().permissionUtils(webView.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 手机相关
-     * @param method
-     * @return
-     */
-    public static Object phoneUtils(ExtendWebView webView, String method, Object var0, Object var1, Object var2) {
-        return myApp().phoneUtils(webView.getContext(), method, var0, var1, var2);
-    }
-
-    /**
-     * 进程相关
-     * @param method
-     * @return
-     */
-    public static Object processUtils(ExtendWebView webView, String method, Object var0, Object var1) {
-        return myApp().processUtils(webView.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 屏幕相关
-     * @param method
-     * @return
-     */
-    public static Object screenUtils(ExtendWebView webView, String method, Object var0, Object var1) {
-        return myApp().screenUtils(webView.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 时间相关
-     * @param method
-     * @return
-     */
-    public static Object timeUtils(ExtendWebView webView, String method, Object var0, Object var1, Object var2) {
-        return myApp().timeUtils(webView.getContext(), method, var0, var1, var2);
-    }
-
-    /**
-     * 摄像机相关
-     * @param method
-     */
-    public static void cameraTool(ExtendWebView webView, String method) {
-        myApp().cameraTool(webView.getContext(), method);
-    }
-
-    /**
-     * 定位相关
-     * @param method
-     * @return
-     */
-    public static Object locationTool(ExtendWebView webView, String method, Object var0, Object var1, Object var2) {
-        return myApp().locationTool(webView.getContext(), method, var0, var1, var2);
-    }
-
-    /**
-     * 震动相关
-     * @param method
-     */
-    public static void vibrateTool(ExtendWebView webView, String method, Object var0, Object var1) {
-        myApp().vibrateTool(webView.getContext(), method, var0, var1);
     }
 }

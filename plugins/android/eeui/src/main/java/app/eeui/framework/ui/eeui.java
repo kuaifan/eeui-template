@@ -13,12 +13,16 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.InitConfig.Builder;
 import com.taobao.weex.WXSDKEngine;
+import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.common.WXException;
+import com.taobao.weex.ui.SimpleComponentHolder;
+import com.taobao.weex.ui.component.WXBasicComponentType;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -43,6 +47,7 @@ import app.eeui.framework.extend.integration.glide.request.target.SimpleTarget;
 import app.eeui.framework.extend.integration.glide.request.transition.Transition;
 import app.eeui.framework.extend.integration.iconify.Iconify;
 import app.eeui.framework.extend.integration.iconify.fonts.IoniconsModule;
+import app.eeui.framework.extend.integration.screenshot.ScreenshotModule;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
 import app.eeui.framework.extend.integration.swipebacklayout.BGASwipeBackHelper;
 import app.eeui.framework.extend.module.eeuiAdDialog;
@@ -67,13 +72,14 @@ import app.eeui.framework.ui.component.a.A;
 import app.eeui.framework.ui.component.banner.Banner;
 import app.eeui.framework.ui.component.button.Button;
 import app.eeui.framework.ui.component.grid.Grid;
-import app.eeui.framework.ui.component.scrollHeader.ScrollHeader;
 import app.eeui.framework.ui.component.icon.Icon;
 import app.eeui.framework.ui.component.marquee.Marquee;
 import app.eeui.framework.ui.component.navbar.Navbar;
 import app.eeui.framework.ui.component.navbar.NavbarItem;
 import app.eeui.framework.ui.component.recyler.Recyler;
+import app.eeui.framework.ui.component.richtext.WXRichText;
 import app.eeui.framework.ui.component.ripple.Ripple;
+import app.eeui.framework.ui.component.scrollHeader.ScrollHeader;
 import app.eeui.framework.ui.component.scrollText.ScrollText;
 import app.eeui.framework.ui.component.sidePanel.SidePanel;
 import app.eeui.framework.ui.component.sidePanel.SidePanelMenu;
@@ -178,6 +184,7 @@ public class eeui {
             WXSDKEngine.registerComponent("tabbar", Tabbar.class);
             WXSDKEngine.registerComponent("tabbar-page", TabbarPage.class);
             WXSDKEngine.registerComponent("web-view", WebView.class);
+            WXSDKEngine.registerComponent(new SimpleComponentHolder(WXRichText.class, new WXRichText.Creator()), false, WXBasicComponentType.RICHTEXT);
         } catch (WXException e) {
             e.printStackTrace();
         }
@@ -396,7 +403,7 @@ public class eeui {
      * @param object
      * @param callback
      */
-    public void openPage(Context context, String object, JSCallback callback) {
+    public void openPage(Object context, String object, JSCallback callback) {
         JSONObject json = eeuiJson.parseObject(object);
         if (json.size() == 0) {
             json.put("url", object);
@@ -406,9 +413,17 @@ public class eeui {
         }
         PageBean mBean = new PageBean();
         String pageType = eeuiJson.getString(json, "pageType", "app");
-
+        String pageUrl = eeuiPage.rewriteUrl(context, eeuiPage.suffixUrl(pageType, json.getString("url")));
+        //
+        if (context instanceof WXSDKInstance) {
+            context = ((WXSDKInstance) context).getContext();
+        }else if (context instanceof View) {
+            context = ((View) context).getContext();
+        }else{
+            return;
+        }
         //网址
-        mBean.setUrl(eeuiPage.rewriteUrl(context, eeuiPage.suffixUrl(pageType, json.getString("url"))));
+        mBean.setUrl(pageUrl);
         //名称（默认：随机生成）
         if (json.getString("pageName") != null) {
             mBean.setPageName(json.getString("pageName"));
@@ -487,7 +502,7 @@ public class eeui {
             mBean.setCallback(callback);
         }
 
-        eeuiPage.openWin(context, mBean);
+        eeuiPage.openWin((Context) context, mBean);
     }
 
     /**
@@ -898,7 +913,7 @@ public class eeui {
      * @param url
      * @return
      */
-    public String rewriteUrl(Context context, String url) {
+    public String rewriteUrl(Object context, String url) {
         return eeuiPage.rewriteUrl(context, url);
     }
 
@@ -1660,5 +1675,14 @@ public class eeui {
      */
     public void vibrateTool(Context context, String method, Object var0, Object var1) {
         rxtoolsModule.RxVibrateTool(context, method, eeui.objectGroup(var0, var1));
+    }
+
+    /**
+     * 组件截图
+     * @param view
+     * @param callback
+     */
+    public void screenshots(View view, JSCallback callback) {
+        ScreenshotModule.shots(view, callback);
     }
 }

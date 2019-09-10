@@ -23,7 +23,7 @@ import app.eeui.framework.extend.integration.glide.request.RequestOptions;
 import app.eeui.framework.extend.integration.glide.request.target.SimpleTarget;
 import app.eeui.framework.extend.integration.glide.request.transition.Transition;
 import app.eeui.framework.extend.module.eeuiBase;
-import app.eeui.framework.extend.module.eeuiHtml;
+import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.ui.eeui;
 
 public class DrawableLoader implements IDrawableLoader {
@@ -39,7 +39,7 @@ public class DrawableLoader implements IDrawableLoader {
     @Override
     public void setDrawable(String url, DrawableTarget drawableTarget, DrawableStrategy drawableStrategy) {
         WXSDKManager.getInstance().postOnUiThread(() -> {
-            String tempUrl = eeuiBase.config.verifyFile(eeuiHtml.repairUrl(eeui.getActivityList().getLast(), url));
+            String tempUrl = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(eeui.getActivityList().getLast(), url));
             Log.d(TAG, "setDrawable: " + tempUrl);
             try {
                 RequestBuilder<Drawable> myLoad;

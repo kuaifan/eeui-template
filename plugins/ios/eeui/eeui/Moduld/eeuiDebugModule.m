@@ -64,16 +64,27 @@ WX_EXPORT_METHOD(@selector(closeConsole))
     if (pageUrl.length > 0) {
         pageUrl = [[NSString alloc] initWithFormat:@" (%@)", pageUrl];
     }
-    if ([type isEqualToString:@"log"]) {
-        NSLog(@"D/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
-    }else if ([type isEqualToString:@"info"]) {
-        NSLog(@"I/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
-    }else if ([type isEqualToString:@"warn"]) {
-        NSLog(@"W/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
-    }else if ([type isEqualToString:@"error"]) {
-        NSLog(@"E/jsLog: %@%@", [self descriptionWithLocale:log], pageUrl);
+    if ([log isKindOfClass:[NSArray class]]) {
+        [log enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [self outLog:type log:obj pageUrl:pageUrl];
+        }];
+    }else{
+        [self outLog:type log:log pageUrl:pageUrl];
     }
 #endif
+}
+
+-(void)outLog:(NSString *)type log:(id)log pageUrl:(NSString *)pageUrl
+{
+    if ([type isEqualToString:@"log"]) {
+        NSLog(@"D/jsLog: %@%@", log, pageUrl);
+    }else if ([type isEqualToString:@"info"]) {
+        NSLog(@"I/jsLog: %@%@", log, pageUrl);
+    }else if ([type isEqualToString:@"warn"]) {
+        NSLog(@"W/jsLog: %@%@", log, pageUrl);
+    }else if ([type isEqualToString:@"error"]) {
+        NSLog(@"E/jsLog: %@%@", log, pageUrl);
+    }
 }
 
 - (void)getLog:(NSString*)type :(WXModuleCallback)callback
@@ -144,35 +155,6 @@ WX_EXPORT_METHOD(@selector(closeConsole))
         eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
         [vc hideFixedConsole];
     }
-}
-
--(NSString *)descriptionWithLocale:(id)locale {
-    if (![locale isKindOfClass:[NSArray class]]) {
-        return [WXConvert NSString:locale];
-    }
-    
-    NSMutableString *string = [NSMutableString string];
-    // 开头有个[
-    [string appendString:@"["];
-    
-    // 遍历所有的元素
-    [locale enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if ([obj isKindOfClass:[NSString class]]) {
-            [string appendFormat:@"\"%@\",", obj];
-        }else{
-            [string appendFormat:@"%@,", obj];
-        }
-    }];
-    
-    // 结尾有个]
-    [string appendString:@"]"];
-    
-    // 查找最后一个逗号
-    NSRange range = [string rangeOfString:@"," options:NSBackwardsSearch];
-    if (range.location != NSNotFound)
-        [string deleteCharactersInRange:range];
-    
-    return string;
 }
 
 @end

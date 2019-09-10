@@ -253,7 +253,7 @@ static NSMutableArray *verifyDir;
         return;
     }
     [json setValue:@([[NSDate date] timeIntervalSince1970]) forKey:@"__system:eeui:customTime"];
-    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:json expired:0];
+    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:[DeviceUtil dictionaryToJson:json] expired:0];
 }
 
 //获取自定义配置
@@ -270,7 +270,7 @@ static NSMutableArray *verifyDir;
 //清空自定义配置
 + (void) clearCustomConfig
 {
-    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:@{} expired:0];
+    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:[DeviceUtil dictionaryToJson:@{}] expired:0];
 }
 
 //******************************************************************************************

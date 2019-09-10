@@ -102,10 +102,18 @@
 
     if (homePage.length == 0) {
         homePage = [[WeexSDKManager sharedIntstance] weexUrl];
-        eeuiViewController *top = (eeuiViewController *)[self getTopviewControler];
-        if (top && top.url) {
-            homePage = top.url;
+        if ([[[WXSDKManager bridgeMgr] topInstance].viewController isKindOfClass:[eeuiViewController class]]) {
+            eeuiViewController *top = (eeuiViewController *)[[WXSDKManager bridgeMgr] topInstance].viewController;
+            if (top && top.url) {
+                homePage = top.url;
+            }
         }
+        if (homePage.length == 0) {
+            eeuiViewController *top = (eeuiViewController *)[self getTopviewControler];
+            if (top && top.url) {
+                homePage = top.url;
+            }
+        }       
     }
     if (homePage.length == 0) {
         return [self realUrl:url];
@@ -393,6 +401,14 @@
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSString *strTime = [dateFormatter stringFromDate:timeData];
     return strTime;
+}
+
+//NSDictionary转NSString
++ (NSString*) dictionaryToJson:(NSDictionary *)dic
+{
+    NSError *parseError = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:&parseError];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
 //NSString转NSDictionary

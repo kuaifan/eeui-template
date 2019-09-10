@@ -107,7 +107,7 @@ static ClickWelcome myClickWelcome;
                 if ([[responseObject objectForKey:@"ret"] integerValue] == 1) {
                     NSDictionary *data = responseObject[@"data"];
                     NSMutableDictionary *jsonData = [NSMutableDictionary dictionaryWithDictionary:data];
-                    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:appInfo" value:jsonData expired:0];
+                    [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:appInfo" value:[DeviceUtil dictionaryToJson:jsonData] expired:0];
                     [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[[jsonData objectForKey:@"__system:welcome_wait"] integerValue]];
                     [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0 isReboot:NO];
                 }

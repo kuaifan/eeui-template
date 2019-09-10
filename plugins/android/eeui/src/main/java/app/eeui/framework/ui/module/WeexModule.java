@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.annotation.JSMethod;
 import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.common.WXModule;
+import com.taobao.weex.ui.component.WXComponent;
+
 import app.eeui.framework.ui.eeui;
 
 public class WeexModule extends WXModule {
@@ -30,7 +32,7 @@ public class WeexModule extends WXModule {
      */
     @JSMethod
     public void openPage(String object, JSCallback callback) {
-        myApp().openPage(mWXSDKInstance.getContext(), object, callback);
+        myApp().openPage(mWXSDKInstance, object, callback);
     }
 
     /**
@@ -274,7 +276,7 @@ public class WeexModule extends WXModule {
      */
     @JSMethod(uiThread = false)
     public String rewriteUrl(String url) {
-        return myApp().rewriteUrl(mWXSDKInstance.getContext(), url);
+        return myApp().rewriteUrl(mWXSDKInstance, url);
     }
 
     /****************************************************************************************/
@@ -940,5 +942,16 @@ public class WeexModule extends WXModule {
     @JSMethod
     public void vibrateTool(String method, Object var0, Object var1) {
         myApp().vibrateTool(mWXSDKInstance.getContext(), method, var0, var1);
+    }
+
+    /**
+     * 组件截图
+     * @param id
+     * @param callback
+     */
+    @JSMethod
+    public void screenshots(String id, JSCallback callback) {
+        WXComponent com = findComponent(id);
+        myApp().screenshots(com == null ? null : com.getHostView(), callback);
     }
 }

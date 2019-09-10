@@ -31,7 +31,7 @@ public class WebNavigatorModule {
             json.put("url", object);
         }
         json.put("pageTitle", eeuiJson.getString(json, "pageTitle", " "));
-        myApp().openPage(webView.getContext(), json.toJSONString(), eeui.MCallback(callback));
+        myApp().openPage(webView, json.toJSONString(), eeui.MCallback(callback));
     }
 
     public static void pop(ExtendWebView webView, String object, JsCallback callback) {

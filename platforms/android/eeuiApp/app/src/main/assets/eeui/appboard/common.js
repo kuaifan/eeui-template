@@ -1,3 +1,5 @@
+var eeui = app.requireModule('eeui');
+
 Vue.mixin({
     methods: {
         isNullOrUndefined(obj) {

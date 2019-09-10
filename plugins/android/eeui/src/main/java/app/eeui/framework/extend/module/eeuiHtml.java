@@ -1,17 +1,19 @@
 package app.eeui.framework.extend.module;
 
-import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.taobao.weex.WXSDKInstance;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.extend.bean.PageBean;
+import app.eeui.framework.ui.component.tabbar.view.TabbarFrameLayoutView;
 
 public class eeuiHtml {
 
@@ -21,7 +23,7 @@ public class eeuiHtml {
      * @param content       内容
      * @return
      */
-    @Deprecated
+    /*@Deprecated
     public static String repairJsImage(Context context, String content) {
         String regexBody = "_c\\('image',\\s*\\{([^\\)]*)\\}";
         Pattern patternBody = Pattern.compile(regexBody, Pattern.CASE_INSENSITIVE);
@@ -39,7 +41,7 @@ public class eeuiHtml {
             }
         }
         return result;
-    }
+    }*/
 
     /**
      * （无用、保留只是为了示例）将image标签中的src进行二次包装
@@ -47,7 +49,7 @@ public class eeuiHtml {
      * @param content       内容
      * @return
      */
-    @Deprecated
+    /*@Deprecated
     public static String repairImage(Context context, String content) {
         String patternStr = "<image\\s*([^>]*)\\s*src=((\\\"|\\')(.*?)(\\\"|\\'))\\s*([^>]*)>";
         Pattern pattern = Pattern.compile(patternStr, Pattern.CASE_INSENSITIVE);
@@ -60,7 +62,7 @@ public class eeuiHtml {
             }catch (Exception ignored) { }
         }
         return result;
-    }
+    }*/
 
     /**
      * 规范化url
@@ -79,11 +81,11 @@ public class eeuiHtml {
 
     /**
      * 补全地址
-     * @param homePage      上下文或者父页地址
+     * @param pageUrl      context（PageActivity）、String（父页地址）、view、WXSDKInstance
      * @param url           图片地址
      * @return
      */
-    public static String repairUrl(Object homePage, String url) {
+    public static String repairUrl(Object pageUrl, String url) {
         if (url == null) {
             return "";
         }
@@ -102,15 +104,7 @@ public class eeuiHtml {
             return realUrl(url);
         }
 
-        String websiteUrl = null;
-        if (homePage instanceof PageActivity) {
-            PageBean mPageBean = ((PageActivity) homePage).getPageInfo();
-            if (mPageBean != null) {
-                websiteUrl = mPageBean.getUrl();
-            }
-        }else if (homePage instanceof String) {
-            websiteUrl = (String) homePage;
-        }
+        String websiteUrl = getWebsiteUrl(pageUrl);
         if (websiteUrl == null) {
             return realUrl(url);
         }
@@ -129,8 +123,8 @@ public class eeuiHtml {
             }
         }
 
-        if (url.contains("page_cache") && homePage instanceof Context) {
-            File cachePath = ((Context) homePage).getExternalFilesDir("page_cache");
+        if (url.contains("page_cache")) {
+            File cachePath = eeui.getApplication().getExternalFilesDir("page_cache");
             if (cachePath != null) {
                 String cacheUrl = "file://" + cachePath.getPath();
                 if (url.startsWith(cacheUrl)) {
@@ -169,5 +163,46 @@ public class eeuiHtml {
             e.printStackTrace();
         }
         return realUrl(newUrl);
+    }
+
+    /**
+     * 获取父级地址
+     * @param pageUrl
+     * @return
+     */
+    public static String getWebsiteUrl(Object pageUrl) {
+        String websiteUrl = null;
+        if (pageUrl instanceof String) {
+            websiteUrl = (String) pageUrl;
+        }
+        if (websiteUrl == null && pageUrl instanceof WXSDKInstance) {
+            String tabbarUrl = ((WXSDKInstance) pageUrl).getContainerInfo().get("eeuiTabbarUrl");
+            if (!TextUtils.isEmpty(tabbarUrl)) {
+                websiteUrl = tabbarUrl;
+            }
+            pageUrl = ((WXSDKInstance) pageUrl).getContext();
+        }
+        if (websiteUrl == null && pageUrl instanceof View) {
+            ViewGroup parentViewGroup = (ViewGroup) ((View) pageUrl).getParent();
+            while (parentViewGroup != null) {
+                if (parentViewGroup instanceof TabbarFrameLayoutView) {
+                    websiteUrl = ((TabbarFrameLayoutView) parentViewGroup).getUrl();
+                    break;
+                }
+                try {
+                    parentViewGroup = (ViewGroup) parentViewGroup.getParent();
+                } catch (ClassCastException e) {
+                    parentViewGroup = null;
+                }
+            }
+            pageUrl = ((View) pageUrl).getContext();
+        }
+        if (websiteUrl == null && pageUrl instanceof PageActivity) {
+            PageBean mPageBean = ((PageActivity) pageUrl).getPageInfo();
+            if (mPageBean != null) {
+                websiteUrl = mPageBean.getUrl();
+            }
+        }
+        return websiteUrl;
     }
 }

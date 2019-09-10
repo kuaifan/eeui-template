@@ -21,6 +21,6 @@ public class WeexEventModule extends WXModule {
     public void openURL(String url) {
         JSONObject params = new JSONObject();
         params.put("url", url);
-        myApp().openPage(mWXSDKInstance.getContext(), params.toJSONString(), null);
+        myApp().openPage(mWXSDKInstance, params.toJSONString(), null);
     }
 }

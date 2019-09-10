@@ -54,6 +54,8 @@ static NSMutableDictionary * mAppboardWifi;
 
 + (NSString *)timesFromString:(NSString *)timestamp;
 
++ (NSString*) dictionaryToJson:(NSDictionary *)dic;
+
 + (NSDictionary*) dictionaryWithJsonString:(NSString *)jsonString;
 
 + (NSString *) webCommonStyle;

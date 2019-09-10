@@ -12,13 +12,13 @@
         android:layout_height="0dp"
         android:visibility="gone"/>
 
-    <FrameLayout
+    <app.eeui.framework.ui.component.tabbar.view.TabbarFrameLayoutView
         android:id="@+id/v_container"
         android:layout_below="@+id/v_statusBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </FrameLayout>
+    </app.eeui.framework.ui.component.tabbar.view.TabbarFrameLayoutView>
 
     <FrameLayout
         android:id="@+id/v_progress"

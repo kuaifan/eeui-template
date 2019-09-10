@@ -24,6 +24,8 @@
 #import "scanViewController.h"
 #import "CustomWeexSDKManager.h"
 #import "UIImage+itdCategory.h"
+#import "UIView+eeuiScreenshots.h"
+#import "UIImage+eeuiScreenshots.h"
 #import <UIKit/UIKit.h>
 #import <AdSupport/AdSupport.h>
 
@@ -702,6 +704,42 @@ WX_EXPORT_METHOD_SYNC(@selector(keyboardStatus))
         }
     }
     return nil;
+}
+
+#pragma mark 组件截图
+
+WX_EXPORT_METHOD(@selector(screenshots:callback:))
+- (void) screenshots:(NSString*)ref  callback:(WXModuleCallback)callback
+{
+    [self shotsFindComponent:ref instance:weexInstance block:^(WXComponent *comp) {
+        if (comp == nil) {
+            callback(@{@"status":@"error", @"msg":@"截图失败", @"path":@""});
+            return;
+        }
+        UIImage *img = [comp.view eeui_toImage];
+        NSString *path = [img eeui_saveToDisk:@"shots.png"];
+        if (!path) {
+            callback(@{@"status":@"error", @"msg":@"截图失败", @"path":@""});
+        }else{
+            callback(@{@"status":@"success", @"msg":@"", @"path":path});
+        }
+    }];
+}
+    
+-(void)shotsFindComponent:(NSString *)elemRef instance:(WXSDKInstance*)instance block:(void (^)(WXComponent *))block {
+    if (!elemRef) {
+        block(nil);
+    }
+    WXPerformBlockOnComponentThread(^{
+        WXComponent *component = (WXComponent *)[instance componentForRef:elemRef];
+        if (!component) {
+            block(nil);
+            return;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            block(component);
+        });
+    });
 }
 
 @end

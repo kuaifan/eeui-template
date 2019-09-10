@@ -9,10 +9,12 @@ import com.taobao.weex.annotation.JSMethod;
 import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.common.WXModule;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import app.eeui.framework.BuildConfig;
 import app.eeui.framework.activity.PageActivity;
-import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.module.eeuiJson;
+import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 
 
@@ -24,13 +26,7 @@ public class WeexDebugModule extends WXModule {
     @JSMethod
     public void addLog(String type, Object log) {
         if (BuildConfig.DEBUG) {
-            String pageUrl = null;
-            if (mWXSDKInstance.getContext() instanceof PageActivity) {
-                PageBean mPageBean = ((PageActivity) mWXSDKInstance.getContext()).getPageInfo();
-                if (mPageBean != null) {
-                    pageUrl = mPageBean.getUrl();
-                }
-            }
+            String pageUrl = eeuiPage.getWebsiteUrl(mWXSDKInstance);
             if (pageUrl == null) {
                 pageUrl = "";
             }else{
@@ -65,15 +61,41 @@ public class WeexDebugModule extends WXModule {
             if (!TextUtils.isEmpty(pageUrl)) {
                 pageUrl = " (" + pageUrl + ")";
             }
-            if (type.contentEquals("log")) {
-                Log.d("jsLog", eeuiParse.parseStr(log) + pageUrl);
-            }else if (type.contentEquals("info")) {
-                Log.i("jsLog", eeuiParse.parseStr(log) + pageUrl);
-            }else if (type.contentEquals("warn")) {
-                Log.w("jsLog", eeuiParse.parseStr(log) + pageUrl);
-            }else if (type.contentEquals("error")) {
-                Log.e("jsLog", eeuiParse.parseStr(log) + pageUrl);
+            if (log instanceof JSONArray) {
+                JSONArray array = (JSONArray) log;
+                for (int i = 0; i < array.size(); i++) {
+                    outLog(type, array.get(i), pageUrl);
+                }
+            }else{
+                outLog(type, log, pageUrl);
             }
+        }
+    }
+
+    /**
+     * 输出日志
+     * @param type
+     * @param log
+     * @param pageUrl
+     */
+    private void outLog(String type, Object log, String pageUrl) {
+        String text;
+        if (log instanceof JSONArray || log instanceof JSONObject) {
+            text = StringEscapeUtils.unescapeJson(log.toString());
+        }else{
+            text = eeuiParse.parseStr(log);
+        }
+        if (text == null) {
+            return;
+        }
+        if (type.contentEquals("log")) {
+            Log.d("jsLog", text + pageUrl);
+        }else if (type.contentEquals("info")) {
+            Log.i("jsLog", text + pageUrl);
+        }else if (type.contentEquals("warn")) {
+            Log.w("jsLog", text + pageUrl);
+        }else if (type.contentEquals("error")) {
+            Log.e("jsLog", text + pageUrl);
         }
     }
 

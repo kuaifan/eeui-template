@@ -52,6 +52,7 @@ import app.eeui.framework.ui.component.tabbar.adapter.TabbarAdapter;
 import app.eeui.framework.ui.component.tabbar.bean.TabbarBean;
 import app.eeui.framework.ui.component.tabbar.bean.WXSDKBean;
 import app.eeui.framework.ui.component.tabbar.entity.TabbarEntity;
+import app.eeui.framework.ui.component.tabbar.view.TabbarFrameLayoutView;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -220,7 +221,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                             for (Map.Entry<String, Object> entry : item.entrySet()) {
                                 barBean = TabbarPage.setBarAttr(barBean, entry.getKey(), entry.getValue());
                             }
-                            barBean.setView(eeuiPage.rewriteUrl(getContext(), eeuiPage.suffixUrl("app", barBean.getUrl())));
+                            barBean.setView(eeuiPage.rewriteUrl(getHostView(), eeuiPage.suffixUrl("app", barBean.getUrl())));
                             addPageView(barBean);
                         }
                     }
@@ -518,9 +519,10 @@ public class Tabbar extends WXVContainer<ViewGroup> {
      */
     private void addPageView(TabbarBean barBean) {
         View view = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.layout_eeui_tabbar_page, null);
+        TabbarFrameLayoutView vContainer = view.findViewById(R.id.v_container);
         //
         WXSDKBean sdkBean = new WXSDKBean();
-        sdkBean.setContainer(view.findViewById(R.id.v_container));
+        sdkBean.setContainer(vContainer);
         sdkBean.setProgress(view.findViewById(R.id.v_progress));
         sdkBean.setErrorView(view.findViewById(R.id.v_error));
         sdkBean.setErrorCodeView(view.findViewById(R.id.v_error_code));
@@ -538,6 +540,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
         if (barBean.getView() instanceof String) {
             sdkBean.setType("urlView");
             mViewPager.WXSDKList.put(barBean.getTabName(), sdkBean);
+            vContainer.setUrl(String.valueOf(barBean.getView()));
         }else if (barBean.getView() instanceof TabbarPageView) {
             sdkBean.setType("pageView");
             mViewPager.WXSDKList.put(barBean.getTabName(), sdkBean);
@@ -631,7 +634,9 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                 sdkBean.getProgress().setVisibility(View.VISIBLE);
             }
         }), 200);
-        sdkBean.setInstance(new WXSDKInstance(getContext()));
+        WXSDKInstance mWXSDKInstance = new WXSDKInstance(getContext());
+        mWXSDKInstance.setContainerInfo("eeuiTabbarUrl", url);
+        sdkBean.setInstance(mWXSDKInstance);
         sdkBean.getInstance().registerRenderListener(new IWXRenderListener() {
             @Override
             public void onViewCreated(WXSDKInstance instance, View view) {

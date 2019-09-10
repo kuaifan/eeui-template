@@ -34,7 +34,7 @@ public class WeexNavigatorModule extends WXModule {
         }
         String pageTitle = eeuiJson.getString(json, "pageTitle", "");
         json.put("pageTitle", json.containsKey("pageTitle") ? pageTitle : " ");
-        myApp().openPage(mWXSDKInstance.getContext(), json.toJSONString(), callback);
+        myApp().openPage(mWXSDKInstance, json.toJSONString(), callback);
     }
 
     @JSMethod

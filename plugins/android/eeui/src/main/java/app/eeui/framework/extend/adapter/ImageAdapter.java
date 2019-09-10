@@ -29,7 +29,7 @@ import app.eeui.framework.extend.integration.glide.request.RequestListener;
 import app.eeui.framework.extend.integration.glide.request.RequestOptions;
 import app.eeui.framework.extend.integration.glide.request.target.Target;
 import app.eeui.framework.extend.module.eeuiBase;
-import app.eeui.framework.extend.module.eeuiHtml;
+import app.eeui.framework.extend.module.eeuiPage;
 
 public class ImageAdapter implements IWXImgLoaderAdapter {
 
@@ -78,7 +78,7 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
         if (view.getContext() == null) {
             return;
         }
-        String tempUrl = eeuiBase.config.verifyFile(eeuiHtml.repairUrl(view.getContext(), url));
+        String tempUrl = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, url));
         Log.d(TAG, "loadImage: " + tempUrl);
         try {
             RequestBuilder<Drawable> myLoad;

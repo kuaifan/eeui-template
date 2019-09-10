@@ -44,7 +44,7 @@ public class A extends WXDiv {
             if (url.equals("-1")) {
                 myApp().closePage(getContext(), null);
             }else if (!url.equals("")) {
-                myApp().openPage(getContext(), params.toJSONString(), null);
+                myApp().openPage(getInstance(), params.toJSONString(), null);
             }
         });
         super.onHostViewInitialized(host);
