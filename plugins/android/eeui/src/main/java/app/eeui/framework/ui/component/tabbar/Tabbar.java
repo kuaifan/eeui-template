@@ -697,7 +697,19 @@ public class Tabbar extends WXVContainer<ViewGroup> {
             }
         });
         //
-        eeuiPage.cachePage(getContext(), eeuiBase.config.verifyFile(url), sdkBean.getCache(), sdkBean.getParams(), (resParams, newUrl) -> sdkBean.getInstance().renderByUrl("Tabbar:" + tabName, newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC));
+        eeuiPage.cachePage(getContext(), eeuiBase.config.verifyFile(url), sdkBean.getCache(), sdkBean.getParams(), new eeuiPage.OnCachePageCallback() {
+            @Override
+            public void success(Map<String, Object> resParams, String newUrl) {
+                sdkBean.getInstance().renderByUrl("Tabbar:" + tabName, newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
+            }
+
+            @Override
+            public void error(Map<String, Object> resParams, String newUrl) {
+                sdkBean.getErrorView().setVisibility(View.VISIBLE);
+                sdkBean.getErrorCodeView().setText(String.valueOf(-5202));
+                sdkBean.setErrorMsg("加载页面失败或不存在！");
+            }
+        });
     }
 
     /**

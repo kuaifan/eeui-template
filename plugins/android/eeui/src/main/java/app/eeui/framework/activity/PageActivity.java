@@ -1066,7 +1066,25 @@ public class PageActivity extends AppCompatActivity {
         //
         weexCreateInstance();
         mWXSDKInstance.onActivityCreate();
-        eeuiPage.cachePage(this, eeuiBase.config.verifyFile(mPageInfo.getUrl()), mPageInfo.getCache(), mPageInfo.getParams(), (resParams, newUrl) -> mWXSDKInstance.renderByUrl(mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC));
+        eeuiPage.cachePage(this, eeuiBase.config.verifyFile(mPageInfo.getUrl()), mPageInfo.getCache(), mPageInfo.getParams(), new eeuiPage.OnCachePageCallback() {
+            @Override
+            public void success(Map<String, Object> resParams, String newUrl) {
+                mWXSDKInstance.renderByUrl(mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
+            }
+
+            @Override
+            public void error(Map<String, Object> resParams, String newUrl) {
+                Map<String, Object> retData = new HashMap<>();
+                retData.put("errCode", -5202);
+                retData.put("errMsg", "加载页面失败或不存在！");
+                retData.put("errUrl", newUrl);
+                invokeAndKeepAlive("error", retData);
+                //
+                mError.setVisibility(View.VISIBLE);
+                mErrorCode.setText(String.valueOf(-5202));
+                mErrorMsg = "加载页面失败或不存在！";
+            }
+        });
     }
 
     /**
@@ -1132,11 +1150,11 @@ public class PageActivity extends AppCompatActivity {
                 Map<String, Object> retData = new HashMap<>();
                 retData.put("errCode", errCode);
                 retData.put("errMsg", errMsg);
-                retData.put("errUrl", instance.getBundleUrl());
+                retData.put("errUrl", instance.getBundleUrl() == null ? "" : instance.getBundleUrl());
                 invokeAndKeepAlive("error", retData);
                 //
                 mError.setVisibility(View.VISIBLE);
-                mErrorCode.setText(String.valueOf(errCode));
+                mErrorCode.setText(errCode);
                 mErrorMsg = errMsg;
             }
         };
@@ -2313,7 +2331,17 @@ public class PageActivity extends AppCompatActivity {
 
             }
         });
-        eeuiPage.cachePage(this, "file://assets/main-console.js", 0, null, (resParams, newUrl) -> mInstance.renderByUrl("Console::" + mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC));
+        eeuiPage.cachePage(this, "file://assets/main-console.js", 0, null, new eeuiPage.OnCachePageCallback() {
+            @Override
+            public void success(Map<String, Object> resParams, String newUrl) {
+                mInstance.renderByUrl("Console::" + mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
+            }
+
+            @Override
+            public void error(Map<String, Object> resParams, String newUrl) {
+                Toast.makeText(PageActivity.this, "日志文件不存在！", Toast.LENGTH_SHORT).show();
+            }
+        });
         mBody.addView(mPageLogView);
     }
 

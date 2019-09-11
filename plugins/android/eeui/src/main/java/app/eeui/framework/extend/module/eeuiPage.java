@@ -341,14 +341,20 @@ public class eeuiPage {
         String appboard = eeuiPage.getAppboardContent(context);
         if (cache >= 1000 || !TextUtils.isEmpty(appboard)) {
             if (url.startsWith("file://")) {
-                String tempUrl = saveCachePage(context, url, appboard + eeuiCommon.getFileOrAsset(context, url));
-                if (tempUrl == null) {
+                String fileContent = eeuiCommon.getFileOrAsset(context, url);
+                if (TextUtils.isEmpty(fileContent)) {
                     Log.d(TAG, "cachePage assetsError: " + url);
-                    mOnCachePageCallback.success(resParams, url);
-                }else{
-                    Log.d(TAG, "cachePage assetsSuccess: " + url);
-                    mOnCachePageCallback.success(resParams, tempUrl);
+                    mOnCachePageCallback.error(resParams, url);
+                    return;
                 }
+                String tempUrl = saveCachePage(context, url, appboard + fileContent);
+                if (TextUtils.isEmpty(tempUrl)) {
+                    Log.d(TAG, "cachePage assetsError2: " + url);
+                    mOnCachePageCallback.success(resParams, url);
+                    return;
+                }
+                Log.d(TAG, "cachePage assetsSuccess: " + url);
+                mOnCachePageCallback.success(resParams, tempUrl);
             }else{
                 Map<String, Object> data = new HashMap<>();
                 data.put(WXSDKInstance.BUNDLE_URL, url);
@@ -358,14 +364,19 @@ public class eeuiPage {
                 eeuiIhttp.get("eeuiPage", url, data, new eeuiIhttp.ResultCallback() {
                     @Override
                     public void success(String resData, boolean isCache) {
+                        if (TextUtils.isEmpty(resData)) {
+                            Log.d(TAG, "cachePage assetsError: " + url);
+                            mOnCachePageCallback.error(resParams, url);
+                            return;
+                        }
                         String tempUrl = saveCachePage(context, url, appboard + resData);
-                        if (tempUrl == null) {
+                        if (TextUtils.isEmpty(tempUrl)) {
                             Log.d(TAG, "cachePage errors: " + url);
                             mOnCachePageCallback.success(resParams, url);
-                        }else{
-                            Log.d(TAG, "cachePage success: " + url);
-                            mOnCachePageCallback.success(resParams, tempUrl);
+                            return;
                         }
+                        Log.d(TAG, "cachePage success: " + url);
+                        mOnCachePageCallback.success(resParams, tempUrl);
                     }
 
                     @Override
@@ -420,5 +431,6 @@ public class eeuiPage {
      */
     public interface OnCachePageCallback {
         void success(Map<String, Object> resParams, String newUrl);
+        void error(Map<String, Object> resParams, String newUrl);
     }
 }
