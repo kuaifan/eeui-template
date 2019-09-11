@@ -639,24 +639,11 @@ public class eeui {
     }
 
     /**
-     * 修改状态栏样式
+     * 修改状态栏字体颜色风格
      * @param context
      * @param isLight 是否亮色
      */
     public void setStatusBarStyle(Context context, boolean isLight) {
-        if (context instanceof PageActivity) {
-            ((PageActivity) context).setStatusBarStyle(isLight);
-        } else {
-            this.toast(context, "当前页面不支持状态栏字体变色");
-        }
-    }
-
-    /**
-     * 修改状态栏样式
-     * @param context
-     * @param isLight 是否亮色
-     */
-    public void statusBarStyle(Context context, boolean isLight) {
         if (context instanceof PageActivity) {
             ((PageActivity) context).setStatusBarStyle(isLight);
         } else {

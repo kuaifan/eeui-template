@@ -104,7 +104,7 @@ public class WeexModule extends WXModule {
     }
 
     /**
-     * 修改状态栏样式
+     * 修改状态栏字体颜色风格
      * @param isLight 是否亮色
      */
     @JSMethod
@@ -113,7 +113,7 @@ public class WeexModule extends WXModule {
     }
 
     /**
-     * 修改状态栏样式
+     * 修改状态栏字体颜色风格
      * @param isLight 是否亮色
      */
     @JSMethod

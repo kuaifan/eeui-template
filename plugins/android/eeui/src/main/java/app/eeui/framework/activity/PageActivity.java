@@ -1449,7 +1449,7 @@ public class PageActivity extends AppCompatActivity {
     }
 
     /**
-     * 修改状态栏样式
+     * 修改状态栏字体颜色风格
      * @param isLight
      */
     public void setStatusBarStyle(boolean isLight) {
