@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gyf.immersionbar.ImmersionBar;
 import com.rabtman.wsmanager.WsManager;
 import com.rabtman.wsmanager.listener.WsStatusListener;
 import com.taobao.weex.IWXRenderListener;
@@ -315,23 +316,24 @@ public class PageActivity extends AppCompatActivity {
                         requestPermissions(mPermissionInstance.getPermissionsRequest().toArray(new String[size]), 1);
                     }
                 }
-                setImmersionStatusBar();
+                ImmersionBar.with(this).init();
                 break;
 
             case "swipeCaptcha":
                 setContentView(R.layout.activity_page_swipe_captcha);
                 initSwipeCaptchaPageView();
+                ImmersionBar.with(this).init();
                 break;
 
             case "scanerCode":
                 setContentView(R.layout.activity_page_scaner_code);
-                setImmersionStatusBar();
                 initScanerCodePageView();
+                ImmersionBar.with(this).init();
                 break;
 
             case "transparentPage":
                 setContentView(R.layout.activity_page_transparent);
-                setImmersionStatusBar();
+                ImmersionBar.with(this).init();
                 break;
 
             default:
@@ -673,44 +675,61 @@ public class PageActivity extends AppCompatActivity {
         mSwipeBackHelper.setSwipeBackEnable(mPageInfo.isSwipeBack());
         mBody.setBackgroundColor(Color.parseColor(mPageInfo.getBackgroundColor()));
         //
-        switch (mPageInfo.getStatusBarType()) {
-            case "fullscreen":
-                //全屏
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                if (mPageInfo.getSoftInputMode().equals("auto")) {
-                    mPageInfo.setSoftInputMode("nothing");
-                }
-                break;
-            case "immersion":
-                //沉浸式
-                setImmersionStatusBar();
-                if (mPageInfo.getSoftInputMode().equals("auto")) {
-                    mPageInfo.setSoftInputMode("nothing");
-                }
-                break;
-            default:
-                //默认
-                if (mPageInfo.isSwipeBack() && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                    StatusBarUtil.setColorForSwipeBack(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
-                    KeyboardUtils.registerSoftInputChangedListener(this, (int height) -> {
-                        if (KeyboardUtils.isSoftInputVisible(this)) {
-                            KeyboardUtils.unregisterSoftInputChangedListener(this);
-                            StatusBarUtil.cancelColorForSwipeBack(this);
-                            StatusBarUtil.setColor(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
-                        }
-                    });
-                }else{
-                    StatusBarUtil.setColor(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
-                }
-                break;
-        }
-        //
-        if (mPageInfo.getStatusBarStyle() != null) {
-            setStatusBarStyle(mPageInfo.getStatusBarStyle());
-        }
-        //
-        setSoftInputMode(mPageInfo.getSoftInputMode());
+        initStatusBar();
         initDefaultPageView();
+    }
+
+    /**
+     * 初始化默认视图
+     */
+    private void initStatusBar() {
+        if ("immersion".equals(mPageInfo.getStatusBarType())) {
+            //沉浸式
+            if (mPageInfo.getSoftInputMode().equals("auto")) {
+                mPageInfo.setSoftInputMode("nothing");
+            }
+            ImmersionBar iBar = ImmersionBar.with(this);
+            if (mPageInfo.getStatusBarStyle() != null) {
+                iBar.statusBarDarkFont(!mPageInfo.getStatusBarStyle());
+            }
+            iBar.keyboardEnable(true);
+            iBar.keyboardMode(this.convertSoftInputMode(mPageInfo.getSoftInputMode()));
+            iBar.init();
+            return;
+        }
+        if ("fullscreen".equals(mPageInfo.getStatusBarType())) {
+            //全屏
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if (mPageInfo.getSoftInputMode().equals("auto")) {
+                mPageInfo.setSoftInputMode("nothing");
+            }
+        } else {
+            //默认
+            if (mPageInfo.isSwipeBack() && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                StatusBarUtil.setColorForSwipeBack(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
+                KeyboardUtils.registerSoftInputChangedListener(this, (int height) -> {
+                    if (KeyboardUtils.isSoftInputVisible(this)) {
+                        KeyboardUtils.unregisterSoftInputChangedListener(this);
+                        StatusBarUtil.cancelColorForSwipeBack(this);
+                        StatusBarUtil.setColor(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
+                    }
+                });
+            } else {
+                StatusBarUtil.setColor(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
+            }
+        }
+        //
+        if (mPageInfo.getStatusBarStyle() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = this.getWindow().getDecorView();
+            if (mPageInfo.getStatusBarStyle()) {
+                //白色样式
+                decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            } else {
+                //黑色样式
+                decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
+        }
+        getWindow().setSoftInputMode(this.convertSoftInputMode((mPageInfo.getSoftInputMode())));
     }
 
     /**
@@ -1188,15 +1207,6 @@ public class PageActivity extends AppCompatActivity {
     /****************************************************************************************************/
     /****************************************************************************************************/
 
-    private void setImmersionStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-    }
-
     private void invoke(String status, Map<String, Object> retData) {
         if (status.equals(lifecycleLastStatus)) {
             return;
@@ -1342,21 +1352,8 @@ public class PageActivity extends AppCompatActivity {
         if (mPageInfo == null || mode == null) {
             return;
         }
-        switch (mode) {
-            case "resize":
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                break;
-            case "pan":
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-                break;
-            case "nothing":
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-                break;
-            case "auto":
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED);
-                break;
-        }
         mPageInfo.setSoftInputMode(mode);
+        initStatusBar();
     }
 
     /**
@@ -1471,18 +1468,35 @@ public class PageActivity extends AppCompatActivity {
      * @param isLight
      */
     public void setStatusBarStyle(boolean isLight) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decorView = this.getWindow().getDecorView();
-            if (isLight) {
-                //白色样式
-                decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            } else {
-                //黑色样式
-                decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-        } else {
-            Toast.makeText(this, "当前设备不支持状态栏字体变色", Toast.LENGTH_SHORT).show();
+        if (mPageInfo == null) {
+            return;
         }
+        mPageInfo.setStatusBarStyle(isLight);
+        initStatusBar();
+    }
+
+    /**
+     * 转换键盘类型
+     * @param mode
+     * @return
+     */
+    private int convertSoftInputMode(String mode) {
+        int keyboardMode = 0;
+        switch (mode) {
+            case "resize":
+                keyboardMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+                break;
+            case "pan":
+                keyboardMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
+                break;
+            case "nothing":
+                keyboardMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
+                break;
+            case "auto":
+                keyboardMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED;
+                break;
+        }
+        return keyboardMode;
     }
 
     /**

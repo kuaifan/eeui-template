@@ -48,7 +48,8 @@
 
 - (id<WXImageOperationProtocol>)downloadImageWithURL:(NSString *)url imageFrame:(CGRect)imageFrame userInfo:(NSDictionary *)userInfo completed:(void(^)(UIImage *image,  NSError *error, BOOL finished))completedBlock
 {
-    url = [Config verifyFile:[DeviceUtil rewriteUrl:url homePage:nil]];
+    WXSDKInstance *instance = [WXSDKManager instanceForID:userInfo[@"instanceId"]];
+    url = [Config verifyFile:[DeviceUtil rewriteUrl:url mInstance:instance]];
     
     return (id<WXImageOperationProtocol>)[SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:url] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
         if (completedBlock) {

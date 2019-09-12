@@ -263,7 +263,7 @@
 
 - (NSString*)rewriteUrl:(NSString*)url
 {
-    return [DeviceUtil rewriteUrl:url homePage:nil];
+    return [DeviceUtil rewriteUrl:url mInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 #pragma mark 打开其他APP

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #include <UIKit/UIKit.h>
+#import "WeexSDK.h"
 
 #define SCALE(value) [DeviceUtil scale:value]
 #define SCALEFLOAT(value) [DeviceUtil scaleFloat:value]
@@ -31,6 +32,8 @@ static NSMutableDictionary * mAppboardWifi;
 + (NSString*)realUrl:(NSString*)url;
 
 + (NSString*)suffixUrl:(NSString*)pageType url:(NSString*)url;
+
++ (NSString*)rewriteUrl:(NSString*)url mInstance:(WXSDKInstance*)mInstance;
 
 + (NSString*)rewriteUrl:(NSString*)url homePage:(NSString*)homePage;
 

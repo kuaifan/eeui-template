@@ -109,7 +109,7 @@
         }
     }
 
-    url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:pageType url:url] homePage:nil];
+    url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:pageType url:url] mInstance:weexInstance];
     NSLog(@"NewPage = %@", url);
 
     //跳转页面

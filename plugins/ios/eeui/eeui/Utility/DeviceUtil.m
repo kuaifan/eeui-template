@@ -8,7 +8,6 @@
 
 #import "DeviceUtil.h"
 #import "WeexSDKManager.h"
-#import "WeexSDK.h"
 #import "TBCityIconInfo.h"
 #import "TBCityIconFont.h"
 #import "eeuiViewController.h"
@@ -74,7 +73,20 @@
     return url;
 }
 
-//重写url
+//重写url（传入 WXSDKInstance）
++ (NSString*)rewriteUrl:(NSString*)url mInstance:(WXSDKInstance*)mInstance
+{
+    NSString* homePage = nil;
+    if ([mInstance.viewController isKindOfClass:[eeuiViewController class]]) {
+        eeuiViewController *top = (eeuiViewController *)mInstance.viewController;
+        if (top && top.url) {
+            homePage = top.url;
+        }
+    }
+    return [self rewriteUrl:url homePage:homePage];
+}
+
+//重写url（传入homePage）
 + (NSString*)rewriteUrl:(NSString*)url homePage:(NSString*)homePage
 {
     if (url.length == 0) {
