@@ -77,13 +77,13 @@ WX_EXPORT_METHOD(@selector(closeConsole))
 -(void)outLog:(NSString *)type log:(id)log pageUrl:(NSString *)pageUrl
 {
     if ([type isEqualToString:@"log"]) {
-        NSLog(@"D/jsLog: %@%@", log, pageUrl);
+        EELog(@"D/jsLog: %@%@", log, pageUrl);
     }else if ([type isEqualToString:@"info"]) {
-        NSLog(@"I/jsLog: %@%@", log, pageUrl);
+        EELog(@"I/jsLog: %@%@", log, pageUrl);
     }else if ([type isEqualToString:@"warn"]) {
-        NSLog(@"W/jsLog: %@%@", log, pageUrl);
+        EELog(@"W/jsLog: %@%@", log, pageUrl);
     }else if ([type isEqualToString:@"error"]) {
-        NSLog(@"E/jsLog: %@%@", log, pageUrl);
+        EELog(@"E/jsLog: %@%@", log, pageUrl);
     }
 }
 

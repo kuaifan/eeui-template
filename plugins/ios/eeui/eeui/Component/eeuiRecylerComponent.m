@@ -467,7 +467,7 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
             }
             [scrollerComponent scrollToComponent:toComponent withOffset:0 animated:animated];
         }@catch (NSException *exception) {
-            NSLog(@"NSException = %@", exception);
+            EELog(@"NSException = %@", exception);
         }
     }
 }

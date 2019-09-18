@@ -249,7 +249,7 @@ static int easyNavigationButtonTag = 8000;
 
 - (void)dealloc
 {
-    NSLog(@"gggggggg::dealloc:%@", self.pageName);
+    EELog(@"gggggggg::dealloc:%@", self.pageName);
 
     self.identify = @"";
     [self updateStatus:@"destroy"];
@@ -461,7 +461,7 @@ static int easyNavigationButtonTag = 8000;
                     [errMsg appendFormat:@"ErrorType:%@\n",[error domain]];
                     [errMsg appendFormat:@"ErrorCode:%ld\n",(long)[error code]];
                     [errMsg appendFormat:@"ErrorInfo:%@\n", [error userInfo]];
-                    NSLog(@"%@", errMsg);
+                    EELog(@"%@", errMsg);
                 });
             }
             

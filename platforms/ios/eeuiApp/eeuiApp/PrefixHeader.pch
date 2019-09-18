@@ -1,0 +1,25 @@
+//
+//  PrefixHeader.pch
+//  eeuiApp
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* PrefixHeader_pch */
+
+// __OBJC__这个宏,宏内引用的文件确保只被使用Objective-C语言的文件所引用，限定仅仅被OC代码使用
+#ifdef __OBJC__
+
+/**
+ *  配置自定义的测试Log
+ */
+#ifdef DEBUG
+#define EELog(...) NSLog(__VA_ARGS__)
+#else
+#define EELog(...)
+#endif
+#endif

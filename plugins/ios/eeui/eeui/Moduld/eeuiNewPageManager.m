@@ -110,7 +110,7 @@
     }
 
     url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:pageType url:url] mInstance:weexInstance];
-    NSLog(@"NewPage = %@", url);
+    EELog(@"NewPage = %@", url);
 
     //跳转页面
     eeuiViewController *mainVC = [[eeuiViewController alloc] init];

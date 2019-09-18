@@ -259,7 +259,7 @@ static NSMutableArray *verifyDir;
 //获取自定义配置
 + (NSDictionary *) getCustomConfig
 {
-    NSDictionary *json = [DeviceUtil dictionaryWithJsonString:[[eeuiStorageManager sharedIntstance] getCachesString:@"__system:eeui:customConfig" defaultVal:@{}]];
+    NSDictionary *json = [DeviceUtil dictionaryWithJsonString:[[eeuiStorageManager sharedIntstance] getCachesString:@"__system:eeui:customConfig" defaultVal:@"{}"]];
     if (json == nil) {
         return [NSMutableDictionary dictionary];
     }else{

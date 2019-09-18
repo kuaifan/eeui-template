@@ -236,7 +236,7 @@
                 [self.navigationController popViewControllerAnimated:YES];
             }
         }else{
-            NSLog(@"没内容");
+            EELog(@"没内容");
             NSDictionary *dic = @{@"status":@"error", @"url":@"", @"source":@"photo"};
             self.scanerBlock(dic);
         }
@@ -288,7 +288,7 @@
                 [self.navigationController popViewControllerAnimated:YES];
             }
         }else{
-            NSLog(@"没扫到东西");
+            EELog(@"没扫到东西");
             NSDictionary *dic = @{@"status":@"success", @"url":@"", @"source":@"camera"};
             self.scanerBlock(dic);
         }

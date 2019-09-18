@@ -83,7 +83,7 @@
         //记录本地标识，等待完成后取到相册中的图片对象
         [imageIds addObject:req.placeholderForCreatedAsset.localIdentifier];
     } completionHandler:^(BOOL success, NSError * _Nullable error) {
-        NSLog(@"success = %d, error = %@", success, error);
+        EELog(@"success = %d, error = %@", success, error);
         if (success)
         {
             //成功后取相册中的图片对象

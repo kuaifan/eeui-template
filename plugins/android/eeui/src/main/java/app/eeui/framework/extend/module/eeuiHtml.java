@@ -109,17 +109,12 @@ public class eeuiHtml {
             return realUrl(url);
         }
 
-        if (url.startsWith("root://")) {
+        if (url.startsWith("root:")) {
+            int fromIndex = url.startsWith("root://") ? 7 : 5;
             if (websiteUrl.startsWith("file://assets")) {
-                return realUrl("file://assets/eeui/" + url.substring(7));
+                return realUrl("file://assets/eeui/" + url.substring(fromIndex));
             } else {
-                url = "/" + url.substring(7);
-            }
-        }else if (url.startsWith("root:")) {
-            if (websiteUrl.startsWith("file://assets")) {
-                return realUrl("file://assets/eeui/" + url.substring(5));
-            } else {
-                url = "/" + url.substring(5);
+                url = "/" + url.substring(fromIndex);
             }
         }
 

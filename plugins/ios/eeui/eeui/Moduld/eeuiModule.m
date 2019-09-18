@@ -451,12 +451,12 @@ WX_EXPORT_METHOD_SYNC(@selector(clearAllVariate))
     return [[eeuiStorageManager sharedIntstance] getCaches:key defaultVal:defaultVal];
 }
 
-- (void)setCachesString:(NSString*)key value:(id)value expired:(NSInteger)expired
+- (void)setCachesString:(NSString*)key value:(NSString*)value expired:(NSInteger)expired
 {
     [[eeuiStorageManager sharedIntstance] setCachesString:key value:value expired:expired];
 }
 
-- (NSString*)getCachesString:key defaultVal:(id)defaultVal
+- (NSString*)getCachesString:key defaultVal:(NSString*)defaultVal
 {
     return [[eeuiStorageManager sharedIntstance] getCachesString:key defaultVal:defaultVal];
 }

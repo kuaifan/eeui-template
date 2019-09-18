@@ -71,12 +71,12 @@
     return defaultVal;
 }
 
-- (void)setCachesString:(NSString*)key value:(id)value expired:(NSInteger)expired
+- (void)setCachesString:(NSString*)key value:(NSString*)value expired:(NSInteger)expired
 {
     [self setCaches:key value:value expired:expired];
 }
 
-- (NSString*)getCachesString:(NSString*)key defaultVal:(id)defaultVal
+- (NSString*)getCachesString:(NSString*)key defaultVal:(NSString*)defaultVal
 {
     return [WXConvert NSString:[self getCaches:key defaultVal:defaultVal]];
 }

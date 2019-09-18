@@ -354,12 +354,12 @@
 
 #pragma mark 保存数据信息
 
-- (void)setCachesString:(NSString*)key value:(id)value expired:(NSInteger)expired
+- (void)setCachesString:(NSString*)key value:(NSString*)value expired:(NSInteger)expired
 {
     [[eeuiStorageManager sharedIntstance] setCachesString:key value:value expired:expired];
 }
 
-- (id)getCachesString:key defaultVal:(id)defaultVal
+- (id)getCachesString:key defaultVal:(NSString*)defaultVal
 {
     return [[eeuiStorageManager sharedIntstance] getCachesString:key defaultVal:defaultVal];
 }

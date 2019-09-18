@@ -132,14 +132,14 @@ NSDictionary *mLaunchOptions;
         switch (state) {
             case kCTCellularDataRestricted:{
                 //1权限关闭的情况下 再次请求网络数据会弹出设置网络提示
-                NSLog(@"gggggggg::网络权限关闭");
+                EELog(@"gggggggg::网络权限关闭");
                 [Cloud appData];
                 self.isDataRestricted = YES;
                 break;
             }
             case kCTCellularDataNotRestricted:{
                 //2已经开启网络权限 监听网络状态
-                NSLog(@"gggggggg::网络权限开启");
+                EELog(@"gggggggg::网络权限开启");
                 [self addReachabilityManager:application didFinishLaunchingWithOptions:launchOptions];
                 if (self.isDataRestricted == YES) {
                     [self refresh];
@@ -149,7 +149,7 @@ NSDictionary *mLaunchOptions;
             }
             case kCTCellularDataRestrictedStateUnknown:{
                 //3未知情况 （还没有遇到推测是有网络但是连接不正常的情况下）
-                NSLog(@"gggggggg::网络权限未知");
+                EELog(@"gggggggg::网络权限未知");
                 [Cloud appData];
                 break;
             }
@@ -163,15 +163,15 @@ NSDictionary *mLaunchOptions;
     [afNetworkReachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         switch (status) {
             case AFNetworkReachabilityStatusNotReachable:{
-                NSLog(@"gggggggg::网络不通：%@",@(status) );
+                EELog(@"gggggggg::网络不通：%@",@(status) );
                 break;
             }
             case AFNetworkReachabilityStatusReachableViaWiFi:{
-                NSLog(@"gggggggg::网络通过WIFI连接：%@",@(status));
+                EELog(@"gggggggg::网络通过WIFI连接：%@",@(status));
                 break;
             }
             case AFNetworkReachabilityStatusReachableViaWWAN:{
-                NSLog(@"gggggggg::网络通过无线连接：%@",@(status) );
+                EELog(@"gggggggg::网络通过无线连接：%@",@(status) );
                 break;
             }
             default:
@@ -476,7 +476,7 @@ NSDictionary *mLaunchOptions;
 
 //长链接已连接成功
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket{
-    NSLog(@"[socket] %@", @"onOpen");
+    EELog(@"[socket] %@", @"onOpen");
     deBugWsOpenUrl = [NSString stringWithFormat:@"%@:%@", [webSocket url].host, [webSocket url].port];
     if (deBugKeepScreen.length == 0) {
         deBugKeepScreen = @"ON";
@@ -493,7 +493,7 @@ NSDictionary *mLaunchOptions;
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
     NSDictionary *data = [DeviceUtil dictionaryWithJsonString:(NSString *)message];
     if (data == nil) {
-        NSLog(@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli");
+        EELog(@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli");
         [[eeuiToastManager sharedIntstance] toast:@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli"];
         return;
     }
@@ -501,11 +501,11 @@ NSDictionary *mLaunchOptions;
     NSString *value = [WXConvert NSString:data[@"value"]];
     NSInteger version = [WXConvert NSInteger:data[@"version"]];
     if (version < 2) {
-        NSLog(@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli");
+        EELog(@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli");
         [[eeuiToastManager sharedIntstance] toast:@"eeui-cli版本太低，请先升级eeui-cli版本，详情：https://www.npmjs.com/package/eeui-cli"];
         return;
     }
-    NSLog(@"[socket] onMessage: %@:%@", type, value);
+    EELog(@"[socket] onMessage: %@:%@", type, value);
     if ([type isEqualToString:@"HOMEPAGE"]) {
         [DeviceUtil clearAppboardWifi];
     }
@@ -567,11 +567,11 @@ NSDictionary *mLaunchOptions;
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error{
     if ([deBugWsOpenUrl isEqualToString:[NSString stringWithFormat:@"%@:%@", socketHost, socketPort]]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            NSLog(@"[socket] %@ - fail", @"reconnect");
+            EELog(@"[socket] %@ - fail", @"reconnect");
             [self setSocketConnect:@"reconnect"];
         });
     } else {
-        NSLog(@"[socket] %@", @"onFailure");
+        EELog(@"[socket] %@", @"onFailure");
         [[eeuiToastManager sharedIntstance] toast:[NSString stringWithFormat:@"WiFi同步连接失败：%@", [error localizedDescription]]];
     }
     self.webSocket.delegate = nil;
@@ -586,11 +586,11 @@ NSDictionary *mLaunchOptions;
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean{
     if ([deBugWsOpenUrl isEqualToString:[NSString stringWithFormat:@"%@:%@", socketHost, socketPort]]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            NSLog(@"[socket] %@ - close", @"reconnect");
+            EELog(@"[socket] %@ - close", @"reconnect");
             [self setSocketConnect:@"reconnect"];
         });
     } else {
-        NSLog(@"[socket] %@", @"onClosed");
+        EELog(@"[socket] %@", @"onClosed");
         [[eeuiToastManager sharedIntstance] toast:[NSString stringWithFormat:@"WiFi同步连接失败：%@", reason]];
     }
     //

@@ -131,19 +131,13 @@
         return [self realUrl:url];
     }
     
-    if ([url hasPrefix:@"root://"]) {
+    if ([url hasPrefix:@"root:"]) {
+        NSInteger fromIndex = [url hasPrefix:@"root://"] ? 7 : 5;
         NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
         if ([homePage hasPrefix:tempUrl]) {
-            return [self realUrl:[NSString stringWithFormat:@"%@/eeui/%@", tempUrl, [url substringFromIndex:7]]];
+            return [self realUrl:[NSString stringWithFormat:@"%@/eeui/%@", tempUrl, [url substringFromIndex:fromIndex]]];
         }else{
-            url = [NSString stringWithFormat:@"/%@", [url substringFromIndex:7]];
-        }
-    }else if ([url hasPrefix:@"root:"]) {
-        NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
-        if ([homePage hasPrefix:tempUrl]) {
-            return [self realUrl:[NSString stringWithFormat:@"%@/eeui/%@", tempUrl, [url substringFromIndex:5]]];
-        }else{
-            url = [NSString stringWithFormat:@"/%@", [url substringFromIndex:5]];
+            url = [NSString stringWithFormat:@"/%@", [url substringFromIndex:fromIndex]];
         }
     }
     

@@ -32,7 +32,7 @@
         //将字符串转换成二进制进行Json解析
         NSData * data = [nowIp dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary * dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-        NSLog(@"%@",dict);
+        EELog(@"%@",dict);
         return dict[@"cip"] ? dict[@"cip"] : @"0.0.0.0";
     }
     return @"0.0.0.0";
@@ -41,7 +41,7 @@
 #pragma mark - 获取设备当前本地IP地址列表
 + (NSMutableArray *)getLocalIPAddressIPv4Lists {
     NSDictionary *addresses = [self getIPAddresses];
-    NSLog(@"addresses: %@", addresses);
+    EELog(@"addresses: %@", addresses);
     
     NSMutableArray *address = [[NSMutableArray alloc] init];
     for (NSString *key in addresses) {
@@ -72,7 +72,7 @@
             NSRange resultRange = [firstMatch rangeAtIndex:0];
             NSString *result=[ipAddress substringWithRange:resultRange];
             //输出结果
-            NSLog(@"%@",result);
+            EELog(@"%@",result);
             return YES;
         }
     }

@@ -109,6 +109,7 @@
 		B2135AA9212406EF00EDD991 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		B2135AAB212406F800EDD991 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		B25A71E921257A0500AA0AB9 /* bundlejs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bundlejs; sourceTree = "<group>"; };
+		B2BF762C23320B4D001DF25B /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		B2FF80F222290D1800DB1E47 /* eeuiApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = eeuiApp.entitlements; sourceTree = "<group>"; };
 		B3954AB0077F67222589658D /* libPods-eeuiAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-eeuiAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF4738D867E50FB2D943A92A /* libPods-eeuiApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-eeuiApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -211,6 +212,7 @@
 				B21356392124045E00EDD991 /* Main.storyboard */,
 				B21356362124045E00EDD991 /* ViewController.h */,
 				B21356372124045E00EDD991 /* ViewController.m */,
+				B2BF762C23320B4D001DF25B /* PrefixHeader.pch */,
 			);
 			path = eeuiApp;
 			sourceTree = "<group>";
@@ -643,6 +645,7 @@
 					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Alipay",
 					"\"$(SRCROOT)/eeuiApp/eeui/Utility/Pay/Alipay/AlipaySDK.framework\"",
 				);
+				GCC_PREFIX_HEADER = "$(SRCROOT)/eeuiApp/PrefixHeader.pch";
 				INFOPLIST_FILE = eeuiApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -675,6 +678,7 @@
 					"$(PROJECT_DIR)/eeuiApp/eeui/Utility/Pay/Alipay",
 					"\"$(SRCROOT)/eeuiApp/eeui/Utility/Pay/Alipay/AlipaySDK.framework\"",
 				);
+				GCC_PREFIX_HEADER = "$(SRCROOT)/eeuiApp/PrefixHeader.pch";
 				INFOPLIST_FILE = eeuiApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (

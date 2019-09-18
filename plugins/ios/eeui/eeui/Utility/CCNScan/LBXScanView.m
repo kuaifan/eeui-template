@@ -226,7 +226,7 @@ NS_ASSUME_NONNULL_END
     
     
     
-    NSLog(@"frame:%@",NSStringFromCGRect(self.frame));
+    EELog(@"frame:%@",NSStringFromCGRect(self.frame));
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     

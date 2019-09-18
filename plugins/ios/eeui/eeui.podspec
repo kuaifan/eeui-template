@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "eeui"
-  s.version      = "0.0.1"
+  s.version      = "1.0.14"
   s.summary      = "eeui plugin."
   s.description  = <<-DESC
                     eeui plugin.
@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
                   'eeui/Utility/CCNScan/CodeScan.bundle',
                   'eeui/Utility/MJRefresh/MJRefresh.bundle',
                   'eeui/Utility/IQKeyboardManager/Resources/IQKeyboardManager.bundle']
+  s.prefix_header_file = 'eeui/Utility/PrefixHeader.pch'
   s.platform     = :ios, "8.0"
   s.requires_arc = true
 

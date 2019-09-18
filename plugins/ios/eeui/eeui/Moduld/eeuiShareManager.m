@@ -30,11 +30,11 @@
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[text] applicationActivities:nil];
     activityVC.completionWithItemsHandler = ^(NSString *activityType,BOOL completed,NSArray *returnedItems,NSError *activityError)
     {
-        NSLog(@"%@", activityType);
+        EELog(@"%@", activityType);
         if (completed) {
-            NSLog(@"分享成功");
+            EELog(@"分享成功");
         } else {
-            NSLog(@"分享失败");
+            EELog(@"分享失败");
         }
     };
 
@@ -86,11 +86,11 @@
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:images applicationActivities:nil];
     activityVC.completionWithItemsHandler = ^(NSString *activityType,BOOL completed,NSArray *returnedItems,NSError *activityError)
     {
-        NSLog(@"%@", activityType);
+        EELog(@"%@", activityType);
         if (completed) {
-            NSLog(@"分享成功");
+            EELog(@"分享成功");
         } else {
-            NSLog(@"分享失败");
+            EELog(@"分享失败");
         }
     };
 

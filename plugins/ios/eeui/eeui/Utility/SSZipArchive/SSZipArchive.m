@@ -420,7 +420,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
                     success = NO;
                     break;
                 }
-                NSLog(@"[SSZipArchive] Error: %@", err.localizedDescription);
+                EELog(@"[SSZipArchive] Error: %@", err.localizedDescription);
             }
             
             if ([fileManager fileExistsAtPath:fullPath] && !isDirectory && !overwrite) {
@@ -442,7 +442,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
                             if (0 == fwrite(buffer, readBytes, 1, fp)) {
                                 if (ferror(fp)) {
                                     NSString *message = [NSString stringWithFormat:@"Failed to write file (check your free space)"];
-                                    NSLog(@"[SSZipArchive] %@", message);
+                                    EELog(@"[SSZipArchive] %@", message);
                                     success = NO;
                                     unzippingError = [NSError errorWithDomain:@"SSZipArchiveErrorDomain" code:SSZipArchiveErrorCodeFailedToWriteFile userInfo:@{NSLocalizedDescriptionKey: message}];
                                     break;
@@ -486,7 +486,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
                                 if (attr) {
                                     if (![fileManager setAttributes:attr ofItemAtPath:fullPath error:nil]) {
                                         // Can't set attributes
-                                        NSLog(@"[SSZipArchive] Failed to set attributes - whilst setting modification date");
+                                        EELog(@"[SSZipArchive] Failed to set attributes - whilst setting modification date");
                                     }
                                 }
                             }
@@ -506,7 +506,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
                                 // Update attributes
                                 if (![fileManager setAttributes:attrs ofItemAtPath:fullPath error:nil]) {
                                     // Unable to set the permissions attribute
-                                    NSLog(@"[SSZipArchive] Failed to set attributes - whilst setting permissions");
+                                    EELog(@"[SSZipArchive] Failed to set attributes - whilst setting permissions");
                                 }
                             }
                         }
@@ -558,7 +558,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
                         if (!removeSuccess)
                         {
                             NSString *message = [NSString stringWithFormat:@"Failed to delete existing symbolic link at \"%@\"", error.localizedDescription];
-                            NSLog(@"[SSZipArchive] %@", message);
+                            EELog(@"[SSZipArchive] %@", message);
                             success = NO;
                             unzippingError = [NSError errorWithDomain:SSZipArchiveErrorDomain code:error.code userInfo:@{NSLocalizedDescriptionKey: message}];
                         }
@@ -573,7 +573,7 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
                 {
                     // Bubble the error up to the completion handler
                     NSString *message = [NSString stringWithFormat:@"Failed to create symbolic link at \"%@\" to \"%@\" - symlink() error code: %d", fullPath, destinationPath, errno];
-                    NSLog(@"[SSZipArchive] %@", message);
+                    EELog(@"[SSZipArchive] %@", message);
                     success = NO;
                     unzippingError = [NSError errorWithDomain:NSPOSIXErrorDomain code:symlinkError userInfo:@{NSLocalizedDescriptionKey: message}];
                 }
@@ -613,10 +613,10 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
         NSError * err = nil;
         for (NSDictionary * d in directoriesModificationDates) {
             if (![[NSFileManager defaultManager] setAttributes:@{NSFileModificationDate: [d objectForKey:@"modDate"]} ofItemAtPath:[d objectForKey:@"path"] error:&err]) {
-                NSLog(@"[SSZipArchive] Set attributes failed for directory: %@.", [d objectForKey:@"path"]);
+                EELog(@"[SSZipArchive] Set attributes failed for directory: %@.", [d objectForKey:@"path"]);
             }
             if (err) {
-                NSLog(@"[SSZipArchive] Error setting directory file modification date attribute: %@", err.localizedDescription);
+                EELog(@"[SSZipArchive] Error setting directory file modification date attribute: %@", err.localizedDescription);
             }
         }
     }

@@ -301,7 +301,7 @@ WX_EXPORT_METHOD(@selector(setIndicatorHeight:))
     NSDictionary *data = @{@"page":@(page), @"position":@(position), @"index":@(index)};
     [self fireEvent:@"itemClick" params:data];
 
-    NSLog(@"%@", data);
+    EELog(@"%@", data);
 }
 
 - (void)itemLongClick:(UILongPressGestureRecognizer*)longRecognizer
