@@ -146,7 +146,7 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
             mText = var;
         }
         v_autotext.setText(mText);
-        v_autotext.init(((Activity) getContext()).getWindowManager());
+        v_autotext.init(getParent().getLayoutWidth());
     }
 
     /**

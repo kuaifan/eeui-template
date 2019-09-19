@@ -53,6 +53,17 @@ public class AutoScrollTextView extends android.support.v7.widget.AppCompatTextV
         setEllipsize(TextUtils.TruncateAt.MARQUEE);
     }
 
+    public void init(float width) {
+        paint = getPaint();
+        text = getText().toString();
+        textLength = paint.measureText(text);
+        viewWidth = width;
+        step = viewWidth + textLength;
+        temp_view_plus_text_length = viewWidth + textLength;
+        temp_view_plus_two_text_length = viewWidth + textLength * 2;
+        y = getTextSize() + getPaddingTop() + 3;
+    }
+
     public void init(WindowManager windowManager) {
         paint = getPaint();
         text = getText().toString();
