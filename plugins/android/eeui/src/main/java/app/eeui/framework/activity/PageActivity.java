@@ -2245,7 +2245,8 @@ public class PageActivity extends AppCompatActivity {
                         Activity activity = activityList.get(i);
                         if (activity instanceof PageActivity) {
                             PageActivity mActivity = ((PageActivity) activity);
-                            if (eeuiPage.realUrl(mActivity.mPageInfo.getUrl()).startsWith(value)) {
+                            String urlStr = eeuiParse.parseStr(eeuiPage.realUrl(mActivity.mPageInfo.getUrl()));
+                            if (urlStr.startsWith(value)) {
                                 if (i == size) {
                                     mActivity.reload();
                                     BGAKeyboardUtil.closeKeyboard(PageActivity.this);

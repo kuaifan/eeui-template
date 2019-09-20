@@ -1,8 +1,8 @@
 {
     "name": "eeui-template",
-    "version": "1.0.14",
+    "version": "1.0.15",
     "description": "A weex project",
-    "eeuiclimin": "1.0.14",
+    "eeuiclimin": "1.0.15",
     "author": "",
     "private": true,
     "scripts": {
