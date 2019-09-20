@@ -719,14 +719,11 @@ public class PageActivity extends AppCompatActivity {
             }
         }
         //
-        if (mPageInfo.getStatusBarStyle() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decorView = this.getWindow().getDecorView();
+        if (mPageInfo.getStatusBarStyle() != null) {
             if (mPageInfo.getStatusBarStyle()) {
-                //白色样式
-                decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                StatusBarUtil.setDarkMode(this);
             } else {
-                //黑色样式
-                decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                StatusBarUtil.setLightMode(this);
             }
         }
         getWindow().setSoftInputMode(this.convertSoftInputMode((mPageInfo.getSoftInputMode())));
@@ -1472,7 +1469,12 @@ public class PageActivity extends AppCompatActivity {
             return;
         }
         mPageInfo.setStatusBarStyle(isLight);
-        initStatusBar();
+        //
+        if (mPageInfo.getStatusBarStyle()) {
+            StatusBarUtil.setDarkMode(this);
+        } else {
+            StatusBarUtil.setLightMode(this);
+        }
     }
 
     /**
