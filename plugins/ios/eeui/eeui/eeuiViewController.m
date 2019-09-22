@@ -44,6 +44,7 @@ static int easyNavigationButtonTag = 8000;
 @property (nonatomic, strong) UIView *errorView;
 @property (nonatomic, strong) UIScrollView *errorInfoView;
 @property (nonatomic, strong) NSString *errorContent;
+@property (nonatomic, strong) NSString *navigationBarBarColor;
 @property (nonatomic, strong) UIColor *navigationBarBarTintColor;
 
 @property (nonatomic, strong) UIView *consoleView;
@@ -345,6 +346,7 @@ static int easyNavigationButtonTag = 8000;
     if (self.activityIndicatorView == nil) {
         self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
         self.activityIndicatorView.center = self.view.center;
+        self.activityIndicatorView.color = [WXConvert UIColor:@"#F9F9F9"];
         [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
         [self.view addSubview:self.activityIndicatorView];
     }
@@ -513,7 +515,7 @@ static int easyNavigationButtonTag = 8000;
         self.errorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
         [self.errorView setBackgroundColor:[UIColor whiteColor]];
 
-        NSInteger top = 80;
+        NSInteger top = [self fd_prefersNavigationBarHidden] == YES ? 100 : 120;
         UILabel * label1 = [[UILabel alloc] initWithFrame:CGRectMake(0, top, self.view.frame.size.width, 50)];
         label1.text = @"bibi~ 出错啦！";
         label1.textColor = [WXConvert UIColor:@"#3EB4FF"];
@@ -905,18 +907,26 @@ static int easyNavigationButtonTag = 8000;
         item = [params copy];
     }
     NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : @"";
-    NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"#232323";
+    NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"";
     CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : 32.0;
     NSString *subtitle = item[@"subtitle"] ? [WXConvert NSString:item[@"subtitle"]] : @"";
-    NSString *subtitleColor = item[@"subtitleColor"] ? [WXConvert NSString:item[@"subtitleColor"]] : @"#232323";
+    NSString *subtitleColor = item[@"subtitleColor"] ? [WXConvert NSString:item[@"subtitleColor"]] : @"";
     CGFloat subtitleSize = item[@"subtitleSize"] ? [WXConvert CGFloat:item[@"subtitleSize"]] : 24.0;
-    NSString *backgroundColor = item[@"backgroundColor"] ? [WXConvert NSString:item[@"backgroundColor"]] : (_statusBarColor ? _statusBarColor : @"#3EB4FF");
+    _navigationBarBarColor = item[@"backgroundColor"] ? [WXConvert NSString:item[@"backgroundColor"]] : (_statusBarColor ? _statusBarColor : @"#3EB4FF");
 
     //背景色
     CGFloat alpha = (255 - _statusBarAlpha) * 1.0 / 255;
-    _navigationBarBarTintColor = [[WXConvert UIColor:backgroundColor] colorWithAlphaComponent:alpha];
+    _navigationBarBarTintColor = [[WXConvert UIColor:_navigationBarBarColor] colorWithAlphaComponent:alpha];
     self.navigationController.navigationBar.barTintColor = _navigationBarBarTintColor;
     [self showNavigation];
+    
+    //文字默认颜色
+    if (titleColor.length == 0) {
+        titleColor = [_navigationBarBarColor isEqualToString:@"#3EB4FF"] ? @"#ffffff" : @"#232323";
+    }
+    if (subtitleColor.length == 0) {
+        subtitleColor = [_navigationBarBarColor isEqualToString:@"#3EB4FF"] ? @"#ffffff" : @"#232323";
+    }
 
     //标题
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
@@ -995,13 +1005,21 @@ static int easyNavigationButtonTag = 8000;
     for (NSDictionary *item in buttonArray)
     {
         NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : @"";
-        NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"#232323";
+        NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"";
         CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : 28.0;
         NSString *icon = item[@"icon"] ? [WXConvert NSString:item[@"icon"]] : @"";
-        NSString *iconColor = item[@"iconColor"] ? [WXConvert NSString:item[@"iconColor"]] : @"#232323";
+        NSString *iconColor = item[@"iconColor"] ? [WXConvert NSString:item[@"iconColor"]] : @"";
         CGFloat iconSize = item[@"iconSize"] ? [WXConvert CGFloat:item[@"iconSize"]] : 28.0;
         NSInteger width = item[@"width"] ? [WXConvert NSInteger:item[@"width"]] : 0;
         NSInteger spacing = item[@"spacing"] ? [WXConvert NSInteger:item[@"spacing"]] : 10;
+        
+        //文字默认颜色
+        if (titleColor.length == 0) {
+            titleColor = [_navigationBarBarColor isEqualToString:@"#3EB4FF"] ? @"#ffffff" : @"#232323";
+        }
+        if (iconColor.length == 0) {
+            iconColor = [_navigationBarBarColor isEqualToString:@"#3EB4FF"] ? @"#ffffff" : @"#232323";
+        }
 
         UIButton *customButton = [UIButton buttonWithType:UIButtonTypeCustom];
         if (icon.length > 0) {

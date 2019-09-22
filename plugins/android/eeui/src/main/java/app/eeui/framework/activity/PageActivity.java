@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.util.TypedValue;
@@ -1551,15 +1552,22 @@ public class PageActivity extends AppCompatActivity {
         }
 
         String title = eeuiJson.getString(item, "title", "");
-        String titleColor = eeuiJson.getString(item, "titleColor", "#232323");
+        String titleColor = eeuiJson.getString(item, "titleColor", "");
         float titleSize = eeuiJson.getFloat(item, "titleSize", 32f);
         String subtitle = eeuiJson.getString(item, "subtitle", "");
-        String subtitleColor = eeuiJson.getString(item, "subtitleColor", "#232323");
+        String subtitleColor = eeuiJson.getString(item, "subtitleColor", "");
         float subtitleSize = eeuiJson.getFloat(item, "subtitleSize", 24f);
         navigationBarBackgroundColor = eeuiJson.getString(item, "backgroundColor", (!mPageInfo.getStatusBarColor().equals("") ? mPageInfo.getStatusBarColor() : "#3EB4FF"));
 
         titleBar.setBackgroundColor(Color.parseColor(navigationBarBackgroundColor));
         showNavigation();
+
+        if (TextUtils.isEmpty(titleColor)) {
+            titleColor = navigationBarBackgroundColor.contentEquals("#3EB4FF") ? "#ffffff" : "#232323";
+        }
+        if (TextUtils.isEmpty(subtitleColor)) {
+            subtitleColor = navigationBarBackgroundColor.contentEquals("#3EB4FF") ? "#ffffff" : "#232323";
+        }
 
         if ("".equals(title)) {
             titleBarTitle.setVisibility(View.GONE);
@@ -1619,13 +1627,20 @@ public class PageActivity extends AppCompatActivity {
         for (int i = 0; i < buttonArray.size(); i++) {
             JSONObject item = eeuiJson.parseObject(buttonArray.get(i));
             String title = eeuiJson.getString(item, "title", "");
-            String titleColor = eeuiJson.getString(item, "titleColor", "#232323");
+            String titleColor = eeuiJson.getString(item, "titleColor", "");
             float titleSize = eeuiJson.getFloat(item, "titleSize", 28f);
             String icon = eeuiJson.getString(item, "icon", "");
-            String iconColor = eeuiJson.getString(item, "iconColor", "#232323");
+            String iconColor = eeuiJson.getString(item, "iconColor", "");
             float iconSize = eeuiJson.getFloat(item, "iconSize", 28f);
             int width = eeuiScreenUtils.weexPx2dp(mWXSDKInstance, item.get("width"));
             int spacing = eeuiScreenUtils.weexPx2dp(mWXSDKInstance, item.get("spacing"), 10);
+
+            if (TextUtils.isEmpty(titleColor)) {
+                titleColor = navigationBarBackgroundColor.contentEquals("#3EB4FF") ? "#ffffff" : "#232323";
+            }
+            if (TextUtils.isEmpty(iconColor)) {
+                iconColor = navigationBarBackgroundColor.contentEquals("#3EB4FF") ? "#ffffff" : "#232323";
+            }
 
             LinearLayout.LayoutParams customParams = new LinearLayout.LayoutParams(width > 0 ? width : LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             LinearLayout customButton = new LinearLayout(this);
