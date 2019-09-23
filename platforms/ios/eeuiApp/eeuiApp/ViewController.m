@@ -90,6 +90,7 @@ eeuiViewController *homeController;
             homeController.statusBarColor = [Config getHomeParams:@"statusBarColor" defaultVal:@"#3EB4FF"];
             homeController.statusBarAlpha = [[Config getHomeParams:@"statusBarAlpha" defaultVal:@"0"] intValue];
             homeController.statusBarStyleCustom = [Config getHomeParams:@"statusBarStyle" defaultVal:@""];
+            homeController.softInputMode = [Config getHomeParams:@"softInputMode" defaultVal:@"auto"];
             homeController.backgroundColor = [Config getHomeParams:@"backgroundColor" defaultVal:@"#ffffff"];
             homeController.statusBlock = ^(NSString *status) {
                 if ([status isEqualToString:@"create"]) {

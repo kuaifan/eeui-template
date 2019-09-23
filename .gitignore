@@ -1,7 +1,9 @@
 /.idea
 /.temp
 /common/backup
+/common/differ
 /common/dist
+/common/zip
 /node_modules
 /plugins-dev
 .DS_Store
