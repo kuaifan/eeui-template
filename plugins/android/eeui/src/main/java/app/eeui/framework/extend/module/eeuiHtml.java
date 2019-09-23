@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.WXSDKInstance;
 
 import java.io.File;
@@ -199,5 +200,33 @@ public class eeuiHtml {
             }
         }
         return websiteUrl;
+    }
+
+    /**
+     * 获取地址中的参数返回 JSONObject
+     * @param url
+     * @return
+     */
+    public static JSONObject getUrlQuery(String url) {
+        JSONObject queryJson = new JSONObject();
+        if (url == null) {
+            return queryJson;
+        }
+        url = url.trim();
+        if (url.equals("")) {
+            return queryJson;
+        }
+        String[] urlParts = url.split("\\?");
+        //没有参数
+        if (urlParts.length == 1) {
+            return queryJson;
+        }
+        //有参数
+        String[] params = urlParts[1].split("&");
+        for (String param : params) {
+            String[] keyValue = param.split("=");
+            queryJson.put(keyValue[0], keyValue[1]);
+        }
+        return queryJson;
     }
 }

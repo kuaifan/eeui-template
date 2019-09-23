@@ -10,6 +10,7 @@
 #import "DeviceUtil.h"
 #import "CustomWeexSDKManager.h"
 #import "WeexSDKManager.h"
+#import "NSString+BHURLHelper.h"
 #import "UIViewController+HHTransition.h"
 
 @interface eeuiNewPageManager ()
@@ -63,9 +64,20 @@
 }
 
 #pragma mark openPage
-- (void)openPage:(NSDictionary*)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback
+- (void)openPage:(NSDictionary*)dic weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback
 {
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:dic];
     NSString *url = params[@"url"] ? [WXConvert NSString:params[@"url"]] : @"";
+    
+    NSDictionary *queryJson = [url parseURLParameters];
+    if (queryJson != nil) {
+        NSArray *pageParams=@[@"pageName", @"pageTitle", @"pageType", @"cache", @"params", @"loading", @"swipeBack", @"swipeFullBack", @"animated", @"animatedType", @"statusBarType", @"statusBarColor", @"statusBarAlpha", @"statusBarStyle", @"softInputMode", @"translucent", @"backgroundColor", @"backPressedClose"];
+        for (NSString *key in queryJson) {
+            if ([pageParams containsObject:key]) {
+                params[key] = [queryJson objectForKey:key];
+            }
+        }
+    }
 
     NSString *pageName = params[@"pageName"] ? [WXConvert NSString:params[@"pageName"]] : [NSString stringWithFormat:@"NewPage-%d", (arc4random() % 100) + 1000];
     NSString *pageTitle = params[@"pageTitle"] ? [WXConvert NSString:params[@"pageTitle"]] : @"";

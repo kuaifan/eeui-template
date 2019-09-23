@@ -28,6 +28,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,6 +56,7 @@ import app.eeui.framework.extend.module.eeuiAjax;
 import app.eeui.framework.extend.module.eeuiAlertDialog;
 import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiCommon;
+import app.eeui.framework.extend.module.eeuiHtml;
 import app.eeui.framework.extend.module.eeuiIhttp;
 import app.eeui.framework.extend.module.eeuiJson;
 import app.eeui.framework.extend.module.eeuiOpenApp;
@@ -411,6 +413,16 @@ public class eeui {
         if (json.getString("url") == null || json.getString("url").isEmpty()) {
             return;
         }
+        JSONObject queryJson = eeuiHtml.getUrlQuery(json.getString("url"));
+        if (queryJson.size() > 0) {
+            String[] pageParams = {"pageName", "pageTitle", "pageType", "cache", "params", "loading", "swipeBack", "swipeFullBack", "animated", "animatedType", "statusBarType", "statusBarColor", "statusBarAlpha", "statusBarStyle", "softInputMode", "translucent", "backgroundColor", "backPressedClose"};
+            for (Map.Entry<String, Object> entry : queryJson.entrySet()) {
+                if (Arrays.asList(pageParams).contains(entry.getKey())) {
+                    json.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        //
         PageBean mBean = new PageBean();
         String pageType = eeuiJson.getString(json, "pageType", "app");
         String pageUrl = eeuiPage.rewriteUrl(context, eeuiPage.suffixUrl(pageType, json.getString("url")));
