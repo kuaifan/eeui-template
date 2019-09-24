@@ -22,12 +22,16 @@ public class TabbarBean {
     private boolean dot = false;
     private String statusBarColor = "";
     private Object view;
+    private boolean loading = true;
+    private boolean loadingBackground = false;
 
     public Map<String, Object> toMap() {
         Map<String, Object> data = new HashMap<>();
         data.put("tabName", getTabName());
         data.put("message", getMessage());
         data.put("dot", isDot());
+        data.put("loading", isLoading());
+        data.put("loadingBackground", isLoadingBackground());
         data.put("selectedIcon", getSelectedIcon());
         data.put("title", getTitle());
         data.put("unSelectedIcon", getUnSelectedIcon());
@@ -126,5 +130,21 @@ public class TabbarBean {
 
     public void setView(Object view) {
         this.view = view;
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
+    }
+
+    public boolean isLoadingBackground() {
+        return loadingBackground;
+    }
+
+    public void setLoadingBackground(boolean loadingBackground) {
+        this.loadingBackground = loadingBackground;
     }
 }

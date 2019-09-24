@@ -1074,7 +1074,7 @@ public class PageActivity extends AppCompatActivity {
             mHandler.postDelayed(()-> mWeexProgress.post(()->{
                 if (mWeexProgress.getVisibility() == View.INVISIBLE) {
                     mWeexProgress.setVisibility(View.VISIBLE);
-                    if (!mPageInfo.isTranslucent()) {
+                    if (!mPageInfo.isTranslucent() && mPageInfo.isLoadingBackground()) {
                         mWeexProgressBg.setVisibility(View.VISIBLE);
                     }
                 }

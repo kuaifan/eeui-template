@@ -415,7 +415,7 @@ public class eeui {
         }
         JSONObject queryJson = eeuiHtml.getUrlQuery(json.getString("url"));
         if (queryJson.size() > 0) {
-            String[] pageParams = {"pageName", "pageTitle", "pageType", "cache", "params", "loading", "swipeBack", "swipeFullBack", "animated", "animatedType", "statusBarType", "statusBarColor", "statusBarAlpha", "statusBarStyle", "softInputMode", "translucent", "backgroundColor", "backPressedClose"};
+            String[] pageParams = {"pageName", "pageTitle", "pageType", "cache", "params", "loading", "loadingBackground", "swipeBack", "swipeFullBack", "animated", "animatedType", "statusBarType", "statusBarColor", "statusBarAlpha", "statusBarStyle", "softInputMode", "translucent", "backgroundColor", "backPressedClose"};
             for (Map.Entry<String, Object> entry : queryJson.entrySet()) {
                 if (Arrays.asList(pageParams).contains(entry.getKey())) {
                     json.put(entry.getKey(), entry.getValue());
@@ -459,6 +459,10 @@ public class eeui {
         //是否显示等待（默认：true）
         if (json.getBoolean("loading") != null) {
             mBean.setLoading(json.getBoolean("loading"));
+        }
+        //是否显示等待过渡背景（默认：false）
+        if (json.getBoolean("loadingBackground") != null) {
+            mBean.setLoadingBackground(json.getBoolean("loadingBackground"));
         }
         //是否支持滑动返回（默认：false）
         if (json.getBoolean("swipeBack") != null) {

@@ -25,6 +25,7 @@ public class PageBean {
         temp.put("params", getParams());
         temp.put("cache", getCache());
         temp.put("loading", isLoading());
+        temp.put("loadingBackground", isLoadingBackground());
         temp.put("loadTime", getLoadTime());
         temp.put("swipeBack", isSwipeBack());
         temp.put("swipeFullBack", isSwipeFullBack());
@@ -50,6 +51,7 @@ public class PageBean {
      * params :             传递参数（可选）
      * cache :              缓存时间（可选，单位：毫秒，仅weex有效，默认：0不启用）
      * loading :            是否显示等待（可选，默认：true）
+     * loadingBackground :  是否显示等待过渡背景（可选，默认：false）
      * swipeBack :          是否支持滑动返回（可选，默认：true）
      * swipeFullBack :      是否支持全屏滑动返回（可选，默认：false）
      * animated :           是否进入页面需要动画效果（可选，默认：true）
@@ -78,6 +80,7 @@ public class PageBean {
     private Object params;
     private long cache = 0;
     private boolean loading = true;
+    private boolean loadingBackground = false;
     private boolean swipeBack = true;
     private boolean swipeFullBack = false;
     private boolean animated = true;
@@ -156,6 +159,14 @@ public class PageBean {
 
     public void setLoading(boolean loading) {
         this.loading = loading;
+    }
+
+    public boolean isLoadingBackground() {
+        return loadingBackground;
+    }
+
+    public void setLoadingBackground(boolean loadingBackground) {
+        this.loadingBackground = loadingBackground;
     }
 
     public boolean isSwipeBack() {

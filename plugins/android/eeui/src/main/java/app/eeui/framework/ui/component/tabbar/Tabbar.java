@@ -172,6 +172,8 @@ public class Tabbar extends WXVContainer<ViewGroup> {
             barBean.setUnSelectedIcon(newView.getBarBean().getUnSelectedIcon());
             barBean.setUrl(newView.getBarBean().getUrl());
             barBean.setView(newView);
+            barBean.setLoading(newView.getBarBean().isLoading());
+            barBean.setLoadingBackground(newView.getBarBean().isLoadingBackground());
             addPageView(barBean);
             setTabData();
         }
@@ -524,10 +526,13 @@ public class Tabbar extends WXVContainer<ViewGroup> {
         WXSDKBean sdkBean = new WXSDKBean();
         sdkBean.setContainer(vContainer);
         sdkBean.setProgress(view.findViewById(R.id.v_progress));
+        sdkBean.setProgressBackground(view.findViewById(R.id.v_progressbg));
         sdkBean.setErrorView(view.findViewById(R.id.v_error));
         sdkBean.setErrorCodeView(view.findViewById(R.id.v_error_code));
         sdkBean.setCache(barBean.getCache());
         sdkBean.setParams(barBean.getParams());
+        sdkBean.setLoading(barBean.isLoading());
+        sdkBean.setLoadingBackground(barBean.isLoadingBackground());
         sdkBean.setView(barBean.getView());
         //
         if (!barBean.getStatusBarColor().isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -628,12 +633,17 @@ public class Tabbar extends WXVContainer<ViewGroup> {
             sdkBean.getInstance().destroy();
         }
         //
-        sdkBean.getProgress().setVisibility(View.INVISIBLE);
-        mHandler.postDelayed(()-> sdkBean.getProgress().post(()->{
-            if (sdkBean.getProgress().getVisibility() == View.INVISIBLE) {
-                sdkBean.getProgress().setVisibility(View.VISIBLE);
-            }
-        }), 200);
+        if (sdkBean.isLoading()) {
+            sdkBean.getProgress().setVisibility(View.INVISIBLE);
+            mHandler.postDelayed(()-> sdkBean.getProgress().post(()->{
+                if (sdkBean.getProgress().getVisibility() == View.INVISIBLE) {
+                    sdkBean.getProgress().setVisibility(View.VISIBLE);
+                    if (sdkBean.isLoadingBackground()) {
+                        sdkBean.getProgressBackground().setVisibility(View.VISIBLE);
+                    }
+                }
+            }), 200);
+        }
         WXSDKInstance mWXSDKInstance = new WXSDKInstance(getContext());
         mWXSDKInstance.setContainerInfo("eeuiTabbarUrl", url);
         sdkBean.setInstance(mWXSDKInstance);
@@ -641,6 +651,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
             @Override
             public void onViewCreated(WXSDKInstance instance, View view) {
                 sdkBean.getProgress().setVisibility(View.GONE);
+                sdkBean.getProgressBackground().setVisibility(View.GONE);
                 sdkBean.getContainer().removeAllViews();
                 sdkBean.getContainer().addView(view);
                 //
@@ -731,6 +742,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
             parentViewGroup.removeView(view);
         }
         sdkBean.getProgress().setVisibility(View.GONE);
+        sdkBean.getProgressBackground().setVisibility(View.GONE);
         sdkBean.getContainer().removeAllViews();
         sdkBean.getContainer().addView(view);
         //

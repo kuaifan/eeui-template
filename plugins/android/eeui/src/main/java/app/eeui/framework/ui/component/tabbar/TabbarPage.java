@@ -175,6 +175,14 @@ public class TabbarPage extends WXVContainer<TabbarPageView> {
             case "statusBarColor":
                 barBean.setStatusBarColor(eeuiParse.parseStr(value, "#00000000"));
                 break;
+
+            case "loading":
+                barBean.setLoading(eeuiParse.parseBool(value, true));
+                break;
+
+            case "loadingBackground":
+                barBean.setLoadingBackground(eeuiParse.parseBool(value, false));
+                break;
         }
         return barBean;
     }

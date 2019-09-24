@@ -345,7 +345,11 @@ static int easyNavigationButtonTag = 8000;
     //加载图
     if (self.activityIndicatorView == nil) {
         self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-        self.activityIndicatorView.center = self.view.center;
+        if (self.isChildSubview) {
+            self.activityIndicatorView.center = CGPointMake(self.parentFrameCGRect.size.width * 0.5, self.parentFrameCGRect.size.height * 0.5);
+        }else{
+            self.activityIndicatorView.center = self.view.center;
+        }
         self.activityIndicatorView.color = [WXConvert UIColor:@"#F9F9F9"];
         [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
         [self.view addSubview:self.activityIndicatorView];
@@ -708,8 +712,10 @@ static int easyNavigationButtonTag = 8000;
 
 - (void)startLoading
 {
-    [self.activityIndicatorView setHidden:NO];
-    [self.activityIndicatorView startAnimating];
+    if (_loading) {
+        [self.activityIndicatorView setHidden:NO];
+        [self.activityIndicatorView startAnimating];        
+    }
 }
 
 - (void)updateInstanceState:(WXState)state

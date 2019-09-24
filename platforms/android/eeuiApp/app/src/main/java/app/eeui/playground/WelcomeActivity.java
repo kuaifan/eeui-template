@@ -57,6 +57,7 @@ public class WelcomeActivity extends AppCompatActivity {
             mPageBean.setParams(eeuiBase.config.getHomeParams("params", "{}"));
             mPageBean.setCache(eeuiParse.parseLong(eeuiBase.config.getHomeParams("cache", "0")));
             mPageBean.setLoading(eeuiParse.parseBool(eeuiBase.config.getHomeParams("loading", "true")));
+            mPageBean.setLoadingBackground(eeuiParse.parseBool(eeuiBase.config.getHomeParams("loadingBackground", "false")));
             mPageBean.setStatusBarType(eeuiBase.config.getHomeParams("statusBarType", "normal"));
             mPageBean.setStatusBarColor(eeuiBase.config.getHomeParams("statusBarColor", "#3EB4FF"));
             mPageBean.setStatusBarAlpha(eeuiParse.parseInt(eeuiBase.config.getHomeParams("statusBarAlpha", "0")));

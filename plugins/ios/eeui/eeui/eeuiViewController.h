@@ -21,9 +21,10 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 @property (nonatomic, assign) BOOL isDisSwipeBack;//禁止滑动返回
 @property (nonatomic, assign) BOOL isDisSwipeFullBack;//禁止全屏滑动返回
 @property (nonatomic, assign) BOOL isDisItemBack;//禁止点击返回按钮
-@property (nonatomic, assign) BOOL loading;//显示等待加载图
+@property (nonatomic, assign) BOOL loading;//显示等待加载效果
 @property (nonatomic, assign) BOOL showNavigationBar;//导航栏
 @property (nonatomic, assign) BOOL isChildSubview;//是否作为子视图添加，用于判断是否添加自定义状态栏
+@property (nonatomic, assign) CGRect parentFrameCGRect;//父视图尺寸，用于isChildSubview时加载效果的定位
 
 @property (nonatomic, assign) BOOL isTabbarChildView;//是否tabbar子视图
 @property (nonatomic, assign) BOOL isTabbarChildSelected;//是否tabbar子视图当前页，用于生命周期回传值

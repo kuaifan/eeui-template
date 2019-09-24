@@ -1,7 +1,6 @@
 package app.eeui.framework.ui.component.tabbar.bean;
 
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -14,6 +13,7 @@ public class WXSDKBean {
 
     private FrameLayout container;
     private View progress;
+    private View progressBackground;
     private View errorView;
     private TextView errorCodeView;
 
@@ -22,6 +22,8 @@ public class WXSDKBean {
     private String type = "";
     private Object params;
     private long cache = 0;
+    private boolean loading = true;
+    private boolean loadingBackground = false;
 
     private Object view;
 
@@ -49,6 +51,14 @@ public class WXSDKBean {
 
     public void setProgress(View progress) {
         this.progress = progress;
+    }
+
+    public View getProgressBackground() {
+        return progressBackground;
+    }
+
+    public void setProgressBackground(View progressBackground) {
+        this.progressBackground = progressBackground;
     }
 
     public View getErrorView() {
@@ -105,6 +115,22 @@ public class WXSDKBean {
 
     public void setView(Object view) {
         this.view = view;
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
+    }
+
+    public boolean isLoadingBackground() {
+        return loadingBackground;
+    }
+
+    public void setLoadingBackground(boolean loadingBackground) {
+        this.loadingBackground = loadingBackground;
     }
 
     public void setErrorMsg(String errorMsg) {

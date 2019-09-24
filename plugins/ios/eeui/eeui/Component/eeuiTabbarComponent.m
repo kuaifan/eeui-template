@@ -809,6 +809,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         NSString *title = dic[@"title"] ? [WXConvert NSString:dic[@"title"]] : @"New Page";
         NSString *url = dic[@"url"] ? [WXConvert NSString:dic[@"url"]] : @"";
         NSInteger cache = dic[@"cache"] ? [WXConvert NSInteger:dic[@"cache"]] : 0;
+        BOOL loading = dic[@"loading"] ? [WXConvert BOOL:dic[@"loading"]] : YES;
         NSString *statusBarColor = dic[@"statusBarColor"];
         id params = dic[@"params"];
 
@@ -827,7 +828,9 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         vc.url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url] mInstance:_tabInstance];
         vc.cache = cache;
         vc.params = params;
+        vc.loading = loading;
         vc.isChildSubview = YES;
+        vc.parentFrameCGRect = scoView.frame;
         vc.pageName = tabName;
         vc.title = title;
 
@@ -1141,6 +1144,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
                 NSString *title = dic[@"title"] ? [WXConvert NSString:dic[@"title"]] : @"New Page";
                 NSInteger cache = dic[@"cache"] ? [WXConvert NSInteger:dic[@"cache"]] : 0;
+                BOOL loading = dic[@"loading"] ? [WXConvert BOOL:dic[@"loading"]] : YES;
                 NSString *statusBarColor = dic[@"statusBarColor"];
                 id params = dic[@"params"];
 
@@ -1148,7 +1152,9 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
                 vc.url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url] mInstance:_tabInstance];
                 vc.cache = cache;
                 vc.params = params;
+                vc.loading = loading;
                 vc.isChildSubview = YES;
+                vc.parentFrameCGRect = scoView.frame;
                 vc.pageName = [NSString stringWithFormat:@"TabPage-%d", (arc4random() % 100) + 1000];
                 vc.title = title;
 
