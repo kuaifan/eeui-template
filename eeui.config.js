@@ -3,6 +3,7 @@
  * 参数详细说明：https://eeui.app/guide/config.html
  */
 module.exports = {
+    serviceUrl: "",
 
     homePage: "",
     homePageParams: { },

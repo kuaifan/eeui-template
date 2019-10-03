@@ -19,9 +19,31 @@
 
 @implementation Cloud
 
-static NSString *apiUrl = @"https://console.eeui.app/";
 static UIImageView *welcomeView;
 static ClickWelcome myClickWelcome;
+
++ (NSString*) getUrl:(NSString*) act
+{
+    NSString* url = [Config getString:@"serviceUrl" defaultVal:@""];
+    if (url.length > 0) {
+        if ([url containsString:@"?"]) {
+            return [[NSString alloc] initWithFormat:@"%@&act=%@", url, act];
+        }else{
+            return [[NSString alloc] initWithFormat:@"%@?act=%@", url, act];
+        }
+    }
+    //
+    NSString *apiUrl = @"https://console.eeui.app/";
+    if ([act isEqualToString:@"app"]) {
+        return [NSString stringWithFormat:@"%@api/client/app?", url];
+    }else if ([act isEqualToString:@"update-success"]) {
+        return [NSString stringWithFormat:@"%@api/client/update/success?", url];
+    }else if ([act isEqualToString:@"update-delete"]) {
+        return [NSString stringWithFormat:@"%@api/client/update/delete?", url];
+    }else{
+        return apiUrl;
+    }
+}
 
 //加载启动图
 + (NSInteger) welcome:(nullable UIView *) view click:(nullable ClickWelcome) click
@@ -82,7 +104,7 @@ static ClickWelcome myClickWelcome;
     if (appkey.length == 0) {
         return;
     }
-    NSString *url = [[NSString alloc] initWithFormat:@"%@api/client/app", apiUrl];
+    NSString *url = [self getUrl:@"app"];
     NSString *package = [[NSBundle mainBundle]bundleIdentifier];
     NSString *version = [NSString stringWithFormat:@"%ld", (long)[Config getLocalVersion]];
     NSString *versionName = [Config getLocalVersionName];
@@ -198,7 +220,7 @@ static ClickWelcome myClickWelcome;
         [fm createFileAtPath:lockFile contents:[[Config getyyyMMddHHmmss] dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
         [fm createFileAtPath:releaseFile contents:[[Config getyyyMMddHHmmss] dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        NSString *tempUrl = [[NSString alloc] initWithFormat:@"%@api/client/update/success?id=%@", apiUrl, id];
+        NSString *tempUrl = [[NSString alloc] initWithFormat:@"%@&id=%@", [self getUrl:@"update-success"], id];
         [manager GET:tempUrl parameters:nil progress:nil success:nil failure:nil];
     }else if (valid == 2) {
         //开始删除
@@ -217,7 +239,7 @@ static ClickWelcome myClickWelcome;
         }
         //标记回调
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        NSString *tempUrl = [[NSString alloc] initWithFormat:@"%@api/client/update/delete?id=%@", apiUrl, id];
+        NSString *tempUrl = [[NSString alloc] initWithFormat:@"%@&id=%@", [self getUrl:@"update-delete"], id];
         [manager GET:tempUrl parameters:nil progress:nil success:nil failure:nil];
     }
     [Config clear];

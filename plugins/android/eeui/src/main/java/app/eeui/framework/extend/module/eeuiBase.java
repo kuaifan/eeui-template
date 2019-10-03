@@ -371,7 +371,33 @@ public class eeuiBase {
      */
     public static class cloud {
 
-        private static String apiUrl = "https://console.eeui.app/";
+        /**
+         * 获取服务端地址
+         * @param act
+         * @return
+         */
+        public static String getUrl(String act) {
+            String url = config.getString("serviceUrl", null);
+            if (!TextUtils.isEmpty(url)) {
+                url+= url.contains("?") ? "&" : "?";
+                return url + "act=" + act;
+            }
+            //
+            String apiUrl = "https://console.eeui.app/";
+            switch (act) {
+                case "app":
+                    return apiUrl + "api/client/app?";
+
+                case "update-success":
+                    return apiUrl + "api/client/update/success?";
+
+                case "update-delete":
+                    return apiUrl + "api/client/update/delete?";
+
+                default:
+                    return apiUrl;
+            }
+        }
 
         /**
          * 加载启动图
@@ -461,7 +487,7 @@ public class eeuiBase {
             data.put("screenHeight", ScreenUtils.getScreenHeight());
             data.put("platform", "android");
             data.put("debug", BuildConfig.DEBUG ? 1 : 0);
-            eeuiIhttp.get("main", apiUrl + "api/client/app", data, new eeuiIhttp.ResultCallback() {
+            eeuiIhttp.get("main", getUrl("app"), data, new eeuiIhttp.ResultCallback() {
                 @Override
                 public void success(String resData, boolean isCache) {
                     JSONObject json = eeuiJson.parseObject(resData);
@@ -564,7 +590,7 @@ public class eeuiBase {
                                 fos.write(bytes);
                                 fos.close();
                                 //
-                                eeuiIhttp.get("checkUpdateLists", apiUrl + "api/client/update/success?id=" + id, null, null);
+                                eeuiIhttp.get("checkUpdateLists", getUrl("update-success") + "&id=" + id, null, null);
                                 checkUpdateHint(lists, data, number, isReboot);
                                 if (clearCache == 1) {
                                     eeuiBase.config.clearCustomConfig();
@@ -608,7 +634,7 @@ public class eeuiBase {
                     checkUpdateLists(lists, number + 1, isReboot);
                     return;
                 }
-                eeuiIhttp.get("checkUpdateLists", apiUrl + "api/client/update/delete?id=" + id, null, null);
+                eeuiIhttp.get("checkUpdateLists", getUrl("update-delete") + "&id=" + id, null, null);
                 checkUpdateHint(lists, data, number, isReboot);
                 if (clearCache == 1) {
                     eeuiBase.config.clearCustomConfig();

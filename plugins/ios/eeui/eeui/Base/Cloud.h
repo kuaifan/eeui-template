@@ -14,6 +14,7 @@ typedef void (^ClickWelcome)(void);
 
 @interface Cloud : NSObject
 
++ (NSString*) getUrl:(NSString*) act;
 + (NSInteger) welcome:(nullable UIView *) view click:(nullable ClickWelcome) click;
 + (void) welcomeClose;
 + (void) appData;
