@@ -20,27 +20,20 @@
 }
 
 -(instancetype)init {
-    self = [super init];
-    if (self) {
-        [self configBase];
+    if (self = [super init]) {
+        self.sx_defaultFixSpace = 0;
+        self.sx_disableFixSpace = NO;
     }
     return self;
 }
 
--(void)configBase {
-    self.sx_rawFixSpace = 0.f;
-    self.sx_defaultFixSpace = 0.f;
-    self.sx_fixedSpaceWidth = -20.f;
-    self.sx_disableFixSpace = NO;
+- (CGFloat)sx_systemSpace {
+    return MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) > 375 ? 20 : 16;
 }
 
 +(NSArray *)itemSpace:(UIBarButtonItem *)barButtonItem {
     UIBarButtonItem *space = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    if (@available(iOS 11.0, *)) {
-        space.width = [UINavigationConfig shared].sx_rawFixSpace;
-    }else{
-        space.width = 20.f;
-    }
+    space.width = MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) > 375 ? 20 : 16;
     return @[space, barButtonItem];
 }
 

@@ -15,6 +15,8 @@
 #import "eeuiIconComponent.h"
 #import "DeviceUtil.h"
 
+#define kItemViewTag 8000
+
 @interface eeuiNavView : UIView
 
 @end
@@ -27,12 +29,15 @@
 
 @property (nonatomic, strong) NSString *titleType;
 @property (nonatomic, strong) NSString *kbackgroundColor;
+
 @property (nonatomic, strong) NSMutableArray *subViews;
+@property (nonatomic, strong) NSMutableDictionary *subFrames;
 
 @property (nonatomic, strong) WXSDKInstance *navInstance;
 @property (nonatomic, strong) UIButton *backBtn;
 
 @property (nonatomic, assign) BOOL isDisItemBack;
+
 
 @end
 
@@ -54,12 +59,12 @@
         }
 
         _navInstance = weexInstance;
-
+        
         _subViews = [NSMutableArray arrayWithCapacity:5];
+        _subFrames = [[NSMutableDictionary alloc] init];
 
         [self _fillCSSNode:@{
                              @"flexDirection":@"row",
-                             @"height": @"100px",
                              @"alignItems": @"center"} isUpdate:YES];
     }
 
@@ -118,12 +123,15 @@
         [old removeFromSuperview];
     }
 
-    NSMutableArray *titleList = [NSMutableArray arrayWithCapacity:5];
     NSMutableArray *leftList = [NSMutableArray arrayWithCapacity:5];
+    NSMutableArray *titleList = [NSMutableArray arrayWithCapacity:5];
     NSMutableArray *rightList = [NSMutableArray arrayWithCapacity:5];
-
+    
     for (int i = 0; i< _subViews.count; i++) {
         eeuiNavbarItemComponent *component = _subViews[i];
+        
+        UIView *view = component.view;
+        CGRect frame = view.frame;
 
         if ([component.barType isEqualToString:@"back"]) {
             UIImage *backImg = [DeviceUtil getIconText:@"ios-arrow-back" font:19 color:@"#ffffff"];
@@ -132,6 +140,8 @@
             [backBtn setImage:backImg forState:UIControlStateNormal];
             [backBtn addTarget:self action:@selector(barBackClick) forControlEvents:UIControlEventTouchUpInside];
             [leftList addObject:backBtn];
+            backBtn.tag = kItemViewTag + i;
+            frame = backBtn.frame;
         } else if ([component.barType isEqualToString:@"title"]) {
             [titleList addObject:component.view];
         } else if ([component.barType isEqualToString:@"left"]) {
@@ -139,57 +149,83 @@
         } else if ([component.barType isEqualToString:@"right"]) {
             [rightList addObject:component.view];
         }
+        
+        view.tag = kItemViewTag + i;
+        [_subFrames setObject:@{
+                                @"w":@(frame.size.width),
+                                @"ml":@([component getCssStyleValueForKey:@"margin-left"]),
+                                @"mr":@([component getCssStyleValueForKey:@"margin-right"])} forKey:[NSString stringWithFormat:@"tag_%ld", (long)view.tag]];
     }
 
     CGFloat leftWidth = 0;
     for (UIView *view in leftList) {
-        leftWidth += view.frame.size.width;
+        NSString *key = [NSString stringWithFormat:@"tag_%ld", (long)view.tag];
+        leftWidth += [WXConvert CGFloat:_subFrames[key][@"ml"]] + [WXConvert CGFloat:_subFrames[key][@"w"]] + [WXConvert CGFloat:_subFrames[key][@"mr"]];
     }
 
     CGFloat rightWidth = 0;
     for (UIView *view in rightList) {
-        rightWidth += view.frame.size.width;
+        NSString *key = [NSString stringWithFormat:@"tag_%ld", (long)view.tag];
+        rightWidth += [WXConvert CGFloat:_subFrames[key][@"ml"]] + [WXConvert CGFloat:_subFrames[key][@"w"]] + [WXConvert CGFloat:_subFrames[key][@"mr"]];
     }
-
+    
     CGFloat titleWidth = 0;
     for (UIView *view in titleList) {
-        titleWidth += view.frame.size.width;
+        NSString *key = [NSString stringWithFormat:@"tag_%ld", (long)view.tag];
+        titleWidth += [WXConvert CGFloat:_subFrames[key][@"ml"]] + [WXConvert CGFloat:_subFrames[key][@"w"]] + [WXConvert CGFloat:_subFrames[key][@"mr"]];
     }
 
     UIView *leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, leftWidth, self.view.frame.size.height)];
+    [leftView setClipsToBounds:true];
     [navView addSubview:leftView];
 
     CGFloat leftX = 0;
     for (UIView *view in leftList) {
+        NSString *key = [NSString stringWithFormat:@"tag_%ld", (long)view.tag];
         CGRect frame = view.frame;
-        frame.origin.x = leftX;
+        frame.origin.x = [WXConvert NSInteger:_subFrames[key][@"ml"]] + leftX;
         view.frame = frame;
         [leftView addSubview:view];
-        leftX += view.frame.size.width;
+        leftX += [WXConvert CGFloat:_subFrames[key][@"ml"]] + [WXConvert CGFloat:_subFrames[key][@"w"]] + [WXConvert CGFloat:_subFrames[key][@"mr"]];
     }
 
     UIView *rightView = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width - rightWidth, 0, rightWidth, self.view.frame.size.height)];
+    [rightView setClipsToBounds:true];
     [navView addSubview:rightView];
 
     CGFloat rightX = 0;
     for (UIView *view in rightList) {
+        NSString *key = [NSString stringWithFormat:@"tag_%ld", (long)view.tag];
         CGRect frame = view.frame;
-        frame.origin.x = rightX;
+        frame.origin.x = [WXConvert NSInteger:_subFrames[key][@"ml"]] + rightX;
         view.frame = frame;
         [rightView addSubview:view];
-        rightX += view.frame.size.width;
+        rightX += [WXConvert CGFloat:_subFrames[key][@"ml"]] + [WXConvert CGFloat:_subFrames[key][@"w"]] + [WXConvert CGFloat:_subFrames[key][@"mr"]];
     }
 
-    UIView *titleView = [[UIView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - titleWidth)/2, 0, titleWidth, self.view.frame.size.height)];
+    CGFloat maxWidth = MAX(leftWidth, rightWidth);
+    UIView *titleView = nil;
+    if ([_titleType isEqualToString:@"left"]) {
+        titleView = [[UIView alloc] initWithFrame:CGRectMake(maxWidth, 0, self.view.frame.size.width - (maxWidth * 2), self.view.frame.size.height)];
+    }else if ([_titleType isEqualToString:@"right"]) {
+        titleWidth = MIN(titleWidth, self.view.frame.size.width - (maxWidth * 2));
+        CGFloat titleLeft = self.view.frame.size.width - (maxWidth * 2) - titleWidth + maxWidth;
+        titleView = [[UIView alloc] initWithFrame:CGRectMake(titleLeft, 0, titleWidth, self.view.frame.size.height)];
+    }else{
+        titleWidth = MIN(titleWidth, self.view.frame.size.width - (maxWidth * 2));
+        titleView = [[UIView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - titleWidth) / 2, 0, titleWidth, self.view.frame.size.height)];
+    }
+    [titleView setClipsToBounds:true];
     [navView addSubview:titleView];
 
     CGFloat titleX = 0;
     for (UIView *view in titleList) {
+        NSString *key = [NSString stringWithFormat:@"tag_%ld", (long)view.tag];
         CGRect frame = view.frame;
-        frame.origin.x = titleX;
+        frame.origin.x = [WXConvert NSInteger:_subFrames[key][@"ml"]] + titleX;
         view.frame = frame;
         [titleView addSubview:view];
-        titleX += view.frame.size.width;
+        titleX += [WXConvert CGFloat:_subFrames[key][@"ml"]] + [WXConvert CGFloat:_subFrames[key][@"w"]] + [WXConvert CGFloat:_subFrames[key][@"mr"]];
     }
 }
 

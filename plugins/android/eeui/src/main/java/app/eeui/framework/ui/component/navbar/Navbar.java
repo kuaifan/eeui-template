@@ -2,6 +2,7 @@ package app.eeui.framework.ui.component.navbar;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -130,13 +131,21 @@ public class Navbar extends WXVContainer<ViewGroup> {
                 JSONObject json = eeuiJson.parseObject(eeuiParse.parseStr(val, ""));
                 if (json.size() > 0) {
                     for (Map.Entry<String, Object> entry : json.entrySet()) {
-                        initProperty(entry.getKey(), entry.getValue());
+                        if ("backgroundColor".contentEquals(eeuiCommon.camelCaseName(entry.getKey()))) {
+                            initProperty("eeuiBackgroundColor", entry.getValue());
+                        }else{
+                            initProperty(entry.getKey(), entry.getValue());
+                        }
                     }
                 }
                 return true;
 
             case "titleType":
                 setTitleType(eeuiParse.parseStr(val, "center"));
+                return true;
+
+            case "eeuiBackgroundColor":
+                mView.setBackgroundColor(Color.parseColor(eeuiParse.parseStr(val, "#3EB4FF")));
                 return true;
 
             default:

@@ -7,19 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
 @interface UINavigationConfig : NSObject
 
-@property (nonatomic, assign) CGFloat sx_rawFixSpace; //item距离两端的默认间距
 @property (nonatomic, assign) CGFloat sx_defaultFixSpace; //item距离两端的间距,默认为0
-@property (nonatomic, assign) CGFloat sx_fixedSpaceWidth; //iOS11之前调整间距,默认为-20
 @property (nonatomic, assign) BOOL sx_disableFixSpace;    //是否禁止使用修正,默认为NO
 
-+ (instancetype)shared;//
-
++ (instancetype)shared;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+
+- (CGFloat)sx_systemSpace;
 
 + (NSArray *)itemSpace:(UIBarButtonItem *)barButtonItem;
 
