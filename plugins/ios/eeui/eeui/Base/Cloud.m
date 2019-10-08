@@ -35,11 +35,11 @@ static ClickWelcome myClickWelcome;
     //
     NSString *apiUrl = @"https://console.eeui.app/";
     if ([act isEqualToString:@"app"]) {
-        return [NSString stringWithFormat:@"%@api/client/app?", url];
+        return [NSString stringWithFormat:@"%@api/client/app?", apiUrl];
     }else if ([act isEqualToString:@"update-success"]) {
-        return [NSString stringWithFormat:@"%@api/client/update/success?", url];
+        return [NSString stringWithFormat:@"%@api/client/update/success?", apiUrl];
     }else if ([act isEqualToString:@"update-delete"]) {
-        return [NSString stringWithFormat:@"%@api/client/update/delete?", url];
+        return [NSString stringWithFormat:@"%@api/client/update/delete?", apiUrl];
     }else{
         return apiUrl;
     }

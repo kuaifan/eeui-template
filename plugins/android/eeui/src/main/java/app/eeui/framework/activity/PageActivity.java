@@ -713,6 +713,13 @@ public class PageActivity extends AppCompatActivity {
                         KeyboardUtils.unregisterSoftInputChangedListener(this);
                         StatusBarUtil.cancelColorForSwipeBack(this);
                         StatusBarUtil.setColor(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
+                        if (mPageInfo.getStatusBarStyle() != null) {
+                            if (mPageInfo.getStatusBarStyle()) {
+                                StatusBarUtil.setDarkMode(this);
+                            } else {
+                                StatusBarUtil.setLightMode(this);
+                            }
+                        }
                     }
                 });
             } else {
