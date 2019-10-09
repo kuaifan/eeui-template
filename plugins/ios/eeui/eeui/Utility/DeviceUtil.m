@@ -131,6 +131,13 @@
         return [self realUrl:url];
     }
     
+    if ([url hasPrefix:@"/"]) {
+        NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];
+        if ([homePage hasPrefix:tempUrl]) {
+            url = [NSString stringWithFormat:@"root:/%@", url];
+        }
+    }
+    
     if ([url hasPrefix:@"root:"]) {
         NSInteger fromIndex = [url hasPrefix:@"root://"] ? 7 : 5;
         NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:@"bundlejs"]];

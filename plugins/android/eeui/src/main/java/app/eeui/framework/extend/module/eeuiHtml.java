@@ -110,6 +110,12 @@ public class eeuiHtml {
             return realUrl(url);
         }
 
+        if (url.startsWith("/")) {
+            if (websiteUrl.startsWith("file://assets")) {
+                url = "root:/" + url;
+            }
+        }
+
         if (url.startsWith("root:")) {
             int fromIndex = url.startsWith("root://") ? 7 : 5;
             if (websiteUrl.startsWith("file://assets")) {
