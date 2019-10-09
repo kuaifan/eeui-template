@@ -12,8 +12,6 @@
 #import "SSZipArchive.h"
 #import "eeuiStorageManager.h"
 #import "eeuiNewPageManager.h"
-#import "eeuiCachesManager.h"
-#import "eeuiAjaxManager.h"
 #import "WeexSDKManager.h"
 #import "UIImageView+WebCache.h"
 
@@ -244,10 +242,7 @@ static ClickWelcome myClickWelcome;
     }
     [Config clear];
     if (clearCache == 1) {
-        [Config clearCustomConfig];
-        [[eeuiCachesManager sharedIntstance] clearCacheDir:nil];
-        [[eeuiNewPageManager sharedIntstance] clearCachePage];
-        [[eeuiAjaxManager sharedIntstance] clearCacheAjax];
+        [Config clearCache];
     }
     //
     NSString *reboot = [NSString stringWithFormat:@"%@", data[@"reboot"]];
@@ -270,11 +265,7 @@ static ClickWelcome myClickWelcome;
                 [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
             }
         }]];
-        UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        alertWindow.rootViewController = [[UIViewController alloc] init];
-        alertWindow.windowLevel = UIWindowLevelAlert + 1;
-        [alertWindow makeKeyAndVisible];
-        [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+        [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
     }else{
         [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
     }

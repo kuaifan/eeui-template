@@ -9,6 +9,9 @@
 #import "IpUtil.h"
 #import "DeviceUtil.h"
 #import "eeuiStorageManager.h"
+#import "eeuiNewPageManager.h"
+#import "eeuiCachesManager.h"
+#import "eeuiAjaxManager.h"
 #import <CommonCrypto/CommonDigest.h>
 
 @implementation Config
@@ -271,6 +274,15 @@ static NSMutableArray *verifyDir;
 + (void) clearCustomConfig
 {
     [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:eeui:customConfig" value:[DeviceUtil dictionaryToJson:@{}] expired:0];
+}
+
+//清除缓存
++ (void) clearCache
+{
+    [Config clearCustomConfig];
+    [[eeuiCachesManager sharedIntstance] clearCacheDir:nil];
+    [[eeuiNewPageManager sharedIntstance] clearCachePage];
+    [[eeuiAjaxManager sharedIntstance] clearCacheAjax];
 }
 
 //******************************************************************************************

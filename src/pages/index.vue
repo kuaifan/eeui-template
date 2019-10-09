@@ -196,7 +196,7 @@
         padding-left: 20px;
         padding-right: 20px;
         border-top-width: 1px;
-        border-top-color: #e8e8e8;
+        border-top-color: #f2f2f2;
         border-top-style: solid;
     }
 

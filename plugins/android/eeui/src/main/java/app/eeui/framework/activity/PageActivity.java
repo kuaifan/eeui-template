@@ -1913,8 +1913,9 @@ public class PageActivity extends AppCompatActivity {
         mActionItem.add(new ActionItem(6, "Console"));
         mActionItem.add(new ActionItem(7, "隐藏DEV"));
         mActionItem.add(new ActionItem(8, "重启APP"));
+        mActionItem.add(new ActionItem(9, "清除缓存"));
         if (eeuiBase.config.verifyIsUpdate()) {
-            mActionItem.add(new ActionItem(9, "清除热更新数据"));
+            mActionItem.add(new ActionItem(10, "清除热更新数据"));
         }
         ActionSheet.createBuilder(this, getSupportFragmentManager())
                 .setSubTitle("开发工具菜单")
@@ -2080,6 +2081,26 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 8: {
+                                JSONObject newJson = new JSONObject();
+                                newJson.put("title", "清除缓存");
+                                newJson.put("message", "确认清除缓存吗？\n（清除包括：clearCustomConfig、clearCacheDir、clearCachePage、clearCacheAjax）");
+                                eeuiAlertDialog.confirm(eeui.getActivityList().getLast(), newJson, new JSCallback() {
+                                    @Override
+                                    public void invoke(Object data) {
+                                        Map<String, Object> retData = eeuiMap.objectToMap(data);
+                                        if (eeuiParse.parseStr(retData.get("status")).equals("click") && eeuiParse.parseStr(retData.get("title")).equals("确定")) {
+                                            eeuiBase.config.clearCache();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void invokeAndKeepAlive(Object data) {
+
+                                    }
+                                });
+                                break;
+                            }
+                            case 9: {
                                 eeuiCommon.setVariate("__system:deBugSocket:Init", 0);
                                 eeuiBase.cloud.clearUpdate();
                                 break;

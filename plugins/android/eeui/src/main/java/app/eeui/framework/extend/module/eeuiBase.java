@@ -336,6 +336,16 @@ public class eeuiBase {
         }
 
         /**
+         * 清除缓存
+         */
+        public static void clearCache() {
+            eeuiBase.config.clearCustomConfig();
+            myApp().clearCacheDir(eeui.getApplication(), null);
+            myApp().clearCachePage(eeui.getApplication());
+            myApp().clearCacheAjax(eeui.getApplication());
+        }
+
+        /**
          * 判断是否文件夹（不存在返回NO）
          * @param file
          * @return
@@ -593,10 +603,7 @@ public class eeuiBase {
                                 eeuiIhttp.get("checkUpdateLists", getUrl("update-success") + "&id=" + id, null, null);
                                 checkUpdateHint(lists, data, number, isReboot);
                                 if (clearCache == 1) {
-                                    eeuiBase.config.clearCustomConfig();
-                                    myApp().clearCacheDir(eeui.getApplication(), null);
-                                    myApp().clearCachePage(eeui.getApplication());
-                                    myApp().clearCacheAjax(eeui.getApplication());
+                                    eeuiBase.config.clearCache();
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -637,10 +644,7 @@ public class eeuiBase {
                 eeuiIhttp.get("checkUpdateLists", getUrl("update-delete") + "&id=" + id, null, null);
                 checkUpdateHint(lists, data, number, isReboot);
                 if (clearCache == 1) {
-                    eeuiBase.config.clearCustomConfig();
-                    myApp().clearCacheDir(eeui.getApplication(), null);
-                    myApp().clearCachePage(eeui.getApplication());
-                    myApp().clearCacheAjax(eeui.getApplication());
+                    eeuiBase.config.clearCache();
                 }
             }
         }

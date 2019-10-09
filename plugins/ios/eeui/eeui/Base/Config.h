@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) setCustomConfig:(NSString*)key value:(id)value;
 + (NSMutableDictionary *) getCustomConfig;
 + (void) clearCustomConfig;
++ (void) clearCache;
 
 + (NSString *) getResourcePath:(NSString*)name;
 + (NSString *) getSandPath:(NSString*)name;

@@ -258,6 +258,9 @@ NSDictionary *mLaunchOptions;
     [alertController addAction:[UIAlertAction actionWithTitle:@"重启APP" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self rebootConfirm];
     }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"清除缓存" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self clearCache];
+    }]];
     if ([Config verifyIsUpdate]) {
         [alertController addAction:[UIAlertAction actionWithTitle:@"清除热更新数据" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [Cloud clearUpdate];
@@ -304,12 +307,7 @@ NSDictionary *mLaunchOptions;
         socketPort = portFiled.text;
         [self setSocketConnect:@"initialize"];
     }]];
-
-    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    alertWindow.rootViewController = [[UIViewController alloc] init];
-    alertWindow.windowLevel = UIWindowLevelAlert + 1;
-    [alertWindow makeKeyAndVisible];
-    [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 //查看日志
@@ -331,11 +329,7 @@ NSDictionary *mLaunchOptions;
                                            message: @"当前页面不支持。"
                                            preferredStyle:UIAlertControllerStyleAlert];
     [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:nil]];
-    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    alertWindow.rootViewController = [[UIViewController alloc] init];
-    alertWindow.windowLevel = UIWindowLevelAlert + 1;
-    [alertWindow makeKeyAndVisible];
-    [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 //打开扫一扫
@@ -386,11 +380,7 @@ NSDictionary *mLaunchOptions;
     [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [debugBtn removeFromSuperview];
     }]];
-    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    alertWindow.rootViewController = [[UIViewController alloc] init];
-    alertWindow.windowLevel = UIWindowLevelAlert + 1;
-    [alertWindow makeKeyAndVisible];
-    [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 //查看日志
@@ -405,11 +395,7 @@ NSDictionary *mLaunchOptions;
                                            message: @"当前页面不支持。"
                                            preferredStyle:UIAlertControllerStyleAlert];
     [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:nil]];
-    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    alertWindow.rootViewController = [[UIViewController alloc] init];
-    alertWindow.windowLevel = UIWindowLevelAlert + 1;
-    [alertWindow makeKeyAndVisible];
-    [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 
@@ -437,11 +423,20 @@ NSDictionary *mLaunchOptions;
 
         [WeexInitManager didFinishLaunchingWithOptions:mLaunchOptions];
     }]];
-    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    alertWindow.rootViewController = [[UIViewController alloc] init];
-    alertWindow.windowLevel = UIWindowLevelAlert + 1;
-    [alertWindow makeKeyAndVisible];
-    [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
+}
+
+//清除缓存
+- (void) clearCache {
+    UIAlertController * alertController = [UIAlertController
+                                           alertControllerWithTitle: @"清除缓存"
+                                           message: @"确认清除缓存吗？\n（清除包括：clearCustomConfig、clearCacheDir、clearCachePage、clearCacheAjax）"
+                                           preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:nil]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [Config clearCache];
+    }]];
+    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 //获取socket地址及端口
