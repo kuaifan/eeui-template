@@ -215,7 +215,12 @@
     if (vc == nil) {
         return;
     }
-
+    if ([params isKindOfClass:[NSDictionary class]]) {
+        NSString *newUrl = [WXConvert NSString:params[@"url"]];
+        if (newUrl.length > 0) {
+            [(eeuiViewController*)vc setHomeUrl:[DeviceUtil rewriteUrl:newUrl mInstance:weexInstance] refresh:NO];
+        }
+    }
     [(eeuiViewController*)vc refreshPage];
 }
 

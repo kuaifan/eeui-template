@@ -1319,6 +1319,16 @@ public class PageActivity extends AppCompatActivity {
     }
 
     /**
+     * 设置地址
+     * @param url
+     */
+    public void setPageUrl(String url) {
+        if (mPageInfo != null) {
+            mPageInfo.setUrl(eeuiPage.rewriteUrl(this, url));
+        }
+    }
+
+    /**
      * 刷新页面
      */
     public void reload() {

@@ -141,8 +141,9 @@ public class eeuiPage {
     /**
      * 刷新页面
      * @param name
+     * @param newUrl
      */
-    public static void reloadWin(String name) {
+    public static void reloadWin(String name, String newUrl) {
         if (name == null) {
             return;
         }
@@ -155,6 +156,9 @@ public class eeuiPage {
             return;
         }
         if (activity instanceof PageActivity) {
+            if (!TextUtils.isEmpty(newUrl)) {
+                ((PageActivity) activity).setPageUrl(newUrl);
+            }
             ((PageActivity) activity).reload();
         }
     }

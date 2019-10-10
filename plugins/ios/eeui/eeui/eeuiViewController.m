@@ -350,7 +350,7 @@ static int easyNavigationButtonTag = 8000;
         }else{
             self.activityIndicatorView.center = self.view.center;
         }
-        self.activityIndicatorView.color = [WXConvert UIColor:@"#F9F9F9"];
+        self.activityIndicatorView.color = [WXConvert UIColor:@"#cccccc"];
         [self.activityIndicatorView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleGray];
         [self.view addSubview:self.activityIndicatorView];
     }

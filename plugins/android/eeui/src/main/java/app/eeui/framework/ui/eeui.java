@@ -566,7 +566,11 @@ public class eeui {
             }
             return null;
         }
-        return eeuiPage.getWinInfo(pageName).getParams();
+        PageBean temp = eeuiPage.getWinInfo(pageName);
+        if (temp == null) {
+            return null;
+        }
+        return temp.getParams();
     }
 
     /**
@@ -575,13 +579,17 @@ public class eeui {
      */
     public void reloadPage(Context context, String object) {
         String pageName = eeuiPage.getPageName(object);
+        String newUrl = eeuiJson.getString(object, "url");
         if (pageName.isEmpty()) {
             if (context instanceof PageActivity) {
+                if (!TextUtils.isEmpty(newUrl)) {
+                    ((PageActivity) context).setPageUrl(newUrl);
+                }
                 ((PageActivity) context).reload();
             }
             return;
         }
-        eeuiPage.reloadWin(pageName);
+        eeuiPage.reloadWin(pageName, newUrl);
     }
 
     /**
