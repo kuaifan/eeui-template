@@ -18,6 +18,8 @@
 @implementation Cloud
 
 static UIImageView *welcomeView;
+static UIView *welcomeSuperView;
+static UITapGestureRecognizer *welcomeTapGesture;
 static ClickWelcome myClickWelcome;
 
 + (NSString*) getUrl:(NSString*) act
@@ -72,8 +74,9 @@ static ClickWelcome myClickWelcome;
         welcomeView.clipsToBounds = YES;
         [view addSubview:welcomeView];
         //
-        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickWelcome:)];
-        [view addGestureRecognizer:tapGesture];
+        welcomeTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickWelcome:)];
+        welcomeSuperView = view;
+        [welcomeSuperView addGestureRecognizer:welcomeTapGesture];
     }
     NSInteger welcome_wait = [[storage getCachesString:@"__system:welcome_wait" defaultVal:@"2000"] intValue];
     welcome_wait = welcome_wait > 100 ? welcome_wait : 2000;
@@ -85,6 +88,11 @@ static ClickWelcome myClickWelcome;
     if (myClickWelcome != nil) {
         myClickWelcome();
     }
+    if (welcomeSuperView != nil) {
+        [welcomeSuperView removeGestureRecognizer:welcomeTapGesture];
+        welcomeSuperView = nil;
+        welcomeTapGesture = nil;
+    }
 }
 
 //手动删除启动图
@@ -92,6 +100,11 @@ static ClickWelcome myClickWelcome;
 {
     if (welcomeView != nil) {
         [welcomeView removeFromSuperview];
+    }
+    if (welcomeSuperView != nil) {
+        [welcomeSuperView removeGestureRecognizer:welcomeTapGesture];
+        welcomeSuperView = nil;
+        welcomeTapGesture = nil;
     }
 }
 
