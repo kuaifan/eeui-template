@@ -3,7 +3,7 @@ var eeui = app.requireModule('eeui');
 Vue.mixin({
     data() {
         return {
-            resourceUrl: 'https://eeui.app/dist/1.0.1/pages/',
+            resourceUrl: 'https://editor.eeui.app/compile/editor/releases/1/official/3d888453570367d6173bdc4397b52496/src/pages/',
         }
     },
 

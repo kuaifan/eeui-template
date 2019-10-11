@@ -93,6 +93,21 @@ Vue.mixin({
         },
 
         /**
+         * 语言包数据
+         * @param language
+         * @param data
+         */
+        addLanguageData(language, data) {
+            if (!language || typeof data !== "object") {
+                return;
+            }
+            if (typeof this.privateLanguageData[language] === "undefined") {
+                this.privateLanguageData[language] = {};
+            }
+            Object.assign(this.privateLanguageData[language], data);
+        },
+
+        /**
          * 变化语言
          * @param language
          */

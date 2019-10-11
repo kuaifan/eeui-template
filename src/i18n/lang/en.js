@@ -25,7 +25,7 @@ export default {
     "页面功能": "Page function",
     "系统信息": "System information",
     "数据缓存": "Data storage",
-    "确认对话框": "Confirmation dialog",
+    "确认对话框": "Alert dialog",
     "等待弹窗": "Loading popup",
     "验证弹窗": "Captcha popup",
     "二维码扫描": "Qr scaner",
@@ -57,4 +57,5 @@ export default {
     "你确定要删除扫码记录吗？": "Are you sure you want to delete the scan code record?",
     "取消": "CANCEL",
     "确定": "OK",
+    "标题": "Title",
 }
