@@ -22,13 +22,13 @@
         <scroll-view class="list">
 
             <scroll-header>
-                <text class="list-title">组件 Components</text>
+                <text class="list-title">{{lang('组件')}}</text>
             </scroll-header>
 
-            <div class="list-item" v-for="(item, index) in components" :key="index" @click="openUrl(item.url)">
+            <div class="list-item" v-for="(item, index) in components" :key="index" @click="openUrl(resourceUrl + item.url)">
                 <div class="list-item-left">
                     <icon class="list-left-icon" :eeui="{content: item.icon}"></icon>
-                    <text class="list-left-title">{{item.title}}</text>
+                    <text class="list-left-title">{{lang(item.title)}}</text>
                 </div>
                 <div class="list-item-right">
                     <text class="list-right-title"><{{item.title_en}}></text>
@@ -37,13 +37,13 @@
             </div>
 
             <scroll-header>
-                <text class="list-title">自定义组件 UI</text>
+                <text class="list-title">{{lang('自定义组件')}}</text>
             </scroll-header>
 
-            <div class="list-item" v-for="(item, index) in uis" :key="index" @click="openUrl(item.url)">
+            <div class="list-item" v-for="(item, index) in uis" :key="index" @click="openUrl(resourceUrl + item.url)">
                 <div class="list-item-left">
                     <icon class="list-left-icon" :eeui="{content: item.icon}"></icon>
-                    <text class="list-left-title">{{item.title}}</text>
+                    <text class="list-left-title">{{lang(item.title)}}</text>
                 </div>
                 <div class="list-item-right">
                     <text class="list-right-title"><{{item.title_en}}></text>
@@ -52,13 +52,13 @@
             </div>
 
             <scroll-header>
-                <text class="list-title">模块 Module</text>
+                <text class="list-title">{{lang('模块')}}</text>
             </scroll-header>
 
-            <div class="list-item" v-for="(item, index) in module" :key="index" @click="openUrl(item.url)">
+            <div class="list-item" v-for="(item, index) in module" :key="index" @click="openUrl(resourceUrl + item.url)">
                 <div class="list-item-left">
                     <icon class="list-left-icon" :eeui="{content: item.icon}"></icon>
-                    <text class="list-left-title">{{item.title}}</text>
+                    <text class="list-left-title">{{lang(item.title)}}</text>
                 </div>
                 <div class="list-item-right">
                     <text class="list-right-title">{{item.title_en}}</text>
@@ -67,13 +67,13 @@
             </div>
 
             <scroll-header>
-                <text class="list-title">插件化 Plugins</text>
+                <text class="list-title">{{lang('插件化')}}</text>
             </scroll-header>
 
-            <div class="list-item" v-for="(item, index) in plugin" :key="index" @click="openUrl(item.url)">
+            <div class="list-item" v-for="(item, index) in plugin" :key="index" @click="openUrl(resourceUrl + item.url)">
                 <div class="list-item-left">
                     <icon class="list-left-icon" :eeui="{content: item.icon}"></icon>
-                    <text class="list-left-title">{{item.title}}</text>
+                    <text class="list-left-title">{{lang(item.title)}}</text>
                 </div>
                 <div class="list-item-right">
                     <text class="list-right-title">{{item.title_en}}</text>
@@ -83,7 +83,7 @@
             <div class="list-item" @click="openWeb('https://eeui.app/markets/')">
                 <div class="list-item-left">
                     <icon class="list-left-icon" content="tb-more"></icon>
-                    <text class="list-left-title">更多插件</text>
+                    <text class="list-left-title">{{lang('更多插件')}}</text>
                 </div>
                 <div class="list-item-right">
                     <text class="list-right-title"></text>
@@ -92,23 +92,33 @@
             </div>
 
             <scroll-header>
-                <text class="list-title">关于 About EEUI</text>
+                <text class="list-title">{{lang('关于')}}</text>
             </scroll-header>
 
             <div class="list-item" v-for="(item, index) in abouts" :key="index" @click="openWeb(item.url)">
                 <div class="list-item-left">
                     <icon class="list-left-icon" :eeui="{content: item.icon}"></icon>
-                    <text class="list-left-title">{{item.title}}</text>
+                    <text class="list-left-title">{{lang(item.title)}}</text>
                 </div>
                 <div class="list-item-right">
                     <text class="list-right-title">{{item.title_en}}</text>
                     <icon class="list-right-icon"></icon>
                 </div>
             </div>
+            <div class="list-item" @click="languageSettings">
+                <div class="list-item-left">
+                    <icon class="list-left-icon" :eeui="{content: 'md-globe'}"></icon>
+                    <text class="list-left-title">{{lang('语言')}}</text>
+                </div>
+                <div class="list-item-right">
+                    <text class="list-right-title">{{languageName()}}</text>
+                    <icon class="list-right-icon"></icon>
+                </div>
+            </div>
 
             <scroll-header class="list-title-box" v-if="history.length > 0">
-                <text class="list-title">扫码历史</text>
-                <text class="list-subtitle" @click="clearHistory()">清空历史</text>
+                <text class="list-title">{{lang('扫码历史')}}</text>
+                <text class="list-subtitle" @click="clearHistory()">{{lang('清空历史')}}</text>
             </scroll-header>
 
             <div v-if="history.length > 0">
@@ -258,214 +268,214 @@
 
 <script>
     const eeui = app.requireModule('eeui');
+    const picker = app.requireModule('picker');
+
+    require("../i18n");
 
     export default {
         data() {
             return {
-                components: [],
-                uis: [],
-                module: [],
-                plugin: [],
-                abouts: [],
+                components: [
+                    {
+                        title: '轮播控件',
+                        title_en: 'banner',
+                        icon: 'md-easel',
+                        url: 'component_banner.js',
+                    }, {
+                        title: '常用按钮',
+                        title_en: 'button',
+                        icon: 'logo-youtube',
+                        url: 'component_button.js',
+                    }, {
+                        title: '网格容器',
+                        title_en: 'grid',
+                        icon: 'md-grid',
+                        url: 'component_grid.js',
+                    }, {
+                        title: '字体图标',
+                        title_en: 'icon',
+                        icon: 'logo-ionic',
+                        url: 'component_icon.js',
+                    }, {
+                        title: '跑马文字',
+                        title_en: 'marquee',
+                        icon: 'md-code-working',
+                        url: 'component_marquee.js',
+                    }, {
+                        title: '导航栏',
+                        title_en: 'navbar',
+                        icon: 'md-menu',
+                        url: 'component_navbar.js',
+                    }, {
+                        title: '列表容器',
+                        title_en: 'scroll-view',
+                        icon: 'md-list',
+                        url: 'component_list.js',
+                    }, {
+                        title: '滚动文字',
+                        title_en: 'scroll-text',
+                        icon: 'ios-more',
+                        url: 'component_scroll_text.js',
+                    }, {
+                        title: '侧边栏',
+                        title_en: 'side-panel',
+                        icon: 'md-albums',
+                        url: 'component_side_panel.js',
+                    }, {
+                        title: '标签页面',
+                        title_en: 'tabbar',
+                        icon: 'md-filing',
+                        url: 'component_tabbar.js',
+                    }
+                ],
+                uis: [
+                    {
+                        title: 'Echarts图表',
+                        title_en: 'w-echarts',
+                        icon: 'md-trending-up',
+                        url: 'ui_echarts.js',
+                    },{
+                        title: 'Switch开关',
+                        title_en: 'w-switch',
+                        icon: 'md-switch',
+                        url: 'ui_switch.js',
+                    }
+                ],
+                module: [
+                    {
+                        title: '页面功能',
+                        title_en: 'newPage',
+                        icon: 'md-book',
+                        url: 'module_page.js',
+                    }, {
+                        title: '系统信息',
+                        title_en: 'system',
+                        icon: 'ios-cog',
+                        url: 'module_system.js',
+                    }, {
+                        title: '数据缓存',
+                        title_en: 'storage',
+                        icon: 'md-beaker',
+                        url: 'module_caches.js',
+                    }, {
+                        title: '确认对话框',
+                        title_en: 'alert',
+                        icon: 'md-alert',
+                        url: 'module_alert.js',
+                    }, {
+                        title: '等待弹窗',
+                        title_en: 'loading',
+                        icon: 'tb-loading',
+                        url: 'module_loading.js',
+                    }, {
+                        title: '验证弹窗',
+                        title_en: 'captcha',
+                        icon: 'md-checkmark-circle',
+                        url: 'module_captcha.js',
+                    }, {
+                        title: '二维码扫描',
+                        title_en: 'scaner',
+                        icon: 'tb-scan',
+                        url: 'module_scaner.js',
+                    }, {
+                        title: '跨域异步请求',
+                        title_en: 'ajax',
+                        icon: 'md-git-pull-request',
+                        url: 'module_ajax.js',
+                    }, {
+                        title: '剪切板',
+                        title_en: 'clipboard',
+                        icon: 'md-copy',
+                        url: 'module_plate.js',
+                    }, {
+                        title: '提示消息',
+                        title_en: 'toast',
+                        icon: 'md-notifications',
+                        url: 'module_toast.js',
+                    }, {
+                        title: '广告弹窗',
+                        title_en: 'adDialog',
+                        icon: 'logo-buffer',
+                        url: 'module_ad_dialog.js',
+                    }
+                ],
+                plugin: [
+                    {
+                        title: '城市选择器',
+                        title_en: 'citypicker',
+                        icon: 'md-pin',
+                        url: 'plugin_citypicker.js',
+                    }, {
+                        title: '图片选择器',
+                        title_en: 'picture',
+                        icon: 'md-camera',
+                        url: 'plugin_picture.js',
+                    }, {
+                        title: '组件截图',
+                        title_en: 'screenshots',
+                        icon: 'md-crop',
+                        url: 'plugin_screenshots.js',
+                    }, {
+                        title: '融云通信模块',
+                        title_en: 'rongim',
+                        icon: 'tb-community',
+                        url: 'plugin_rongim.js',
+                    }, {
+                        title: '友盟推送模块',
+                        title_en: 'umeng',
+                        icon: 'md-send',
+                        url: 'plugin_umeng.js',
+                    }, {
+                        title: '第三方支付(微信/支付宝)',
+                        title_en: 'pay',
+                        icon: 'tb-sponsor',
+                        url: 'plugin_pay.js',
+                    }, {
+                        title: '即时通讯',
+                        title_en: 'websocket',
+                        icon: 'md-repeat',
+                        url: 'plugin_websocket.js',
+                    }
+                ],
+                abouts: [
+                    {
+                        title: '开发文档',
+                        title_en: 'document',
+                        icon: 'md-code-working',
+                        url: 'https://eeui.app',
+                    }, {
+                        title: '托管平台',
+                        title_en: 'github',
+                        icon: 'logo-github',
+                        url: 'https://github.com/kuaifan/eeui',
+                    }, {
+                        title: '交流社区',
+                        title_en: 'https://bbs.eeui.app',
+                        icon: 'logo-rss',
+                        url: 'https://bbs.eeui.app',
+                    }, {
+                        title: 'EEUI版本',
+                        title_en: eeui.getVersionName(),
+                        icon: 'md-information-circle',
+                        url: 'https://eeui.app',
+                    }
+                ],
                 history: [],
+
+                language: 'system',
             }
         },
 
         created() {
-            this.components = [
-                {
-                    title: '轮播控件',
-                    title_en: 'banner',
-                    icon: 'md-easel',
-                    url: this.resourceUrl + 'component_banner.js',
-                }, {
-                    title: '常用按钮',
-                    title_en: 'button',
-                    icon: 'logo-youtube',
-                    url: this.resourceUrl + 'component_button.js',
-                }, {
-                    title: '网格容器',
-                    title_en: 'grid',
-                    icon: 'md-grid',
-                    url: this.resourceUrl + 'component_grid.js',
-                }, {
-                    title: '字体图标',
-                    title_en: 'icon',
-                    icon: 'logo-ionic',
-                    url: this.resourceUrl + 'component_icon.js',
-                }, {
-                    title: '跑马文字',
-                    title_en: 'marquee',
-                    icon: 'md-code-working',
-                    url: this.resourceUrl + 'component_marquee.js',
-                }, {
-                    title: '导航栏',
-                    title_en: 'navbar',
-                    icon: 'md-menu',
-                    url: this.resourceUrl + 'component_navbar.js',
-                }, {
-                    title: '列表容器',
-                    title_en: 'scroll-view',
-                    icon: 'md-list',
-                    url: this.resourceUrl + 'component_list.js',
-                }, {
-                    title: '滚动文字',
-                    title_en: 'scroll-text',
-                    icon: 'ios-more',
-                    url: this.resourceUrl + 'component_scroll_text.js',
-                }, {
-                    title: '侧边栏',
-                    title_en: 'side-panel',
-                    icon: 'md-albums',
-                    url: this.resourceUrl + 'component_side_panel.js',
-                }, {
-                    title: '标签页面',
-                    title_en: 'tabbar',
-                    icon: 'md-filing',
-                    url: this.resourceUrl + 'component_tabbar.js',
-                }
-            ];
-            this.uis = [
-                {
-                    title: 'Echarts图表',
-                    title_en: 'w-echarts',
-                    icon: 'md-trending-up',
-                    url: this.resourceUrl + 'ui_echarts.js',
-                },{
-                    title: 'Switch开关',
-                    title_en: 'w-switch',
-                    icon: 'md-switch',
-                    url: this.resourceUrl + 'ui_switch.js',
-                }
-            ];
-            this.module = [
-                {
-                    title: '页面功能',
-                    title_en: 'newPage',
-                    icon: 'md-book',
-                    url: this.resourceUrl + 'module_page.js',
-                }, {
-                    title: '系统信息',
-                    title_en: 'system',
-                    icon: 'ios-cog',
-                    url: this.resourceUrl + 'module_system.js',
-                }, {
-                    title: '数据缓存',
-                    title_en: 'storage',
-                    icon: 'md-beaker',
-                    url: this.resourceUrl + 'module_caches.js',
-                }, {
-                    title: '确认对话框',
-                    title_en: 'alert',
-                    icon: 'md-alert',
-                    url: this.resourceUrl + 'module_alert.js',
-                }, {
-                    title: '等待弹窗',
-                    title_en: 'loading',
-                    icon: 'tb-loading',
-                    url: this.resourceUrl + 'module_loading.js',
-                }, {
-                    title: '验证弹窗',
-                    title_en: 'captcha',
-                    icon: 'md-checkmark-circle',
-                    url: this.resourceUrl + 'module_captcha.js',
-                }, {
-                    title: '二维码扫描',
-                    title_en: 'scaner',
-                    icon: 'tb-scan',
-                    url: this.resourceUrl + 'module_scaner.js',
-                }, {
-                    title: '跨域异步请求',
-                    title_en: 'ajax',
-                    icon: 'md-git-pull-request',
-                    url: this.resourceUrl + 'module_ajax.js',
-                }, {
-                    title: '剪切板',
-                    title_en: 'clipboard',
-                    icon: 'md-copy',
-                    url: this.resourceUrl + 'module_plate.js',
-                }, {
-                    title: '提示消息',
-                    title_en: 'toast',
-                    icon: 'md-notifications',
-                    url: this.resourceUrl + 'module_toast.js',
-                }, {
-                    title: '广告弹窗',
-                    title_en: 'adDialog',
-                    icon: 'logo-buffer',
-                    url: this.resourceUrl + 'module_ad_dialog.js',
-                }
-            ];
-            this.plugin = [
-                {
-                    title: '城市选择器',
-                    title_en: 'citypicker',
-                    icon: 'md-pin',
-                    url: this.resourceUrl + 'plugin_citypicker.js',
-                }, {
-                    title: '图片选择器',
-                    title_en: 'picture',
-                    icon: 'md-camera',
-                    url: this.resourceUrl + 'plugin_picture.js',
-                }, {
-                    title: '组件截图',
-                    title_en: 'screenshots',
-                    icon: 'md-crop',
-                    url: this.resourceUrl + 'plugin_screenshots.js',
-                }, {
-                    title: '融云通信模块',
-                    title_en: 'rongim',
-                    icon: 'tb-community',
-                    url: this.resourceUrl + 'plugin_rongim.js',
-                }, {
-                    title: '友盟推送模块',
-                    title_en: 'umeng',
-                    icon: 'md-send',
-                    url: this.resourceUrl + 'plugin_umeng.js',
-                }, {
-                    title: '第三方支付(微信/支付宝)',
-                    title_en: 'pay',
-                    icon: 'tb-sponsor',
-                    url: this.resourceUrl + 'plugin_pay.js',
-                }, {
-                    title: '即时通讯',
-                    title_en: 'websocket',
-                    icon: 'md-repeat',
-                    url: this.resourceUrl + 'plugin_websocket.js',
-                }
-            ];
-            this.abouts = [
-                {
-                    title: '开发文档',
-                    title_en: 'document',
-                    icon: 'md-code-working',
-                    url: 'https://eeui.app',
-                }, {
-                    title: '托管平台',
-                    title_en: 'github',
-                    icon: 'logo-github',
-                    url: 'https://github.com/kuaifan/eeui',
-                }, {
-                    title: '交流社区',
-                    title_en: 'https://bbs.eeui.app',
-                    icon: 'logo-rss',
-                    url: 'https://bbs.eeui.app',
-                }, {
-                    title: 'EEUI版本',
-                    title_en: eeui.getVersionName(),
-                    icon: 'md-information-circle',
-                    url: 'https://eeui.app',
-                }
-            ];
             this.history = this.jsonParse(eeui.getCachesString("scaner", []), []);
             //
-            eeui.setPageBackPressed(null, function(){
+            eeui.setPageBackPressed(null, () => {
                 eeui.confirm({
-                    title: "温馨提示",
-                    message: "你确定要退出eeui.app吗？",
-                    buttons: ["取消", "确定"]
+                    title: this.lang("温馨提示"),
+                    message: this.lang("你确定要退出eeui.app吗？"),
+                    buttons: [this.lang("取消"), this.lang("确定")]
                 }, (result)=>{
-                    if (result.status === "click" && result.title === "确定") {
+                    if (result.status === "click" && result.title === this.lang("确定")) {
                         eeui.closePage(null);
                     }
                 });
@@ -487,19 +497,6 @@
                 eeui.reloadPage();
             },
 
-            clearHistory() {
-                eeui.confirm({
-                    title: "删除提示",
-                    message: "你确定要删除扫码记录吗？",
-                    buttons: ["取消", "确定"]
-                }, (result)=>{
-                    if (result.status === "click" && result.title === "确定") {
-                        this.history = [];
-                        eeui.setCachesString("scaner", this.jsonStringify(this.history), 0);
-                    }
-                });
-            },
-
             openUrl(url) {
                 eeui.openPage({
                     url: url,
@@ -517,6 +514,42 @@
                     pageType: 'auto'
                 });
             },
+
+            clearHistory() {
+                eeui.confirm({
+                    title: this.lang("删除提示"),
+                    message: this.lang("你确定要删除扫码记录吗？"),
+                    buttons: [this.lang("取消"), this.lang("确定")]
+                }, (result)=>{
+                    if (result.status === "click" && result.title === this.lang("确定")) {
+                        this.history = [];
+                        eeui.setCachesString("scaner", this.jsonStringify(this.history), 0);
+                    }
+                });
+            },
+
+            languageName() {
+                let options = ['system', 'en', 'zh'];
+                let optionsF = [this.lang("跟随系统"), 'English', '中文'];
+                return optionsF[options.indexOf(this.language)];
+            },
+
+            languageSettings() {
+                let options = ['system', 'en', 'zh'];
+                let index = options.indexOf(this.getLanguage());
+                picker.pick({
+                    title: this.lang("切换语言"),
+                    index: index,
+                    items: [this.lang("跟随系统"), 'English', '中文']
+                }, (res) => {
+                    let result = res.result,
+                        data = res.data;
+                    if (result === 'success') {
+                        this.setLanguage(options[data]);
+                        this.language = options[data];
+                    }
+                });
+            }
         }
     };
 </script>

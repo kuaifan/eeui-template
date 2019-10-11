@@ -11,4 +11,6 @@
 
 @interface eeuiNavbarComponent : WXComponent
 
+- (void)loadComponentView;
+
 @end

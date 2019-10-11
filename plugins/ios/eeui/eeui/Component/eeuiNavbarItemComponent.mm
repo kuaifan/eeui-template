@@ -8,6 +8,7 @@
 
 #import "eeuiNavbarItemComponent.h"
 #import "DeviceUtil.h"
+#import "eeuiNavbarComponent.h"
 
 @implementation eeuiNavbarItemComponent
 
@@ -48,9 +49,14 @@
     }
 }
 
-- (void)insertSubview:(WXComponent *)subcomponent atIndex:(NSInteger)index
+- (void)layoutDidFinish
 {
-    [super insertSubview:subcomponent atIndex:index];
+    [super layoutDidFinish];
+    WXComponent * superComponent = [self supercomponent];
+    if ([superComponent isKindOfClass:[eeuiNavbarComponent class]]) {
+        eeuiNavbarComponent *com = (eeuiNavbarComponent*) superComponent;
+        [com loadComponentView];
+    }
 }
 
 #pragma mark data

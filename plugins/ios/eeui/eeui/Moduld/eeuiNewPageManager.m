@@ -54,7 +54,7 @@
         }
     }
     if (name.length == 0) {
-        if (weexInstance.viewController.navigationController && [weexInstance.viewController isKindOfClass:[eeuiViewController class]]) {
+        if (weexInstance != nil && [weexInstance.viewController isKindOfClass:[eeuiViewController class]]) {
             name = [(eeuiViewController*)weexInstance.viewController pageName];
         }else{
             name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
