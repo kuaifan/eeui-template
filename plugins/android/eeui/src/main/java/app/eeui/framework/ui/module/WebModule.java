@@ -367,7 +367,7 @@ public class WebModule {
      * @param value
      * @param expired
      */
-    public void setCaches(ExtendWebView webView, String key, Object value, Long expired) {
+    public static void setCaches(ExtendWebView webView, String key, Object value, Long expired) {
         myApp().setCaches(webView.getContext(), key, value, expired);
     }
 
@@ -376,7 +376,7 @@ public class WebModule {
      * @param key
      * @param defaultVal
      */
-    public Object getCaches(ExtendWebView webView, String key, Object defaultVal) {
+    public static Object getCaches(ExtendWebView webView, String key, Object defaultVal) {
         return myApp().getCaches(webView.getContext(), key, defaultVal);
     }
 
@@ -386,7 +386,7 @@ public class WebModule {
      * @param value
      * @param expired
      */
-    public void setCachesString(ExtendWebView webView, String key, String value, Long expired) {
+    public static void setCachesString(ExtendWebView webView, String key, String value, Long expired) {
         myApp().setCachesString(webView.getContext(), key, value, expired);
     }
 
@@ -395,21 +395,21 @@ public class WebModule {
      * @param key
      * @param defaultVal
      */
-    public String getCachesString(ExtendWebView webView, String key, String defaultVal) {
+    public static String getCachesString(ExtendWebView webView, String key, String defaultVal) {
         return myApp().getCachesString(webView.getContext(), key, defaultVal);
     }
 
     /**
      * 获取全部缓存信息
      */
-    public JSONObject getAllCaches(ExtendWebView webView) {
+    public static JSONObject getAllCaches(ExtendWebView webView) {
         return myApp().getAllCaches(webView.getContext());
     }
 
     /**
      * 清除缓存信息
      */
-    public void clearAllCaches(ExtendWebView webView) {
+    public static void clearAllCaches(ExtendWebView webView) {
         myApp().clearAllCaches(webView.getContext());
     }
 
@@ -418,7 +418,7 @@ public class WebModule {
      * @param key
      * @param value
      */
-    public void setVariate(ExtendWebView webView, String key, Object value) {
+    public static void setVariate(ExtendWebView webView, String key, Object value) {
         myApp().setVariate(key, value);
     }
 
@@ -427,21 +427,21 @@ public class WebModule {
      * @param key
      * @param defaultVal
      */
-    public Object getVariate(ExtendWebView webView, String key, Object defaultVal) {
+    public static Object getVariate(ExtendWebView webView, String key, Object defaultVal) {
         return myApp().getVariate(key, defaultVal);
     }
 
     /**
      * 获取全部变量
      */
-    public JSONObject getAllVariate(ExtendWebView webView) {
+    public static JSONObject getAllVariate(ExtendWebView webView) {
         return myApp().getAllVariate();
     }
 
     /**
      * 清除全部变量
      */
-    public void clearAllVariate(ExtendWebView webView) {
+    public static void clearAllVariate(ExtendWebView webView) {
         myApp().clearAllVariate();
     }
 
