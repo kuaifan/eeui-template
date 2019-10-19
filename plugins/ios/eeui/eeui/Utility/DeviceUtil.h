@@ -29,6 +29,8 @@ static NSMutableDictionary * mAppboardWifi;
 
 + (UIViewController *)getTopviewControler;
 
++ (NSString*)urlEncoder:(NSString*)url;
+
 + (NSString*)realUrl:(NSString*)url;
 
 + (NSString*)suffixUrl:(NSString*)pageType url:(NSString*)url;

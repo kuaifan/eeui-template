@@ -52,6 +52,14 @@
     return rootVC;
 }
 
+//url转换
++ (NSString*)urlEncoder:(NSString*)url
+{
+    url = [url stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    return url;
+}
+
 //规范化url，删除所有符号连接（比如'/./', '/../' 以及多余的'/'）
 + (NSString*)realUrl:(NSString*)url
 {

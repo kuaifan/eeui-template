@@ -564,9 +564,11 @@
 
 - (void)openWeb:(NSString*)url
 {
-    NSString* newUrl = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-    NSURL *URL = [NSURL URLWithString:newUrl];
-    [[UIApplication sharedApplication] openURL:URL];
+    bool run = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    if (!run) {
+        NSURL *URL = [NSURL URLWithString:[DeviceUtil urlEncoder:url]];
+        [[UIApplication sharedApplication] openURL:URL];
+    }
 }
 
 - (void)goDesktop

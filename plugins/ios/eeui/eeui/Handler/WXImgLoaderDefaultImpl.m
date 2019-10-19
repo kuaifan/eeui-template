@@ -50,6 +50,7 @@
 {
     WXSDKInstance *instance = [WXSDKManager instanceForID:userInfo[@"instanceId"]];
     url = [Config verifyFile:[DeviceUtil rewriteUrl:url mInstance:instance]];
+    url = [DeviceUtil urlEncoder:url];
     
     return (id<WXImageOperationProtocol>)[SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:url] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
         if (completedBlock) {
