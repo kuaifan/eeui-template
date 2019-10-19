@@ -550,6 +550,24 @@ public class StatusBarUtil {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    public static void setLightMode(Activity activity, boolean flagVisible) {
+        setMIUIStatusBarDarkIcon(activity, true);
+        setMeizuStatusBarDarkIcon(activity, true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | (flagVisible ? View.SYSTEM_UI_FLAG_VISIBLE : View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN));
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    public static void setDarkMode(Activity activity, boolean flagVisible) {
+        setMIUIStatusBarDarkIcon(activity, false);
+        setMeizuStatusBarDarkIcon(activity, false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity.getWindow().getDecorView().setSystemUiVisibility(flagVisible ? View.SYSTEM_UI_FLAG_VISIBLE : View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+    }
+
     /**
      * 修改 MIUI V6  以上状态栏颜色
      */

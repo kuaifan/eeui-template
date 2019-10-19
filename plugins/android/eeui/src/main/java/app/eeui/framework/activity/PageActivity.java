@@ -130,6 +130,7 @@ public class PageActivity extends AppCompatActivity {
     public String identify;
     private PageBean mPageInfo;
     private String lifecycleLastStatus;
+    private boolean isCancelColorForSwipeBack = false;
 
     private Map<String, OnBackPressed> mOnBackPresseds = new HashMap<>();
     public interface OnBackPressed { boolean onBackPressed(); }
@@ -711,13 +712,14 @@ public class PageActivity extends AppCompatActivity {
                 KeyboardUtils.registerSoftInputChangedListener(this, (int height) -> {
                     if (KeyboardUtils.isSoftInputVisible(this)) {
                         KeyboardUtils.unregisterSoftInputChangedListener(this);
+                        isCancelColorForSwipeBack = true;
                         StatusBarUtil.cancelColorForSwipeBack(this);
                         StatusBarUtil.setColor(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
                         if (mPageInfo.getStatusBarStyle() != null) {
                             if (mPageInfo.getStatusBarStyle()) {
-                                StatusBarUtil.setDarkMode(this);
+                                StatusBarUtil.setDarkMode(this, isCancelColorForSwipeBack);
                             } else {
-                                StatusBarUtil.setLightMode(this);
+                                StatusBarUtil.setLightMode(this, isCancelColorForSwipeBack);
                             }
                         }
                     }
@@ -729,9 +731,9 @@ public class PageActivity extends AppCompatActivity {
         //
         if (mPageInfo.getStatusBarStyle() != null) {
             if (mPageInfo.getStatusBarStyle()) {
-                StatusBarUtil.setDarkMode(this);
+                StatusBarUtil.setDarkMode(this, isCancelColorForSwipeBack);
             } else {
-                StatusBarUtil.setLightMode(this);
+                StatusBarUtil.setLightMode(this, isCancelColorForSwipeBack);
             }
         }
         getWindow().setSoftInputMode(this.convertSoftInputMode((mPageInfo.getSoftInputMode())));
@@ -1489,9 +1491,9 @@ public class PageActivity extends AppCompatActivity {
         mPageInfo.setStatusBarStyle(isLight);
         //
         if (mPageInfo.getStatusBarStyle()) {
-            StatusBarUtil.setDarkMode(this);
+            StatusBarUtil.setDarkMode(this, isCancelColorForSwipeBack);
         } else {
-            StatusBarUtil.setLightMode(this);
+            StatusBarUtil.setLightMode(this, isCancelColorForSwipeBack);
         }
     }
 
