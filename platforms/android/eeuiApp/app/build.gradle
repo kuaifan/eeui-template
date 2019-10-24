@@ -68,7 +68,7 @@ dependencies {
     implementation "com.android.support:design:${project.supportLibVersion}"
     //
     implementation "com.alibaba:fastjson:${project.fastjsonLibVersion}"
-    implementation "com.taobao.android:weex_sdk:${project.weex_sdkLibVersion}"
+    implementation "org.apache.weex:sdk_legacy:${project.weex_sdkLibVersion}"
     implementation "com.taobao.android:weexplugin-loader:1.3"
     implementation "com.taobao.android:weexplugin-processor:1.3"
     implementation "com.alibaba.android:bindingx-core:1.1.4"

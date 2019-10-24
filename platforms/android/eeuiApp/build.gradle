@@ -51,12 +51,12 @@ subprojects {
         eeuiVersionCode = 21
         eeuiVersionName = "1.0.21"
 
-        compileSdkVersion = 28
+        compileSdkVersion = 29
         appMinSdkVersion = 16
         targetSdkVersion = 28
         supportLibVersion = "28.0.0"
 
         fastjsonLibVersion = "1.2.58"
-        weex_sdkLibVersion = "0.26.1.7-SNAPSHOT@aar"
+        weex_sdkLibVersion = "0.28.0"
     }
 }

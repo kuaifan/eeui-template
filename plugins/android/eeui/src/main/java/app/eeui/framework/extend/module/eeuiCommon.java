@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -816,7 +817,9 @@ public class eeuiCommon {
                         TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
                         if (tm != null) {
                             try {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    imei = Settings.System.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+                                }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     imei = tm.getImei();
                                 }else{
                                     imei = tm.getDeviceId();

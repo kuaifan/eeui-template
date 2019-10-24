@@ -42,7 +42,7 @@ dependencies {
     implementation "com.gyf.immersionbar:immersionbar:3.0.0"
     //
     compileOnly "com.alibaba:fastjson:${project.fastjsonLibVersion}"
-    compileOnly "com.taobao.android:weex_sdk:${project.weex_sdkLibVersion}"
+    compileOnly "org.apache.weex:sdk_legacy:${project.weex_sdkLibVersion}"
     compileOnly "com.taobao.android:weexplugin-processor:1.3"
     compileOnly "com.google.code.gson:gson:2.8.5"
 }
