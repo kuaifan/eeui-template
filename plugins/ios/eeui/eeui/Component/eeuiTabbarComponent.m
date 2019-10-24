@@ -544,7 +544,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
                 [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:tmpIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
-                            [btn setImage:[DeviceUtil imageResize:image andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:nil] forState:UIControlStateNormal];
+                            [btn setImage:[DeviceUtil imageResize:image andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:tmpIcon] forState:UIControlStateNormal];
                             if (self->_iconVisible == NO) {
                                 [btn SG_imagePositionStyle:(SGImagePositionStyleDefault) spacing:0];
                             } else if (self->_iconGravity) {
@@ -564,7 +564,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
                 [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:tmpIcon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
-                            [btn setImage:[DeviceUtil imageResize:image andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:nil] forState:UIControlStateSelected];
+                            [btn setImage:[DeviceUtil imageResize:image andResizeTo:CGSizeMake(iconWidth, iconHeight) icon:tmpIcon] forState:UIControlStateSelected];
                             if (self->_iconVisible == NO) {
                                 [btn SG_imagePositionStyle:(SGImagePositionStyleDefault) spacing:0];
                             } else if (self->_iconGravity) {
