@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
 
 
   s.name         = "eeui"
-  s.version      = "1.0.21"
+  s.version      = "1.0.28"
   s.summary      = "eeui plugin."
   s.description  = <<-DESC
                     eeui plugin.
