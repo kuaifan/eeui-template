@@ -28,6 +28,7 @@
 #include "core/moniter/render_performance.h"
 #include "core/render/page/render_page.h"
 #include "core/render/action/render_action_add_element.h"
+#include "core/render/action/render_action_add_child_to_richtext.h"
 #include "core/render/action/render_action_add_event.h"
 #include "core/render/action/render_action_appendtree_createfinish.h"
 #include "core/render/action/render_action_createbody.h"
@@ -35,10 +36,13 @@
 #include "core/render/action/render_action_layout.h"
 #include "core/render/action/render_action_move_element.h"
 #include "core/render/action/render_action_remove_element.h"
+#include "core/render/action/render_action_remove_child_from_richtext.h"
 #include "core/render/action/render_action_remove_event.h"
 #include "core/render/action/render_action_render_success.h"
 #include "core/render/action/render_action_update_attr.h"
+#include "core/render/action/render_action_update_richtext_child_attr.h"
 #include "core/render/action/render_action_update_style.h"
+#include "core/render/action/render_action_update_richtext_child_style.h"
 #include "core/render/action/render_action_trigger_vsync.h"
 #include "core/render/manager/render_manager.h"
 #include "core/render/node/factory/render_type.h"
@@ -48,18 +52,15 @@
 namespace WeexCore {
 
 RenderPage::RenderPage(const std::string &page_id)
-    : viewport_width_(0),
+    : RenderPageBase(page_id, "platform"),
+    viewport_width_(0),
       render_root_(nullptr),
-      page_id_(),
       render_page_size_(),
-      render_object_registers_(),
-      render_performance_(nullptr) {
+      render_object_registers_() {
 #if RENDER_LOG
   LOGD("[RenderPage] new RenderPage >>>> pageId: %s", pageId.c_str());
 #endif
 
-  this->page_id_ = page_id;
-  this->render_performance_ = new RenderPerformance();
   this->render_page_size_.first =
       WXCoreEnvironment::getInstance()->DeviceWidth();
   this->render_page_size_.second = NAN;
@@ -77,11 +78,6 @@ RenderPage::~RenderPage() {
   if (this->render_root_ != nullptr) {
     delete this->render_root_;
     this->render_root_ = nullptr;
-  }
-
-  if (this->render_performance_ != nullptr) {
-    delete this->render_performance_;
-    this->render_performance_ = nullptr;
   }
 }
 
@@ -127,6 +123,7 @@ void RenderPage::TraverseTree(RenderObject *render, long index) {
 bool RenderPage::CreateRootRender(RenderObject *root) {
   if (root == nullptr) return false;
 
+  set_is_dirty(true);
   SetRootRenderObject(root);
 
   if (isnan(this->render_root_->getStyleWidth())) {
@@ -169,6 +166,8 @@ bool RenderPage::AddRenderObject(const std::string &parent_ref,
   if (insert_posiotn < -1) {
     return false;
   }
+    
+  set_is_dirty(true);
 
   PushRenderToRegisterMap(child);
   SendAddElementAction(child, parent, insert_posiotn, false);
@@ -188,11 +187,19 @@ bool RenderPage::RemoveRenderObject(const std::string &ref) {
   RenderObject *parent = child->parent_render();
   if (parent == nullptr) return false;
 
+  set_is_dirty(true);
   parent->RemoveRenderObject(child);
 
   RemoveRenderFromRegisterMap(child);
-  SendRemoveElementAction(ref);
-    
+  RenderObject* richtext = child->RichtextParent();
+  if (richtext) {
+      RenderObject* parent = child->parent_render();
+      SendRemoveChildFromRichtextAction(ref, parent->type() == "richtext" ? nullptr : parent, richtext);
+      richtext->markDirty();
+      Batch();
+  } else {
+      SendRemoveElementAction(ref);
+  }
   delete child;
   return true;
 }
@@ -214,6 +221,17 @@ bool RenderPage::MoveRenderObject(const std::string &ref,
     }
   }
 
+  if(index > new_parent->getChildCount()){
+    std::stringstream msg;
+    msg << "Out of array bounds when RenderPage::MoveRenderObject, specified index: "
+    << index << "array size " << new_parent->getChildCount();
+
+    WeexCore::WeexCoreManager::Instance()->getPlatformBridge()->platform_side()
+    ->ReportException(page_id().c_str(), "RenderPage::MoveRenderObject", msg.str().c_str());
+    return false;
+  }
+
+  set_is_dirty(true);
   child->getParent()->removeChild(child);
   new_parent->addChildAt(child, index);
 
@@ -226,6 +244,8 @@ bool RenderPage::UpdateStyle(
     std::vector<std::pair<std::string, std::string>> *src) {
   RenderObject *render = GetRenderObject(ref);
   if (render == nullptr || src == nullptr || src->empty()) return false;
+    
+  set_is_dirty(true);
 
   std::vector<std::pair<std::string, std::string>> *style = nullptr;
   std::vector<std::pair<std::string, std::string>> *margin = nullptr;
@@ -234,77 +254,85 @@ bool RenderPage::UpdateStyle(
   bool inheriableLayout = false;
     
   bool flag = false;
-  int result =
-      WeexCoreManager::Instance()
-          ->getPlatformBridge()
-          ->platform_side()
-          ->HasTransitionPros(this->page_id_.c_str(), ref.c_str(), src);
-  // int result =
-  // Bridge_Impl_Android::getInstance()->callHasTransitionPros(mPageId.c_str(),
-  // ref.c_str(), src);
+  RenderObject* richtext = render->RichtextParent();
 
-  if (result == 1) {
-    SendUpdateStyleAction(render, src, margin, padding, border);
-  } else {
-    for (auto iter = src->begin(); iter != src->end(); iter++) {
-      switch (render->UpdateStyle((*iter).first, (*iter).second)) {
-        case kTypeStyle:
-          if (style == nullptr) {
-            style = new std::vector<std::pair<std::string, std::string>>();
-          }
-          style->insert(style->end(), (*iter));
-          flag = true;
-          break;
-        case kTypeMargin:
-          if (margin == nullptr) {
-            margin = new std::vector<std::pair<std::string, std::string>>();
-          }
-          render->UpdateStyleInternal(
-              (*iter).first, (*iter).second, 0, [=, &flag](float foo) {
-                  (*iter).second = to_string(foo);
-                  margin->insert(margin->end(), (*iter));
-                  flag = true;
-              });
-          break;
-        case kTypePadding:
-          if (padding == nullptr) {
-            padding = new std::vector<std::pair<std::string, std::string>>();
-          }
-          render->UpdateStyleInternal(
-              (*iter).first, (*iter).second, 0, [=, &flag](float foo) {
-                  (*iter).second = to_string(foo);
-                  padding->insert(padding->end(), (*iter));
-                  flag = true;
-              });
-          break;
-        case kTypeBorder:
-          if (border == nullptr) {
-            border = new std::vector<std::pair<std::string, std::string>>();
-          }
-          render->UpdateStyleInternal(
-              (*iter).first, (*iter).second, 0, [=, &flag](float foo) {
-                  (*iter).second = to_string(foo);
-                  border->insert(border->end(), (*iter));
-                  flag = true;
-              });
-          break;
-          case kTypeInheritableLayout:
-              inheriableLayout = true;
-              break;
-        default: break;
+  if (richtext) {
+      richtext->markDirty();
+      style = new std::vector<std::pair<std::string, std::string>>();
+      for (auto it : *src) {
+          style->push_back(it);
       }
-    }
-  }
-  
-  if (reserve_css_styles_ || render == render_root_) {
-    // If a page requires that all raw css styles saved, we merge to RenderObject's styles map
-    render->MergeStyles(src);
-  }
+      flag = true;
+      RenderObject* parent = render->parent_render();
+      SendUpdateRichtextChildStyleAction(render, style, parent->type() == "richtext" ? nullptr : parent, richtext);
+  } else {
+      int result = WeexCoreManager::Instance()
+        ->getPlatformBridge()
+        ->platform_side()
+        ->HasTransitionPros(this->page_id_.c_str(), ref.c_str(), src);
 
-  if (style != nullptr || margin != nullptr || padding != nullptr ||
-      border != nullptr || inheriableLayout)
-    SendUpdateStyleAction(render, style, margin, padding, border);
+      if (result == 1) {
+        SendUpdateStyleAction(render, src, margin, padding, border);
+      } else {
+        for (auto iter = src->begin(); iter != src->end(); iter++) {
+          switch (render->UpdateStyle((*iter).first, (*iter).second)) {
+            case kTypeStyle:
+              if (style == nullptr) {
+                style = new std::vector<std::pair<std::string, std::string>>();
+              }
+              style->insert(style->end(), (*iter));
+              flag = true;
+              break;
+            case kTypeMargin:
+              if (margin == nullptr) {
+                margin = new std::vector<std::pair<std::string, std::string>>();
+              }
+              render->UpdateStyleInternal(
+                  (*iter).first, (*iter).second, 0, [=, &flag](float foo) {
+                      (*iter).second = to_string(foo);
+                      margin->insert(margin->end(), (*iter));
+                      flag = true;
+                  });
+              break;
+            case kTypePadding:
+              if (padding == nullptr) {
+                padding = new std::vector<std::pair<std::string, std::string>>();
+              }
+              render->UpdateStyleInternal(
+                  (*iter).first, (*iter).second, 0, [=, &flag](float foo) {
+                      (*iter).second = to_string(foo);
+                      padding->insert(padding->end(), (*iter));
+                      flag = true;
+                  });
+              break;
+            case kTypeBorder:
+              if (border == nullptr) {
+                border = new std::vector<std::pair<std::string, std::string>>();
+              }
+              render->UpdateStyleInternal(
+                  (*iter).first, (*iter).second, 0, [=, &flag](float foo) {
+                      (*iter).second = to_string(foo);
+                      border->insert(border->end(), (*iter));
+                      flag = true;
+                  });
+              break;
+              case kTypeInheritableLayout:
+                  inheriableLayout = true;
+                  break;
+        default: break;
+          }
+        }
+      }
+      if (reserve_css_styles_ || render == render_root_) {
+          // If a page requires that all raw css styles saved, we merge to RenderObject's styles map
+          render->MergeStyles(src);
+      }
 
+     if (style != nullptr || margin != nullptr || padding != nullptr ||
+         border != nullptr || inheriableLayout) {
+         SendUpdateStyleAction(render, style, margin, padding, border);
+     }
+  }
   Batch();
 
   if (src != nullptr) {
@@ -351,10 +379,17 @@ bool RenderPage::UpdateAttr(
   RenderObject *render = GetRenderObject(ref);
   if (render == nullptr || attrs == nullptr || attrs->empty()) return false;
 
-  SendUpdateAttrAction(render, attrs);
-
-  for (auto iter = attrs->cbegin(); iter != attrs->cend(); iter++) {
-    render->UpdateAttr((*iter).first, (*iter).second);
+  RenderObject* richtext = render->RichtextParent();
+  if (richtext) {
+      RenderObject* parent = render->parent_render();
+      SendUpdateRichtextChildAttrAction(render, attrs, parent->type() == "richtext" ? nullptr : parent, richtext);
+      richtext->markDirty();
+  } else {
+      set_is_dirty(true);
+      SendUpdateAttrAction(render, attrs);
+      for (auto iter = attrs->cbegin(); iter != attrs->cend(); iter++) {
+          render->UpdateAttr((*iter).first, (*iter).second);
+      }
   }
   Batch();
   if (attrs != nullptr) {
@@ -399,6 +434,7 @@ bool RenderPage::AddEvent(const std::string &ref, const std::string &event) {
   RenderObject *render = GetRenderObject(ref);
   if (render == nullptr) return false;
 
+  set_is_dirty(true);
   render->AddEvent(event);
 
   RenderAction *action = new RenderActionAddEvent(this->page_id_, ref, event);
@@ -410,6 +446,7 @@ bool RenderPage::RemoveEvent(const std::string &ref, const std::string &event) {
   RenderObject *render = GetRenderObject(ref);
   if (render == nullptr) return false;
 
+  set_is_dirty(true);
   render->RemoveEvent(event);
 
   RenderAction *action =
@@ -422,6 +459,8 @@ bool RenderPage::CreateFinish() {
   if (this->render_root_ == nullptr) {
     return false;
   }
+
+  set_is_dirty(true);
   Batch();
   SendCreateFinishAction();
   // RenderSuccess means the Dom created after executing script finishes layout
@@ -443,14 +482,6 @@ void RenderPage::LayoutImmediately() {
   }
 }
 
-void RenderPage::PostRenderAction(RenderAction *action) {
-  if (action != nullptr) {
-    action->ExecuteAction();
-    delete action;
-    action = nullptr;
-  }
-}
-
 void RenderPage::PushRenderToRegisterMap(RenderObject *render) {
   if (render == nullptr) return;
 
@@ -464,6 +495,10 @@ void RenderPage::PushRenderToRegisterMap(RenderObject *render) {
     if (child != nullptr) {
       PushRenderToRegisterMap(child);
     }
+  }
+
+  for (auto it : render->shadow_objects_) {
+      PushRenderToRegisterMap(it);
   }
 }
 
@@ -509,10 +544,25 @@ void RenderPage::SendAddElementAction(RenderObject *child, RenderObject *parent,
   if (parent != nullptr && parent->type() == WeexCore::kRenderRecycleList) {
     will_layout = false;
   }
-
-  RenderAction *action =
-      new RenderActionAddElement(page_id(), child, parent, index, will_layout);
-  PostRenderAction(action);
+    RenderObject* richtext = child->RichtextParent();
+    if (!richtext) {
+        RenderAction *action =
+        new RenderActionAddElement(page_id(), child, parent, index, will_layout);
+        PostRenderAction(action);
+    } else {
+        SendAddChildToRichtextAction(child, parent->type() == "richtext" ? nullptr : parent, richtext);
+        richtext->markDirty();
+        return;
+    }
+    if (child->type() == "richtext") {
+        for (auto it : child->get_shadow_objects()) {
+            if (it) {
+                SendAddChildToRichtextAction(it, nullptr, child);
+            }
+        }
+        child->markDirty();
+        return;
+  }
 
   int i = 0;
   for (auto it = child->ChildListIterBegin(); it != child->ChildListIterEnd();
@@ -535,10 +585,26 @@ void RenderPage::SendAddElementAction(RenderObject *child, RenderObject *parent,
       ++i;
     }
   }
-
   if (!is_recursion && i > 0 && child->IsAppendTree()) {
     SendAppendTreeCreateFinish(child->ref());
   }
+}
+
+void RenderPage::SendAddChildToRichtextAction(RenderObject *child, RenderObject *parent, RenderObject *richtext) {
+    RenderAction *action =   new RenderActionAddChildToRichtext(page_id(), child, parent, richtext);
+    PostRenderAction(action);
+
+    for (auto it : child->get_child_list()) {
+        RenderObject *grandson = static_cast<RenderObject *>(it);
+        if (grandson) {
+            SendAddChildToRichtextAction(grandson, child, richtext);
+        }
+    }
+}
+
+void RenderPage::SendRemoveChildFromRichtextAction(const std::string &ref, RenderObject *parent, RenderObject *richtext) {
+    RenderAction *action = new RenderActionRemoveChildFromRichtext(page_id(), ref, parent, richtext);
+    PostRenderAction(action);
 }
 
 void RenderPage::SendRemoveElementAction(const std::string &ref) {
@@ -572,12 +638,27 @@ void RenderPage::SendUpdateStyleAction(
   PostRenderAction(action);
 }
 
+void RenderPage::SendUpdateRichtextChildStyleAction(RenderObject *render, std::vector<std::pair<std::string, std::string>> *style, RenderObject *parent, RenderObject *richtext) {
+    RenderAction *action = new RenderActionUpdateRichtextChildStyle(
+                                                       page_id(), render->ref(), style, parent, richtext);
+    PostRenderAction(action);
+
+}
+
 void RenderPage::SendUpdateAttrAction(
     RenderObject *render,
     std::vector<std::pair<std::string, std::string>> *attrs) {
   RenderAction *action =
       new RenderActionUpdateAttr(page_id(), render->ref(), attrs);
   PostRenderAction(action);
+}
+
+void RenderPage::SendUpdateRichtextChildAttrAction(
+                                      RenderObject *render,
+                                      std::vector<std::pair<std::string, std::string>> *attrs, RenderObject *parent, RenderObject *richtext) {
+    RenderAction *action =
+    new RenderActionUpdateRichtextChildAttr(page_id(), render->ref(), attrs, parent, richtext);
+    PostRenderAction(action);
 }
 
 void RenderPage::SendUpdateAttrAction(
@@ -600,48 +681,9 @@ void RenderPage::SendUpdateAttrAction(
   }
 }
 
-void RenderPage::SendCreateFinishAction() {
-  RenderAction *action = new RenderActionCreateFinish(page_id());
-  PostRenderAction(action);
-}
-
-void RenderPage::SendRenderSuccessAction() {
-  RenderAction *action = new RenderActionRenderSuccess(page_id());
-  PostRenderAction(action);
-}
-
 void RenderPage::SendAppendTreeCreateFinish(const std::string &ref) {
   RenderAction *action = new RenderActionAppendTreeCreateFinish(page_id(), ref);
   PostRenderAction(action);
-}
-
-void RenderPage::CssLayoutTime(const int64_t &time) {
-  if (this->render_performance_ != nullptr)
-    this->render_performance_->cssLayoutTime += time;
-}
-
-void RenderPage::ParseJsonTime(const int64_t &time) {
-  if (this->render_performance_ != nullptr)
-    this->render_performance_->parseJsonTime += time;
-}
-
-void RenderPage::CallBridgeTime(const int64_t &time) {
-  if (this->render_performance_ != nullptr)
-    this->render_performance_->callBridgeTime += time;
-}
-
-std::vector<int64_t> RenderPage::PrintFirstScreenLog() {
-  std::vector<int64_t> ret;
-  if (this->render_performance_ != nullptr)
-    ret = this->render_performance_->PrintPerformanceLog(onFirstScreen);
-  return ret;
-}
-
-std::vector<int64_t> RenderPage::PrintRenderSuccessLog() {
-  std::vector<int64_t> ret;
-  if (this->render_performance_ != nullptr)
-    ret = this->render_performance_->PrintPerformanceLog(onRenderSuccess);
-  return ret;
 }
 
 void RenderPage::Batch() {

@@ -17,8 +17,15 @@
  * under the License.
  */
 
-#import "WXComponent.h"
+#import <WeexSDK/WXComponent.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface WXRichText : WXComponent<UITextViewDelegate>
-
+- (void)addChildNode:(NSString *)type ref:(NSString*)ref styles:(NSDictionary*)styles attributes:(NSDictionary*)attributes  toSuperNodeRef:(NSString *)superNodeRef;
+- (void)updateChildNodeAttributes:(NSDictionary *)attributes ref:(NSString*)ref parentRef:(NSString*)parentRef;
+- (void)updateChildNodeStyles:(NSDictionary *)styles ref:(NSString*)ref parentRef:(NSString*)parentRef;
+- (void)removeChildNode:(NSString*)ref superNodeRef:(NSString *)superNodeRef;
 @end
+
+NS_ASSUME_NONNULL_END

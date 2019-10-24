@@ -108,9 +108,6 @@
 - (instancetype) init
 {
     self = [super init];
-    if (self) {
-        
-    }
     return self;
 }
 
@@ -406,8 +403,6 @@ if ([removeEventName isEqualToString:@#eventName1]||[removeEventName isEqualToSt
             [_tapGesture removeTarget:self action:@selector(onClick:)];
         }@catch(NSException *exception) {
             WXLog(@"%@", exception);
-        } @finally {
-            
         }
         _tapGesture = nil;
     }
@@ -489,8 +484,6 @@ if ([removeEventName isEqualToString:@#eventName1]||[removeEventName isEqualToSt
         }
     }@catch(NSException *exception) {
         WXLog(@"%@", exception);
-    }@finally {
-        
     }
     _swipeGestures = nil;
 }
@@ -552,8 +545,6 @@ if ([removeEventName isEqualToString:@#eventName1]||[removeEventName isEqualToSt
             [_longPressGesture removeTarget:self action:@selector(onLongPress:)];
         }@catch(NSException * exception) {
             WXLog(@"%@", exception);
-        }@finally {
-            
         }
         _longPressGesture = nil;
     }
@@ -712,8 +703,6 @@ if ([removeEventName isEqualToString:@#eventName1]||[removeEventName isEqualToSt
             [_panGesture removeTarget:self action:@selector(onPan:)];
         }@catch(NSException * exception) {
             WXLog(@"%@", exception);
-        }@finally {
-            
         }
         _panGesture = nil;
     }
@@ -910,7 +899,7 @@ if ([removeEventName isEqualToString:@#eventName1]||[removeEventName isEqualToSt
 
 - (instancetype)initWithTarget:(id)target action:(SEL)action
 {
-    return [self initWithComponent:nil];;
+    return [self initWithComponent:nil];
 }
 
 - (instancetype)initWithComponent:(WXComponent *)component
@@ -1010,15 +999,13 @@ if ([removeEventName isEqualToString:@#eventName1]||[removeEventName isEqualToSt
         NSDictionary *resultTouch = [_component touchResultWithScreenLocation:screenLocation pageLocation:pageLocation identifier:touch.wx_identifier];
         NSMutableDictionary * mutableResultTouch = [resultTouch mutableCopy];
         
-        if (WX_SYS_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-            float value = touch.force*60;
-            float maxValue = touch.maximumPossibleForce*60;
-            if (touch.maximumPossibleForce) {
-                // the forece value will be range 1 from 0.
-                [mutableResultTouch setObject:[NSNumber numberWithFloat:value/maxValue] forKey:@"force"];
-            }else {
-                [mutableResultTouch setObject:[NSNumber numberWithFloat:0.0] forKey:@"force"];
-            }
+        float value = touch.force*60;
+        float maxValue = touch.maximumPossibleForce*60;
+        if (touch.maximumPossibleForce) {
+            // the forece value will be range 1 from 0.
+            [mutableResultTouch setObject:[NSNumber numberWithFloat:value/maxValue] forKey:@"force"];
+        }else {
+            [mutableResultTouch setObject:[NSNumber numberWithFloat:0.0] forKey:@"force"];
         }
         
         if (mutableResultTouch) { // component is nil, mutableResultTouch will be nil

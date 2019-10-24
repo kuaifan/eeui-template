@@ -159,12 +159,7 @@ static NSThread *WXComponentThread;
     dispatch_once(&onceToken, ^{
         WXComponentThread = [[NSThread alloc] initWithTarget:[self sharedManager] selector:@selector(_runLoopThread) object:nil];
         [WXComponentThread setName:WX_COMPONENT_THREAD_NAME];
-        if(WX_SYS_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-            [WXComponentThread setQualityOfService:[[NSThread mainThread] qualityOfService]];
-        } else {
-            [WXComponentThread setThreadPriority:[[NSThread mainThread] threadPriority]];
-        }
-        
+        [WXComponentThread setQualityOfService:[[NSThread mainThread] qualityOfService]];
         [WXComponentThread start];
     });
     
@@ -321,8 +316,8 @@ static NSThread *WXComponentThread;
     if (supercomponent.ignoreInteraction) {
         component.ignoreInteraction = YES;
     } else {
-        if ([[attributes objectForKey:@"ignoreInteraction"] boolValue]) {
-            component.ignoreInteraction = YES;
+        if ([attributes objectForKey:@"ignoreInteraction"]) {
+            component.ignoreInteraction = [[attributes objectForKey:@"ignoreInteraction"] boolValue];
         } else {
             if (component->_positionType == WXPositionTypeFixed) {
                 component.ignoreInteraction = YES;
@@ -572,6 +567,11 @@ static NSThread *WXComponentThread;
     [_indexDict setObject:component forKey:ref];
 }
 
+- (void)removeComponentForRef:(NSString *)ref
+{
+    [_indexDict removeObjectForKey:ref];
+}
+
 - (NSDictionary *)_extractBindings:(NSDictionary **)attributesOrStylesPoint
 {
     NSDictionary *attributesOrStyles = *attributesOrStylesPoint;
@@ -694,8 +694,9 @@ static NSThread *WXComponentThread;
     [component _updateStylesOnMainThread:normalStyles resetStyles:resetStyles];
     [component readyToRender];
     
+    NSDictionary* dupStyles = [NSDictionary dictionaryWithDictionary:normalStyles];
     WXPerformBlockOnComponentThread(^{
-        [component _updateStylesOnComponentThread:normalStyles resetStyles:resetStyles isUpdateStyles:isUpdateStyles];
+        [component _updateStylesOnComponentThread:dupStyles resetStyles:resetStyles isUpdateStyles:isUpdateStyles];
     });
 }
 
@@ -711,8 +712,10 @@ static NSThread *WXComponentThread;
     NSMutableArray *resetStyles = [NSMutableArray new];
     [self filterStyles:styles normalStyles:normalStyles resetStyles:resetStyles];
     [component _updateStylesOnComponentThread:normalStyles resetStyles:resetStyles isUpdateStyles:isUpdateStyles];
+    
+    NSDictionary* dupStyles = [NSDictionary dictionaryWithDictionary:normalStyles];
     [self _addUITask:^{
-        [component _updateStylesOnMainThread:normalStyles resetStyles:resetStyles];
+        [component _updateStylesOnMainThread:dupStyles resetStyles:resetStyles];
         [component readyToRender];
     }];
 }
@@ -1100,7 +1103,7 @@ static NSThread *WXComponentThread;
         }
     }
     
-    if (mismatchBeginIndex == _uiTaskQueue.count) {
+    if (mismatchBeginIndex == _uiTaskQueue.count) {//!OCLint
         // here we get end tag or there are not begin and end directives
     } else {
         _syncUITaskCount ++;

@@ -174,7 +174,7 @@ do {\
 
 - (void)_initViewPropertyWithStyles:(NSDictionary *)styles
 {
-    _backgroundColor = styles[@"backgroundColor"] ? [WXConvert UIColor:styles[@"backgroundColor"]] : [UIColor clearColor];
+    self.styleBackgroundColor = styles[@"backgroundColor"] ? [WXConvert UIColor:styles[@"backgroundColor"]] : [UIColor clearColor];
     _backgroundImage = styles[@"backgroundImage"] ? [WXConvert NSString:styles[@"backgroundImage"]]: nil;
     _opacity = styles[@"opacity"] ? [WXConvert CGFloat:styles[@"opacity"]] : 1.0;
     _clipToBounds = styles[@"overflow"] ? [WXConvert WXClipType:styles[@"overflow"]] : NO;
@@ -193,7 +193,7 @@ do {\
 {
     WX_CHECK_COMPONENT_TYPE(self.componentType)
     if (styles[@"backgroundColor"]) {
-        _backgroundColor = [WXConvert UIColor:styles[@"backgroundColor"]];
+        self.styleBackgroundColor = [WXConvert UIColor:styles[@"backgroundColor"]];
     }
     if (styles[@"opacity"]) {
         _opacity = [WXConvert CGFloat:styles[@"opacity"]];
@@ -211,7 +211,7 @@ do {\
     }
     
     if (styles[@"backgroundColor"]) {
-        _backgroundColor = [WXConvert UIColor:styles[@"backgroundColor"]];
+        self.styleBackgroundColor = [WXConvert UIColor:styles[@"backgroundColor"]];
         [self setNeedsDisplay];
     }
     
@@ -307,7 +307,7 @@ do {\
 - (void)_resetStyles:(NSArray *)styles
 {
     if (styles && [styles containsObject:@"backgroundColor"]) {
-        _backgroundColor = [UIColor clearColor];
+        self.styleBackgroundColor = [UIColor clearColor];
         [self setNeedsDisplay];
     }
     if (styles && [styles containsObject:@"boxShadow"]) {
@@ -353,6 +353,27 @@ do {\
     if (self->_isTemplate && self.attributes[@"@templateId"]) {
         [[WXSDKManager bridgeMgr] callComponentHook:self.weexInstance.instanceId componentId:self.attributes[@"@templateId"] type:@"lifecycle" hook:@"detach" args:nil competion:nil];
     }
+    _view = nil;
+    [_layer removeFromSuperlayer];
+    _layer = nil;
+    
+    [self viewDidUnload];
+}
+
+- (void)unloadNativeView
+{
+    WXAssertMainThread();
+    
+    [self viewWillUnload];
+    
+    _view.gestureRecognizers = nil;
+    
+    [self _removeAllEvents];
+    
+    if ([_view superview]) {
+        [_view removeFromSuperview];
+    }
+
     _view = nil;
     [_layer removeFromSuperlayer];
     _layer = nil;

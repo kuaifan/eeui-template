@@ -17,7 +17,7 @@
  * under the License.
  */
 //
-// Created by 陈佩翰 on 2019/2/22.
+// Created by chenpeihan on 2019/2/22.
 //
 
 #include "js_runtime/runtime/js_runtime_conversion.h"
@@ -61,13 +61,13 @@ int WeexRuntimeV2::initAppFramework(const std::string &instanceId, const std::st
                                     std::vector<INIT_FRAMEWORK_PARAMS *> &params) {
 
   auto pHolder = getLightAppObjectHolderV2(instanceId);
-  LOG_RUNTIME("Weex jsserver initAppFramework %s", instanceId);
+  LOG_RUNTIME("Weex jsserver initAppFramework %s", instanceId.c_str());
   if (pHolder == nullptr) {
     auto holder =
         new WeexObjectHolderV2(this->vm_, weex_object_holder_v2_->timeQueue, multi_process_flag_);
     holder->initFromParams(params, true);
     LOG_RUNTIME("Weex jsserver initAppFramework pHolder == null and id %s",
-                instanceId);
+                instanceId.c_str());
     app_worker_context_holder_map_v2_[std::string(instanceId)] = holder;
   }
   return _initAppFrameworkWithScript(instanceId, appFramework);
@@ -95,7 +95,7 @@ int WeexRuntimeV2::createAppContext(const std::string &instanceId, const std::st
   }
 
   LOG_RUNTIME("WeexRuntime  createAppContext get_context_fun_name = %s",
-              get_context_fun_name);
+              get_context_fun_name.c_str());
 
   // new a global object
   // --------------------------------------------------
@@ -158,7 +158,7 @@ int WeexRuntimeV2::createAppContext(const std::string &instanceId, const std::st
 
   app_globalObject->id = std::string(final_instanceId);
   LOG_RUNTIME("WeexRuntime:createAppContext instanceId %s",
-              final_instanceId);
+              final_instanceId.c_str());
 
   if (!jsBundle.empty()) {
     std::string exeption;
@@ -236,7 +236,7 @@ int WeexRuntimeV2::destroyAppContext(const std::string &instanceId) {
     return static_cast<int32_t>(false);
   }
 
-  LOG_RUNTIME("Weex jsserver IPCJSMsg::DESTORYAPPCONTEXT end1 %s", instanceId);
+  LOG_RUNTIME("Weex jsserver IPCJSMsg::DESTORYAPPCONTEXT end1 %s", instanceId.c_str());
   std::map<std::string, WeexGlobalObjectV2 *>::iterator it_find_instance;
   auto objectMap = appWorkerObjectHolder->m_jsInstanceGlobalObjectMap;
   it_find_instance = objectMap.find(instanceId);
@@ -643,7 +643,7 @@ int WeexRuntimeV2::_initFrameworkWithScript(const std::string &source) {
 
 int WeexRuntimeV2::_initAppFrameworkWithScript(const std::string &instanceId,
                                                const std::string &appFramework) {
-  LOG_RUNTIME("WeexRuntime _initAppFramework implements %s", instanceId);
+  LOG_RUNTIME("WeexRuntime _initAppFramework implements %s", instanceId.c_str());
   auto appWorkerObjectHolder = getLightAppObjectHolderV2(instanceId);
   if (appWorkerObjectHolder == nullptr) {
     LOGE("WeexRuntime _initAppFramework implements appWorkerHolder is null");

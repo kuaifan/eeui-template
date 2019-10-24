@@ -332,6 +332,10 @@ WX_EXPORT_METHOD(@selector(transition:args:callback:))
                 transition:(WXTransition*)transition
              transitionDic:(NSMutableDictionary*)transitionDic
 {
+    if (args[@"styles"][property] == nil) {
+        return;
+    }
+    
     [transition.filterStyles setObject:args[@"styles"][property] forKey:property];
     
     id oldStyleValue = target.styles[property];
@@ -346,11 +350,26 @@ WX_EXPORT_METHOD(@selector(transition:args:callback:))
     [target _modifyStyles:@{property:args[@"styles"][property]}];
     [transitionDic setObject:@([args[@"duration"] doubleValue]) forKey:kWXTransitionDuration];
     [transitionDic setObject:@([args[@"delay"] doubleValue]) forKey:kWXTransitionDelay];
-    [transitionDic setObject:args[@"timingFunction"] forKey:kWXTransitionTimingFunction];
+    [transitionDic setObject:args[@"timingFunction"] ?: @"linear" forKey:kWXTransitionTimingFunction];
 }
 
 - (void)animation:(WXComponent *)targetComponent args:(NSDictionary *)args callback:(WXModuleKeepAliveCallback)callback
 {
+    /* Check if view of targetComponent is created, if not, we do not do animation and
+     simulate delay of 'duration' and callback.
+     For a view in list, the view migth be recycled, and if view is not attached to a window,
+     the CATransaction completion block will be called immediately, which may cause CPU overload
+     problem if JS code do any logic in the completion callback.
+     */
+    
+    BOOL shouldDoAnimation = NO;
+    if ([targetComponent isViewLoaded]) {
+        UIView* view = targetComponent.view;
+        if ([view window] != nil) {
+            shouldDoAnimation = YES;
+        }
+    }
+    
     /**
        UIView-style animation functions support the standard timing functions,
        but they don’t allow you to specify your own cubic Bézier curve. 
@@ -358,21 +377,31 @@ WX_EXPORT_METHOD(@selector(transition:args:callback:))
      **/
     [CATransaction begin];
     [CATransaction setAnimationTimingFunction:[WXConvert CAMediaTimingFunction:args[@"timingFunction"]]];
-    [CATransaction setCompletionBlock:^{
-        if (callback) {
-            NSDictionary *message;
-            if (_isAnimationedSuccess) {
-                message = @{@"result":@"Success",
-                            @"message":@"Success"};
+    
+    if (shouldDoAnimation) {
+        [CATransaction setCompletionBlock:^{
+            if (callback) {
+                NSDictionary *message;
+                if (_isAnimationedSuccess) {
+                    message = @{@"result":@"Success",
+                                @"message":@"Success"};
+                }
+                else
+                {
+                    message = @{@"result":@"Fail",
+                                @"message":@"Animation did not complete"};
+                }
+                callback(message, NO);
             }
-            else
-            {
-                message = @{@"result":@"Fail",
-                            @"message":@"Animation did not complete"};
-            }
-            callback(message,NO);
-        }
-    }];
+        }];
+    }
+    else if (callback) {
+        double duration = [[args objectForKey:@"duration"] doubleValue] / 1000.f;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            callback(@{@"result":@"Success",
+                       @"message":@"Success"}, NO);
+        });
+    }
     
     BOOL needLayout = NO;
     WXTransition* transition = nil;
@@ -383,6 +412,7 @@ WX_EXPORT_METHOD(@selector(transition:args:callback:))
     }
     
     [CATransaction commit];
+    
     if (needLayout && transition) {
         WXPerformBlockOnComponentThread(^{
             [transition _handleTransitionWithStyles:transitionDic resetStyles:nil target:targetComponent];
@@ -426,7 +456,7 @@ WX_EXPORT_METHOD(@selector(transition:args:callback:))
         }
     } else {
         CATransform3D transform = layer.transform;
-        if (info.target->_transform.perspective && !isinf(info.target->_transform.perspective)) {
+        if (info.target->_transform.perspective && !isinf(info.target->_transform.perspective)) { //!OCLint
             transform.m34 = -1.0/info.target->_transform.perspective*[UIScreen mainScreen].scale;
             layer.transform = transform;
         }

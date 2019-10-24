@@ -17,7 +17,7 @@
  * under the License.
  */
 //
-// Created by 陈佩翰 on 2019/3/4.
+// Created by chenpeihan on 2019/3/4.
 //
 
 #ifndef PROJECT_WEEX_CONSOLE_BINDING_H

@@ -17,7 +17,7 @@
  * under the License.
  */
 //
-// Created by 陈佩翰 on 2019/1/23.
+// Created by chenpeihan on 2019/1/23.
 //
 
 #include "weex_global_binding.h"
@@ -534,7 +534,7 @@ namespace weex {
             std::string time_str;
 
             WeexConversionUtils::GetStringFromArgsDefaultEmpty(vars, 0, callback_str);
-            WeexConversionUtils::GetStringFromArgsDefaultEmpty(vars, 0, time_str);
+            WeexConversionUtils::GetStringFromArgsDefaultEmpty(vars, 1, time_str);
 
             LOG_WEEX_BINDING("WeexGlobalBinding method :setTimeoutNative ,callback:%s, time:%d",
                              callback_str.c_str(),

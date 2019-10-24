@@ -17,7 +17,7 @@
  * under the License.
  */
 //
-// Created by 陈佩翰 on 2019/1/23.
+// Created by chenpeihan on 2019/1/23.
 //
 
 #include "weex_instance_binding.h"

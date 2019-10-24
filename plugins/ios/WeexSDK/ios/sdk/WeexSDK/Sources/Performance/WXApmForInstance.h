@@ -18,7 +18,9 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "WXJSExceptionInfo.h"
+#import <WeexSDK/WXJSExceptionInfo.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - const static string
 
@@ -32,23 +34,30 @@ extern NSString* const KEY_PAGE_PROPERTIES_JSLIB_VERSION;
 extern NSString* const KEY_PAGE_PROPERTIES_WEEX_VERSION;
 extern NSString* const KEY_PAGE_PROPERTIES_REQUEST_TYPE;
 extern NSString* const KEY_PAGE_PROPERTIES_Z_CACHE_INFO;
+extern NSString* const KEY_PAGE_PROPERTIES_GREY_BUNDLE;
 extern NSString* const KEY_PAGE_PROPERTIES_JS_FM_INIT;
 extern NSString* const KEY_PAGE_PROPERTIES_BUNDLE_TYPE;
 extern NSString* const KEY_PAGE_PROPERTIES_CONTAINER_NAME;
 extern NSString* const KEY_PAGE_PROPERTIES_INSTANCE_TYPE;
 extern NSString* const KEY_PAGE_PROPERTIES_PARENT_PAGE;
 extern NSString* const KEY_PAGE_PROPERTIES_RENDER_TYPE;
+extern NSString* const KEY_PAGE_PROPERTIES_UIKIT_TYPE;
 
 
 ///************** stages *****************/
 extern NSString* const KEY_PAGE_STAGES_START;
 extern NSString* const KEY_PAGE_STAGES_DOWN_BUNDLE_START;
 extern NSString* const KEY_PAGE_STAGES_DOWN_BUNDLE_END;
+extern NSString* const KEY_PAGE_STAGES_DOWN_JS_START;
+extern NSString* const KEY_PAGE_STAGES_DOWN_JS_END;
 extern NSString* const KEY_PAGE_STAGES_CUSTOM_PREPROCESS_START;
 extern NSString* const KEY_PAGE_STAGES_CUSTOM_PREPROCESS_END;
 extern NSString* const KEY_PAGE_STAGES_RENDER_ORGIGIN;
 extern NSString* const KEY_PAGE_STAGES_LOAD_BUNDLE_START;
 extern NSString* const KEY_PAGE_STAGES_LOAD_BUNDLE_END;
+extern NSString* const KEY_PAGE_STAGES_EXECUTE_BUNDLE_END;
+extern NSString* const KEY_PAGE_STAGES_EXECUTE_JSON_START;
+extern NSString* const KEY_PAGE_STAGES_EXECUTE_JSON_END;
 extern NSString* const KEY_PAGE_STAGES_CREATE_FINISH;
 extern NSString* const KEY_PAGE_STAGES_FSRENDER;
 extern NSString* const KEY_PAGE_STAGES_NEW_FSRENDER;
@@ -59,6 +68,10 @@ extern NSString* const KEY_PAGE_STAGES_DESTROY;
 extern NSString* const KEY_PAGE_STATS_BUNDLE_SIZE;
 extern NSString* const KEY_PAGE_STATS_FS_CALL_JS_TIME;
 extern NSString* const KEY_PAGE_STATS_FS_CALL_JS_NUM;
+extern NSString* const KEY_PAGE_STATS_EXECUTE_JS_TIME;
+extern NSString* const KEY_PAGE_STATS_CREATE_COMPONENT_TIME;
+extern NSString* const KEY_PAGE_STATS_CREATE_VIEW_TIME;
+extern NSString* const KEY_PAGE_STATS_LAYOUT_TIME;
 extern NSString* const KEY_PAGE_STATS_FS_TIMER_NUM;
 extern NSString* const KEY_PAGE_STATS_FS_CALL_NATIVE_TIME;
 extern NSString* const KEY_PAGE_STATS_FS_CALL_NATIVE_NUM;
@@ -110,12 +123,15 @@ extern NSString* const VALUE_ERROR_CODE_DEFAULT;
 @property (nonatomic, assign) BOOL isStartRender;
 @property (nonatomic,assign)  BOOL  hasRecordFirstInterationView;
 @property (nonatomic, assign) BOOL isDownLoadFailed;
+@property (nonatomic, assign) BOOL forceStopRecordInteractionTime;
 @property (nonatomic,assign) double pageRatio;
+@property (nonatomic,strong) NSMutableDictionary<NSString*,NSNumber*>* recordStatsMap;
+@property (nonatomic,strong) NSMutableDictionary<NSString*,NSNumber*>* recordStageMap;
 
 #pragma mark - basic method
 
 - (void) onEvent:(NSString *)name withValue:(id)value;
-- (void) onStage:(NSString *)name;
+- (long) onStage:(NSString *)name;
 - (void) onStageWithTime:(NSString*)name time:(long)unixTime;
 - (void) setProperty:(NSString *)name withValue:(id)value;
 - (void) setStatistic:(NSString *)name withValue:(double)value;
@@ -129,16 +145,18 @@ extern NSString* const VALUE_ERROR_CODE_DEFAULT;
 - (void) updateMaxStats:(NSString *)name curMaxValue:(double)maxValue;
 - (void) updateExtInfoFromResponseHeader:(NSDictionary*) extInfo;
 - (void) forceSetInteractionTime:(long) unixTime;
+- (void) addUpdateComponentDataTimestamp:(long)unixTime;
+- (void) addUpdateComponentDataTime:(long)unixTime;
 
 
 #pragma mark - called by IWXHttpAdapter implementer
 
 - (void) actionNetRequest;
-- (void) actionNetRequestResult:(bool)succeed withErrorCode:(NSString*)errorCode;
+- (void) actionNetRequestResult:(bool)succeed withErrorCode:(nullable NSString*)errorCode;
 
 #pragma mark - called by IWXImgLoaderAdapter implementer
 - (void) actionImgLoad;
-- (void) actionImgLoadResult:(bool)succeed withErrorCode:(NSString*)errorCode;
+- (void) actionImgLoadResult:(bool)succeed withErrorCode:(nullable NSString*)errorCode;
 
 #pragma mark record top5 errorMsg
 - (void) recordErrorMsg:(WXJSExceptionInfo *)exception;
@@ -147,3 +165,5 @@ extern NSString* const VALUE_ERROR_CODE_DEFAULT;
 #pragma mark templateinfo
 - (NSString*) templateInfo;
 @end
+
+NS_ASSUME_NONNULL_END

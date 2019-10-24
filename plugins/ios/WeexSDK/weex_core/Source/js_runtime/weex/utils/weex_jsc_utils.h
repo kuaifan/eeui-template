@@ -61,6 +61,7 @@
 #include "third_party/IPC/Serializing/IPCSerializer.h"
 //#include "include/JavaScriptCore/runtime/StructureInlines.h"
 //#include "include/JavaScriptCore/runtime/JSCJSValueInlines.h"
+#include "js_runtime/include/ICUCompatible.h"
 
 #if !defined(PATH_MAX)
 #define PATH_MAX 4096
@@ -208,6 +209,7 @@ namespace WEEXICU {
 //    }
 
     static bool initICUEnv(bool multiProcess) {
+#ifdef INIT_JSC_PRIVATE_API
         static bool isInit = false;
         if (isInit)
             return true;
@@ -235,15 +237,19 @@ namespace WEEXICU {
             LOGE("load icui18n so");
             return false;
         }
-//        if (!initICU()) {
-//            LOGE("initICU failed");
-//            return false;
-//        }
+        if (!initICU()) {
+            LOGE("initICU failed");
+            return false;
+        }
         if (strlen(path) > 0) {
             isInit = true;
             return true;//mapIcuData(std::string(path));
         }
         return false;
+#else
+        LOGE("skip initICUEnv");
+        return true;
+#endif
     }
 
 }

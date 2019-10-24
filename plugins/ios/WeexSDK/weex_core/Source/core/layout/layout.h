@@ -183,6 +183,9 @@ namespace WeexCore {
         }
       }
 
+      const std::vector<WXCoreLayoutNode *>& get_child_list() const {return mChildList;}
+
+      void removeAllChildren() {mChildList.clear();}
   private:
 
     /**
@@ -727,6 +730,10 @@ namespace WeexCore {
       }
       
       markDirty();
+    }
+      
+    inline void clearBFCs() {
+        BFCs.clear();
     }
 
     inline void addChildAt(WXCoreLayoutNode* const child, Index index) {

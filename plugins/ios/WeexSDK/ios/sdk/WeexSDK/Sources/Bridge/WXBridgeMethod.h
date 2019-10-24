@@ -18,19 +18,23 @@
  */
 
 #import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
 @class WXSDKInstance;
 
 @interface WXBridgeMethod : NSObject
 
 @property (nonatomic, strong, readonly) NSString *methodName;
-@property (nonatomic, copy, readonly) NSMutableArray *arguments;
+@property (nonatomic, copy, readonly) NSArray *arguments;
 @property (nonatomic, weak, readonly) WXSDKInstance *instance;
 
 - (instancetype)initWithMethodName:(NSString *)methodName
-                         arguments:(NSArray *)arguments
+                         arguments:(NSArray * _Nullable)arguments
                           instance:(WXSDKInstance *)instance;
 
 - (NSInvocation *)invocationWithTarget:(id)target selector:(SEL)selector;
 
 @end
 
+NS_ASSUME_NONNULL_END

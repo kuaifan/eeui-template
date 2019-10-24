@@ -27,7 +27,9 @@ elseif ("${ANDROID_STL}" STREQUAL "gnustl_static")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++1y")
 endif ()
 add_compile_options(-fexceptions)
-
+add_compile_options(-fstack-protector)
+add_compile_options(-funwind-tables)
+add_compile_options(-fno-omit-frame-pointer)
 
 add_definitions(-DGNU_SUPPORT=1)
 add_definitions(-DJSONCPP_NO_LOCALE_SUPPORT=1)
@@ -37,9 +39,10 @@ add_definitions(-DPERFORMANCE_LOG=0)
 add_definitions(-DLAYOUT_LOG=0)
 add_definitions(-DJSAPI_LOG=0)
 add_definitions(-DDOM_PARSER_LOG=0)
+add_definitions(-DDEBUG=1)
 
 message("ANDROID_PROJECT_DIR:"${ANDROID_PROJECT_DIR})
-set(LOCAL_LIBRARIES_DIR ${ANDROID_PROJECT_DIR}/libs/${ANDROID_ABI})
+set(LOCAL_LIBRARIES_DIR ${ANDROID_PROJECT_DIR}/src/main/jniLibs/${ANDROID_ABI})
 
 if ("${ANDROID_ABI}" STREQUAL "x86")
     # todo
@@ -54,6 +57,9 @@ add_compile_options(-fexceptions)
 set(COMMON_SRCS
   ./core/render/manager/render_manager.cpp
   ./core/render/page/render_page.cpp
+  ./core/render/page/render_page_base.cpp
+  ./core/render/page/render_page_custom.cpp
+  ./core/render/target/render_target.cpp
 
   ./core/render/node/render_object.cpp
   ./core/render/node/factory/render_creator.cpp
@@ -76,7 +82,12 @@ set(COMMON_SRCS
   ./core/render/action/render_action_update_style.cpp
   ./core/render/action/render_action_render_success.cpp
   ./core/render/action/render_action_trigger_vsync.cpp
-
+  ./core/json/JsonRenderManager.cpp
+  ./core/json/JsonPage.cpp
+  ./core/render/action/render_action_add_child_to_richtext.cpp
+  ./core/render/action/render_action_remove_child_from_richtext.cpp
+  ./core/render/action/render_action_update_richtext_child_style.cpp
+  ./core/render/action/render_action_update_richtext_child_attr.cpp
   ./core/layout/layout.cpp
   ./core/layout/style.cpp
 
@@ -108,18 +119,13 @@ if(ANDROID)
   ## add_subdirectory for subdirectory has a CMakeLists.txt
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/IPC)
 
-
-  message("check build jsc BUILD_RUNTIME_API flag: ${BUILD_RUNTIME_API}")
-  if ("${BUILD_RUNTIME_API}" STREQUAL "true")
-      add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/js_runtime)
-      message("cmake build jsApi for runtime")
+  if (DEFINED BUILD_RUNTIME_API)
+    message("Variable BUILD_RUNTIME_API is defined with value: ${BUILD_RUNTIME_API}")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/js_runtime)
   else()
-      add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/android/jsengine)
-      message("cmake build jsApi for jsc")
+    message("Variable BUILD_RUNTIME_API is not defined")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/android/jsengine)
   endif()
-
-
-
 
   ## include_directories for include head file
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/IPC)

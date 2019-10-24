@@ -17,7 +17,7 @@
  * under the License.
  */
 //
-// Created by 董亚运 on 2019/3/25.
+// Created by Darin on 2019/3/25.
 //
 #ifndef WEEXV8_WEEX_RUNTIME_VIR
 #define WEEXV8_WEEX_RUNTIME_VIR

@@ -20,6 +20,8 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class WXBridgeMethod;
 @class WXSDKInstance;
 @class WXComponent;
@@ -121,6 +123,11 @@ void WXPerformBlockSyncOnComponentThread(void (^block)(void));
  * @abstract add an existing component to references look-up map
  */
 - (void)addComponent:(WXComponent *)component toIndexDictForRef:(NSString *)ref;
+
+/**
+ * @abstract remove an existing component to references look-up map
+ */
+- (void)removeComponentForRef:(NSString *)ref;
 
 ///--------------------------------------
 /// @name Updating
@@ -276,3 +283,5 @@ void WXPerformBlockSyncOnComponentThread(void (^block)(void));
 - (void)performBatchEnd;
 
 @end
+
+NS_ASSUME_NONNULL_END
