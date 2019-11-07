@@ -17,6 +17,9 @@ import com.taobao.weex.adapter.IWXImgLoaderAdapter;
 import com.taobao.weex.common.WXImageStrategy;
 import com.taobao.weex.dom.WXImageQuality;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -78,7 +81,7 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
         if (view.getContext() == null) {
             return;
         }
-        String tempUrl = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, url));
+        String tempUrl = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, handCachePageUrl(view.getContext(), url)));
         Log.d(TAG, "loadImage: " + tempUrl);
         try {
             RequestBuilder<Drawable> myLoad;
@@ -126,5 +129,27 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
             e.printStackTrace();
         }
         return image;
+    }
+
+    private String handCachePageUrl(Context context, String url) {
+        if (TextUtils.isEmpty(url)) {
+            return url;
+        }
+        File pageCache = context.getExternalFilesDir("page_cache");
+        if (pageCache == null) {
+            return url;
+        }
+        File updateFile = context.getExternalFilesDir("update");
+        if (updateFile == null) {
+            return url;
+        }
+        String cacheUrl = "file://" + pageCache.getPath() + updateFile.getPath() + "/";
+        if (url.startsWith(cacheUrl)) {
+            String tmpUrl = url.substring(cacheUrl.length());
+            if (tmpUrl.contains("/") && NumberUtils.isCreatable(tmpUrl.substring(0, tmpUrl.indexOf("/")))) {
+                url = "root:/" + tmpUrl.substring(tmpUrl.indexOf("/"));
+            }
+        }
+        return url;
     }
 }

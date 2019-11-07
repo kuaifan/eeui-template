@@ -49,7 +49,7 @@
 - (id<WXImageOperationProtocol>)downloadImageWithURL:(NSString *)url imageFrame:(CGRect)imageFrame userInfo:(NSDictionary *)userInfo completed:(void(^)(UIImage *image,  NSError *error, BOOL finished))completedBlock
 {
     WXSDKInstance *instance = [WXSDKManager instanceForID:userInfo[@"instanceId"]];
-    url = [Config verifyFile:[DeviceUtil rewriteUrl:url mInstance:instance]];
+    url = [Config verifyFile:[DeviceUtil rewriteUrl:[self handCachePageUr:url] mInstance:instance]];
     url = [DeviceUtil urlEncoder:url];
     
     return (id<WXImageOperationProtocol>)[SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:url] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
@@ -68,6 +68,41 @@
             completedBlock(image, error, finished);
         }
     }];
+}
+
+- (NSString *)handCachePageUr:(NSString *)url
+{
+    if (url.length == 0) {
+        return url;
+    }
+    NSString *cacheUrl = [NSString stringWithFormat:@"file://%@%@/", [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"page_cache"], [Config getSandPath:@"update"]];
+    if ([url hasPrefix:cacheUrl]) {
+        NSString *tmpUrl = [url substringFromIndex:cacheUrl.length];
+        if ([tmpUrl containsString:@"/"]) {
+            NSRange searchResult = [tmpUrl rangeOfString:@"/"];
+            if (searchResult.location != NSNotFound) {
+                NSString *dataId = [tmpUrl substringToIndex:searchResult.location];
+                
+                if ([self judgeIsNumberByRegularExpressionWith:dataId]) {
+                    return [NSString stringWithFormat:@"root:/%@", [tmpUrl substringFromIndex:dataId.length]];
+                }
+            }
+        }
+    }
+    return url;
+}
+
+- (BOOL)judgeIsNumberByRegularExpressionWith:(NSString *)str
+{
+   if (str.length == 0) {
+        return NO;
+    }
+    NSString *regex = @"[0-9]*";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regex];
+    if ([pred evaluateWithObject:str]) {
+        return YES;
+    }
+    return NO;
 }
 
 @end

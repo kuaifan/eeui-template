@@ -148,11 +148,15 @@ static int easyNavigationButtonTag = 8000;
         [UIApplication sharedApplication].statusBarHidden = NO;
     }
 
-    //状态栏样式
-    if ([_statusBarStyleCustom isEqualToString:@"1"]) {
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    }else{
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    if (!self.isChildSubview) {
+        //状态栏样式
+        if (!self.isChildSubview) {
+            if ([_statusBarStyleCustom isEqualToString:@"1"]) {
+                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+            }else{
+                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+            }
+        }
     }
 }
 
@@ -183,11 +187,13 @@ static int easyNavigationButtonTag = 8000;
     [self updateStatus:@"pause"];
     [self liftCycleEvent:LifeCyclePause];
 
-    //状态栏样式
-    if ([_statusBarStyleCustom isEqualToString:@"1"]) {
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    }else{
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    if (!self.isChildSubview) {
+        //状态栏样式
+        if ([_statusBarStyleCustom isEqualToString:@"1"]) {
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        }else{
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+        }
     }
 }
 
@@ -473,7 +479,7 @@ static int easyNavigationButtonTag = 8000;
             
             [weakSelf showErrorBox:[NSString stringWithFormat: @"%ld", (long)[error code]]];
             weakSelf.errorContent = [error description];
-        });        
+        });
     };
 
     _instance.renderFinish = ^(UIView *view) {
@@ -672,7 +678,7 @@ static int easyNavigationButtonTag = 8000;
             }];
         }else{
             [instance renderWithURL:[NSURL URLWithString:tempUrl] options:nil data:nil];
-        }        
+        }
     }else{
         [self.view bringSubviewToFront:self.consoleView];
     }
@@ -714,7 +720,7 @@ static int easyNavigationButtonTag = 8000;
 {
     if (_loading) {
         [self.activityIndicatorView setHidden:NO];
-        [self.activityIndicatorView startAnimating];        
+        [self.activityIndicatorView startAnimating];
     }
 }
 
@@ -841,7 +847,7 @@ static int easyNavigationButtonTag = 8000;
             [self renderView];
             [self updateStatus:@"restart"];
         }
-    });    
+    });
 }
 
 #pragma mark - notification
