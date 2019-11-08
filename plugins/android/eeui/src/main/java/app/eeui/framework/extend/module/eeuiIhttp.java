@@ -87,6 +87,9 @@ public class eeuiIhttp {
                     }else if (eeuiCommon.leftExists(key.toLowerCase(), "header:")) {
                         key = key.substring(7).trim();
                         params.addHeader(key, String.valueOf(value));
+                    }else if (eeuiCommon.leftExists(key.toLowerCase(), "datas:")) {
+                        params.setAsJsonContent(true);
+                        params.setBodyContent(value.toString());
                     }else if (eeuiCommon.leftExists(key.toLowerCase(), "file:")) {
                         key = key.substring(5).trim();
                         if (value instanceof JSONArray) {

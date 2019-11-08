@@ -72,6 +72,10 @@
     //设置请求头
     for (NSString *key  in headers.allKeys) {
         NSString *value = [NSString stringWithFormat:@"%@", headers[key]];
+        if([value isEqualToString:@"application/json"]) {
+            //设置请求体数据为json类型
+            manager.requestSerializer = [AFJSONRequestSerializer serializer];
+        }
         [manager.requestSerializer setValue:value forHTTPHeaderField:key];
     }
 
