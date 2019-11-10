@@ -50,7 +50,13 @@ static NSMutableArray *verifyDir;
     if (json == nil) {
         return defaultVal;
     }
-    NSString *str = [NSString stringWithFormat:@"%@", [self getRawValue:key]];
+    NSString *str = nil;
+    id rawValue = [self getRawValue:key];
+    if ([rawValue isKindOfClass:[NSDictionary class]]) {
+       str = [DeviceUtil dictionaryToJson:(NSDictionary *)rawValue];
+    }else{
+       str = [NSString stringWithFormat:@"%@", rawValue];
+    }
     if (str == nil) {
         return defaultVal;
     }

@@ -1794,6 +1794,12 @@ public class PageActivity extends AppCompatActivity {
         if (deBugButton != null) {
             return;
         }
+        if (mPageInfo == null) {
+            return;
+        }
+        if (!("app".equals(mPageInfo.getPageType()) || "web".equals(mPageInfo.getPageType()))) {
+            return;
+        }
         deBugButton = new TextView(this);
         deBugButton.setText("DEV");
         deBugButton.setTextColor(Color.WHITE);

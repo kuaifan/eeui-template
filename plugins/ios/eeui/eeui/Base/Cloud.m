@@ -33,7 +33,7 @@ static ClickWelcome myClickWelcome;
         }
     }
     //
-    NSString *apiUrl = @"https://console.eeui.app/";
+    NSString* apiUrl = [Config getString:@"consoleUrl" defaultVal:@"https://console.eeui.app/"];
     if ([act isEqualToString:@"app"]) {
         return [NSString stringWithFormat:@"%@api/client/app?", apiUrl];
     }else if ([act isEqualToString:@"update-success"]) {

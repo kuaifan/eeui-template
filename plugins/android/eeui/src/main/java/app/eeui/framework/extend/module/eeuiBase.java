@@ -393,7 +393,7 @@ public class eeuiBase {
                 return url + "act=" + act;
             }
             //
-            String apiUrl = "https://console.eeui.app/";
+            String apiUrl = eeuiBase.config.getString("consoleUrl", "https://console.eeui.app/");
             switch (act) {
                 case "app":
                     return apiUrl + "api/client/app?";
