@@ -33,6 +33,7 @@ public class eeuiAjax {
         JSONObject headers = eeuiJson.parseObject(json.getString("headers"));
         JSONObject data = eeuiJson.parseObject(json.getString("data"));
         JSONObject files = eeuiJson.parseObject(json.getString("files"));
+        boolean isJson = false;
         //
         if (name.isEmpty()) {
             if (context instanceof PageActivity) {
@@ -49,9 +50,13 @@ public class eeuiAjax {
         if (headers.size() > 0) {
             for (Map.Entry<String, Object> entry : headers.entrySet()) {
                 mData.put("header:" + entry.getKey(), entry.getValue());
+                if("Content-Type".equals(entry.getKey()) && "application/json".equals(entry.getValue().toString())) {
+                    mData.put("datas:" + entry.getKey(), data);
+                    isJson = true;
+                }
             }
         }
-        if (data.size() > 0) {
+        if (data.size() > 0 && !isJson) {
             for (Map.Entry<String, Object> entry : data.entrySet()) {
                 mData.put(entry.getKey(), entry.getValue());
             }
