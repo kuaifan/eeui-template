@@ -571,7 +571,7 @@ public class BannerLayout extends RelativeLayout {
      */
     public void notifyDataSetChanged() {
         indicatorDrawable();
-        setViewPager(pageViews);
+        post(()-> setViewPager(pageViews));
     }
 
     /**

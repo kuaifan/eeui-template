@@ -196,8 +196,10 @@ public class Banner extends WXVContainer<ViewGroup> {
                     v_banner.post(()-> {
                         if (restView) {
                             v_banner.setViews(banner_views);
+                            v_banner.post(()-> v_banner.notifyDataSetChanged());
+                        }else{
+                            v_banner.notifyDataSetChanged();
                         }
-                        v_banner.notifyDataSetChanged();
                     });
                 }catch (NullPointerException ignored) { }
             }
