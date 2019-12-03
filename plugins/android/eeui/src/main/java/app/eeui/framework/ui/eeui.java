@@ -415,7 +415,7 @@ public class eeui {
         }
         JSONObject queryJson = eeuiHtml.getUrlQuery(json.getString("url"));
         if (queryJson.size() > 0) {
-            String[] pageParams = {"pageName", "pageTitle", "pageType", "cache", "params", "loading", "loadingBackground", "swipeBack", "swipeFullBack", "animated", "animatedType", "statusBarType", "statusBarColor", "statusBarAlpha", "statusBarStyle", "softInputMode", "translucent", "backgroundColor", "backPressedClose"};
+            String[] pageParams = {"pageName", "pageTitle", "pageType", "cache", "params", "loading", "loadingBackground", "swipeBack", "swipeFullBack", "swipeColorBack", "animated", "animatedType", "statusBarType", "statusBarColor", "statusBarAlpha", "statusBarStyle", "softInputMode", "translucent", "backgroundColor", "backPressedClose"};
             for (Map.Entry<String, Object> entry : queryJson.entrySet()) {
                 if (Arrays.asList(pageParams).contains(entry.getKey())) {
                     json.put(entry.getKey(), entry.getValue());
@@ -464,13 +464,17 @@ public class eeui {
         if (json.getBoolean("loadingBackground") != null) {
             mBean.setLoadingBackground(json.getBoolean("loadingBackground"));
         }
-        //是否支持滑动返回（默认：false）
+        //是否支持滑动返回（默认：true，首页默认：false）
         if (json.getBoolean("swipeBack") != null) {
             mBean.setSwipeBack(json.getBoolean("swipeBack"));
         }
         //是否支持全屏滑动返回（可选，默认：false）
         if (json.getBoolean("swipeFullBack") != null) {
             mBean.setSwipeFullBack(json.getBoolean("swipeFullBack"));
+        }
+        //是否为滑动返回界面设置状态栏颜色跟随滑动（可选，默认：true，首页默认：false）
+        if (json.getBoolean("swipeColorBack") != null) {
+            mBean.setSwipeColorBack(json.getBoolean("swipeColorBack"));
         }
         //是否进入页面需要动画效果（默认：true）
         if (json.getBoolean("animated") != null) {

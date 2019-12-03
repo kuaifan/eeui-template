@@ -707,7 +707,7 @@ public class PageActivity extends AppCompatActivity {
             }
         } else {
             //默认
-            if (mPageInfo.isSwipeBack() && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            if (mPageInfo.isSwipeBack() && mPageInfo.isSwipeColorBack() && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 StatusBarUtil.setColorForSwipeBack(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
                 KeyboardUtils.registerSoftInputChangedListener(this, (int height) -> {
                     if (KeyboardUtils.isSoftInputVisible(this)) {

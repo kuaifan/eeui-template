@@ -29,6 +29,7 @@ public class PageBean {
         temp.put("loadTime", getLoadTime());
         temp.put("swipeBack", isSwipeBack());
         temp.put("swipeFullBack", isSwipeFullBack());
+        temp.put("swipeColorBack", isSwipeColorBack());
         temp.put("animated", isAnimated());
         temp.put("animatedType", getAnimatedType());
         temp.put("animatedClose", isAnimatedClose());
@@ -52,8 +53,9 @@ public class PageBean {
      * cache :              缓存时间（可选，单位：毫秒，仅weex有效，默认：0不启用）
      * loading :            是否显示等待（可选，默认：true）
      * loadingBackground :  是否显示等待过渡背景（可选，默认：false）
-     * swipeBack :          是否支持滑动返回（可选，默认：true）
+     * swipeBack :          是否支持滑动返回（可选，默认：true，首页默认：false）
      * swipeFullBack :      是否支持全屏滑动返回（可选，默认：false）
+     * swipeColorBack :     是否为滑动返回界面设置状态栏颜色跟随滑动（可选，默认：true，首页默认：false）
      * animated :           是否进入页面需要动画效果（可选，默认：true）
      * animatedType :       页面动画效果类型（可选，默认：跟随系统）
      * animatedClose :      是否关闭页面需要动画效果（可选，默认：true）
@@ -83,6 +85,7 @@ public class PageBean {
     private boolean loadingBackground = false;
     private boolean swipeBack = true;
     private boolean swipeFullBack = false;
+    private boolean swipeColorBack = true;
     private boolean animated = true;
     private String animatedType = "";
     private boolean animatedClose = true;
@@ -183,6 +186,14 @@ public class PageBean {
 
     public void setSwipeFullBack(boolean swipeFullBack) {
         this.swipeFullBack = swipeFullBack;
+    }
+
+    public boolean isSwipeColorBack() {
+        return swipeColorBack;
+    }
+
+    public void setSwipeColorBack(boolean swipeColorBack) {
+        this.swipeColorBack = swipeColorBack;
     }
 
     public boolean isAnimated() {
