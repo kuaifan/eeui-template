@@ -30,18 +30,19 @@ public final class UriRequestFactory {
         String scheme = null;
         String uri = params.getUri();
         int index = uri.indexOf(":");
-        if (index > 0) {
-            scheme = uri.substring(0, index);
-        } else if (uri.startsWith("/")) {
+        if (uri.startsWith("/")) {
             scheme = "file";
+        } else if (index > 0) {
+            scheme = uri.substring(0, index);
         }
 
         // get UriRequest
         if (!TextUtils.isEmpty(scheme)) {
+            scheme = scheme.toLowerCase();
             Class<? extends UriRequest> cls = SCHEME_CLS_MAP.get(scheme);
             if (cls != null) {
                 Constructor<? extends UriRequest> constructor
-                        = cls.getConstructor(RequestParams.class, Class.class);
+                        = cls.getConstructor(RequestParams.class, Type.class);
                 return constructor.newInstance(params, loadType);
             } else {
                 if (scheme.startsWith("http")) {
@@ -50,6 +51,8 @@ public final class UriRequestFactory {
                     return new AssetsRequest(params, loadType);
                 } else if (scheme.equals("file")) {
                     return new LocalFileRequest(params, loadType);
+                } else if (scheme.equals("res")) {
+                    return new ResRequest(params, loadType);
                 } else {
                     throw new IllegalArgumentException("The url not be support: " + uri);
                 }

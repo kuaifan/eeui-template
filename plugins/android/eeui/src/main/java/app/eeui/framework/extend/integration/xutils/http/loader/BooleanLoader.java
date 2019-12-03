@@ -3,8 +3,6 @@ package app.eeui.framework.extend.integration.xutils.http.loader;
 import app.eeui.framework.extend.integration.xutils.cache.DiskCacheEntity;
 import app.eeui.framework.extend.integration.xutils.http.request.UriRequest;
 
-import java.io.InputStream;
-
 /**
  * Author: wyouflf
  * Time: 2014/05/30
@@ -14,11 +12,6 @@ import java.io.InputStream;
     @Override
     public Loader<Boolean> newInstance() {
         return new BooleanLoader();
-    }
-
-    @Override
-    public Boolean load(final InputStream in) throws Throwable {
-        return false;
     }
 
     @Override

@@ -45,7 +45,8 @@ public class ParameterizedTypeUtil {
                     if (declaredClass.isAssignableFrom(cls)) {
                         try {
                             return getTrueType(getParameterizedType(t, declaredClass, paramIndex), tps, ats);
-                        } catch (Throwable ignored) {
+                        } catch (Throwable ex) {
+                            LogUtil.w(ex.getMessage(), ex);
                         }
                     }
                 }
@@ -84,8 +85,6 @@ public class ParameterizedTypeUtil {
                 }
             }
             return tv;
-            // }else if (type instanceof Class<?>) {
-            // return type;
         } else if (type instanceof GenericArrayType) {
             Type ct = ((GenericArrayType) type).getGenericComponentType();
             if (ct instanceof Class<?>) {

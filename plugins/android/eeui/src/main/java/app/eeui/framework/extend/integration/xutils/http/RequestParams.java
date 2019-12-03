@@ -1,15 +1,17 @@
 package app.eeui.framework.extend.integration.xutils.http;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import app.eeui.framework.extend.integration.xutils.common.task.Priority;
-import app.eeui.framework.extend.integration.xutils.common.util.LogUtil;
 import app.eeui.framework.extend.integration.xutils.http.annotation.HttpRequest;
 import app.eeui.framework.extend.integration.xutils.http.app.DefaultParamsBuilder;
+import app.eeui.framework.extend.integration.xutils.http.app.DefaultRedirectHandler;
 import app.eeui.framework.extend.integration.xutils.http.app.HttpRetryHandler;
 import app.eeui.framework.extend.integration.xutils.http.app.ParamsBuilder;
 import app.eeui.framework.extend.integration.xutils.http.app.RedirectHandler;
 import app.eeui.framework.extend.integration.xutils.http.app.RequestTracker;
+import app.eeui.framework.extend.integration.xutils.x;
 
 import java.net.Proxy;
 import java.util.concurrent.Executor;
@@ -23,6 +25,9 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class RequestParams extends BaseParams {
 
+    public final static int MAX_FILE_LOAD_WORKER = 10;
+    private final static DefaultRedirectHandler DEFAULT_REDIRECT_HANDLER = new DefaultRedirectHandler();
+
     // 注解及其扩展参数
     private HttpRequest httpRequest;
     private String uri;
@@ -34,6 +39,7 @@ public class RequestParams extends BaseParams {
     private SSLSocketFactory sslSocketFactory;
 
     // 扩展参数
+    private Context context;
     private Proxy proxy; // 代理
     private HostnameVerifier hostnameVerifier; // https域名校验
     private boolean useCookie = true; // 是否在请求过程中启用cookie
@@ -51,8 +57,8 @@ public class RequestParams extends BaseParams {
     private boolean cancelFast = false; // 是否可以被立即停止, true: 为请求创建新的线程, 取消时请求线程被立即中断.
     private int loadingUpdateMaxTimeSpan = 300; // 进度刷新最大间隔时间(ms)
     private HttpRetryHandler httpRetryHandler; // 自定义HttpRetryHandler
-    private RedirectHandler redirectHandler; // 自定义重定向接口, 默认系统自动重定向.
     private RequestTracker requestTracker; // 自定义日志记录接口.
+    private RedirectHandler redirectHandler = DEFAULT_REDIRECT_HANDLER;
 
     /**
      * 使用空构造创建时必须, 必须是带有@HttpRequest注解的子类.
@@ -70,9 +76,9 @@ public class RequestParams extends BaseParams {
 
     /**
      * @param uri       不可为空
-     * @param builder
-     * @param signs
-     * @param cacheKeys
+     * @param builder   用于自定义参数构建过程, 为空时使用{@link DefaultParamsBuilder}
+     * @param signs     自定义需要签名的字段, 会传给ParamsBuilder
+     * @param cacheKeys 自定义缓存关键key信息, 会传给ParamsBuilder
      */
     public RequestParams(String uri, ParamsBuilder builder, String[] signs, String[] cacheKeys) {
         if (uri != null && builder == null) {
@@ -82,6 +88,7 @@ public class RequestParams extends BaseParams {
         this.signs = signs;
         this.cacheKeys = cacheKeys;
         this.builder = builder;
+        this.context = x.app();
     }
 
     // invoke via HttpTask#createNewRequest
@@ -157,8 +164,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 是否在请求过程中启用cookie, 默认true.
-     *
-     * @return
      */
     public boolean isUseCookie() {
         return useCookie;
@@ -166,11 +171,17 @@ public class RequestParams extends BaseParams {
 
     /**
      * 是否在请求过程中启用cookie, 默认true.
-     *
-     * @param useCookie
      */
     public void setUseCookie(boolean useCookie) {
         this.useCookie = useCookie;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public Proxy getProxy() {
@@ -203,6 +214,9 @@ public class RequestParams extends BaseParams {
         return readTimeout;
     }
 
+    /**
+     * 注意get请求失败后默认会重试2次, 可以通过setMaxRetryCount(0)来防止get请求自动重试.
+     */
     public void setReadTimeout(int readTimeout) {
         if (readTimeout > 0) {
             this.readTimeout = readTimeout;
@@ -227,8 +241,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 默认缓存存活时间, 单位:毫秒.(如果服务没有返回有效的max-age或Expires)
-     *
-     * @return
      */
     public long getCacheMaxAge() {
         return cacheMaxAge;
@@ -236,8 +248,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 默认缓存存活时间, 单位:毫秒.(如果服务没有返回有效的max-age或Expires)
-     *
-     * @param cacheMaxAge
      */
     public void setCacheMaxAge(long cacheMaxAge) {
         this.cacheMaxAge = cacheMaxAge;
@@ -245,8 +255,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 自定义线程池
-     *
-     * @return
      */
     public Executor getExecutor() {
         return executor;
@@ -254,8 +262,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 自定义线程池
-     *
-     * @param executor
      */
     public void setExecutor(Executor executor) {
         this.executor = executor;
@@ -270,8 +276,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 设置是否在下载是自动断点续传
-     *
-     * @param autoResume
      */
     public void setAutoResume(boolean autoResume) {
         this.autoResume = autoResume;
@@ -286,8 +290,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 设置是否根据头信息自动命名文件
-     *
-     * @param autoRename
      */
     public void setAutoRename(boolean autoRename) {
         this.autoRename = autoRename;
@@ -302,8 +304,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 设置下载文件时文件保存的路径和文件名
-     *
-     * @param saveFilePath
      */
     public void setSaveFilePath(String saveFilePath) {
         this.saveFilePath = saveFilePath;
@@ -341,8 +341,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 进度刷新最大间隔时间(默认300毫秒)
-     *
-     * @param loadingUpdateMaxTimeSpan
      */
     public void setLoadingUpdateMaxTimeSpan(int loadingUpdateMaxTimeSpan) {
         this.loadingUpdateMaxTimeSpan = loadingUpdateMaxTimeSpan;
@@ -362,8 +360,6 @@ public class RequestParams extends BaseParams {
 
     /**
      * 自定义重定向接口, 默认系统自动重定向.
-     *
-     * @param redirectHandler
      */
     public void setRedirectHandler(RedirectHandler redirectHandler) {
         this.redirectHandler = redirectHandler;
@@ -400,21 +396,12 @@ public class RequestParams extends BaseParams {
         return httpRequest;
     }
 
-    /**
-     * 在网络请求onStart前, 尽量不要在UI线程调用这个方法, 可能产生性能影响.
-     *
-     * @return
-     */
     @Override
     public String toString() {
-        try {
-            this.init();
-        } catch (Throwable ex) {
-            LogUtil.e(ex.getMessage(), ex);
-        }
         String url = this.getUri();
+        String baseParamsStr = super.toString();
         return TextUtils.isEmpty(url) ?
-                super.toString() :
-                url + (url.contains("?") ? "&" : "?") + super.toString();
+                baseParamsStr :
+                url + (url.contains("?") ? "&" : "?") + baseParamsStr;
     }
 }

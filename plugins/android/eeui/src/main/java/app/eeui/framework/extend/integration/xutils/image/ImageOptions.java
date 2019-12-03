@@ -70,12 +70,18 @@ public class ImageOptions {
         int screenWidth = DensityUtil.getScreenWidth();
         int screenHeight = DensityUtil.getScreenHeight();
 
+        if (this == DEFAULT) {
+            maxWidth = width = screenWidth * 3 / 2;
+            maxHeight = height = screenHeight * 3 / 2;
+            return;
+        }
+
         if (width < 0) {
-            maxWidth = screenWidth * 3 / 2; //Integer.MAX_VALUE;
+            maxWidth = screenWidth * 3 / 2;
             compress = false;
         }
         if (height < 0) {
-            maxHeight = screenHeight * 3 / 2; //Integer.MAX_VALUE;
+            maxHeight = screenHeight * 3 / 2;
             compress = false;
         }
 
@@ -283,7 +289,8 @@ public class ImageOptions {
             if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
                 value = fieldValue;
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable ex) {
+            LogUtil.w(ex.getMessage(), ex);
         }
         return value;
     }
@@ -310,10 +317,6 @@ public class ImageOptions {
 
         /**
          * 小于0时不采样压缩. 等于0时自动识别ImageView的宽高和(maxWidth, maxHeight).
-         *
-         * @param width
-         * @param height
-         * @return
          */
         public Builder setSize(int width, int height) {
             options.width = width;

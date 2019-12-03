@@ -33,10 +33,6 @@ public final class TaskControllerImpl implements TaskController {
 
     /**
      * run task
-     *
-     * @param task
-     * @param <T>
-     * @return
      */
     @Override
     public <T> AbsTask<T> start(AbsTask<T> task) {
@@ -73,8 +69,8 @@ public final class TaskControllerImpl implements TaskController {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends AbsTask<?>> Callback.Cancelable startTasks(
             final Callback.GroupCallback<T> groupCallback, final T... tasks) {
 
@@ -90,7 +86,15 @@ public final class TaskControllerImpl implements TaskController {
             public void run() {
                 if (count.incrementAndGet() == total) {
                     if (groupCallback != null) {
-                        groupCallback.onAllFinished();
+                        try {
+                            groupCallback.onAllFinished();
+                        } catch (Throwable ex) {
+                            try {
+                                groupCallback.onError(null, ex, true);
+                            } catch (Throwable throwable) {
+                                LogUtil.e(throwable.getMessage(), throwable);
+                            }
+                        }
                     }
                 }
             }
@@ -105,7 +109,15 @@ public final class TaskControllerImpl implements TaskController {
                         @Override
                         public void run() {
                             if (groupCallback != null) {
-                                groupCallback.onSuccess(task);
+                                try {
+                                    groupCallback.onSuccess(task);
+                                } catch (Throwable ex) {
+                                    try {
+                                        groupCallback.onError(task, ex, true);
+                                    } catch (Throwable throwable) {
+                                        LogUtil.e(throwable.getMessage(), throwable);
+                                    }
+                                }
                             }
                         }
                     });
@@ -118,7 +130,15 @@ public final class TaskControllerImpl implements TaskController {
                         @Override
                         public void run() {
                             if (groupCallback != null) {
-                                groupCallback.onCancelled(task, cex);
+                                try {
+                                    groupCallback.onCancelled(task, cex);
+                                } catch (Throwable ex) {
+                                    try {
+                                        groupCallback.onError(task, ex, true);
+                                    } catch (Throwable throwable) {
+                                        LogUtil.e(throwable.getMessage(), throwable);
+                                    }
+                                }
                             }
                         }
                     });
@@ -131,7 +151,11 @@ public final class TaskControllerImpl implements TaskController {
                         @Override
                         public void run() {
                             if (groupCallback != null) {
-                                groupCallback.onError(task, ex, isCallbackError);
+                                try {
+                                    groupCallback.onError(task, ex, isCallbackError);
+                                } catch (Throwable ex) {
+                                    LogUtil.e(ex.getMessage(), ex);
+                                }
                             }
                         }
                     });
@@ -143,10 +167,19 @@ public final class TaskControllerImpl implements TaskController {
                     post(new Runnable() {
                         @Override
                         public void run() {
-                            if (groupCallback != null) {
-                                groupCallback.onFinished(task);
+                            try {
+                                if (groupCallback != null) {
+                                    groupCallback.onFinished(task);
+                                }
+                            } catch (Throwable ex) {
+                                try {
+                                    groupCallback.onError(task, ex, true);
+                                } catch (Throwable throwable) {
+                                    LogUtil.e(throwable.getMessage(), throwable);
+                                }
+                            } finally {
+                                callIfOnAllFinished.run();
                             }
-                            callIfOnAllFinished.run();
                         }
                     });
                 }
@@ -187,8 +220,6 @@ public final class TaskControllerImpl implements TaskController {
 
     /**
      * run in UI thread
-     *
-     * @param runnable
      */
     @Override
     public void post(Runnable runnable) {
@@ -198,9 +229,6 @@ public final class TaskControllerImpl implements TaskController {
 
     /**
      * run in UI thread
-     *
-     * @param runnable
-     * @param delayMillis
      */
     @Override
     public void postDelayed(Runnable runnable, long delayMillis) {
@@ -210,8 +238,6 @@ public final class TaskControllerImpl implements TaskController {
 
     /**
      * run in background thread
-     *
-     * @param runnable
      */
     @Override
     public void run(Runnable runnable) {
@@ -224,8 +250,6 @@ public final class TaskControllerImpl implements TaskController {
 
     /**
      * 移除post或postDelayed提交的, 未执行的runnable
-     *
-     * @param runnable
      */
     @Override
     public void removeCallbacks(Runnable runnable) {

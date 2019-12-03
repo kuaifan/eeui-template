@@ -1,5 +1,6 @@
 package app.eeui.framework.extend.integration.xutils.image;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,8 +11,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
-import android.os.Build;
 
 import app.eeui.framework.extend.integration.xutils.cache.DiskCacheEntity;
 import app.eeui.framework.extend.integration.xutils.cache.DiskCacheFile;
@@ -22,12 +21,10 @@ import app.eeui.framework.extend.integration.xutils.common.util.IOUtil;
 import app.eeui.framework.extend.integration.xutils.common.util.LogUtil;
 import app.eeui.framework.extend.integration.xutils.x;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
@@ -49,9 +46,6 @@ public final class ImageDecoder {
     private final static Executor THUMB_CACHE_EXECUTOR = new PriorityExecutor(1, true);
     private final static LruDiskCache THUMB_CACHE = LruDiskCache.getDiskCache("xUtils_img_thumb");
 
-    // 4.2.1+ 对于webp是完全支持的(包含半透明的webp图)
-    private static final boolean supportWebP = Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN;
-
     static {
         int cpuCount = Runtime.getRuntime().availableProcessors();
         BITMAP_DECODE_MAX_WORKER = cpuCount > 4 ? 2 : 1;
@@ -67,12 +61,6 @@ public final class ImageDecoder {
 
     /**
      * decode image file for ImageLoader
-     *
-     * @param file
-     * @param options
-     * @param cancelable
-     * @return
-     * @throws IOException
      */
     /*package*/
     static Drawable decodeFileWithLock(final File file,
@@ -95,6 +83,7 @@ public final class ImageDecoder {
         } else {
             Bitmap bitmap = null;
             { // decode with lock
+                boolean decodeStarted = false;
                 try {
                     synchronized (bitmapDecodeLock) {
                         while (bitmapDecodeWorker.get() >= BITMAP_DECODE_MAX_WORKER
@@ -112,6 +101,7 @@ public final class ImageDecoder {
                         throw new Callback.CancelledException("cancelled during decode image");
                     }
 
+                    decodeStarted = true;
                     bitmapDecodeWorker.incrementAndGet();
                     // get from thumb cache
                     if (options.isCompress()) {
@@ -131,7 +121,9 @@ public final class ImageDecoder {
                         }
                     }
                 } finally {
-                    bitmapDecodeWorker.decrementAndGet();
+                    if (decodeStarted) {
+                        bitmapDecodeWorker.decrementAndGet();
+                    }
                     synchronized (bitmapDecodeLock) {
                         bitmapDecodeLock.notifyAll();
                     }
@@ -161,12 +153,6 @@ public final class ImageDecoder {
 
     /**
      * 转化文件为Bitmap.
-     *
-     * @param file
-     * @param options
-     * @param cancelable
-     * @return
-     * @throws IOException
      */
     public static Bitmap decodeBitmap(File file, ImageOptions options, Callback.Cancelable cancelable) throws IOException {
         {// check params
@@ -266,6 +252,8 @@ public final class ImageDecoder {
             }
 
             result = bitmap;
+        } catch (Callback.CancelledException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } catch (Throwable ex) {
@@ -278,12 +266,6 @@ public final class ImageDecoder {
 
     /**
      * 转换文件为Movie, 可用于创建GifDrawable.
-     *
-     * @param file
-     * @param options
-     * @param cancelable
-     * @return
-     * @throws IOException
      */
     public static Movie decodeGif(File file, ImageOptions options, Callback.Cancelable cancelable) throws IOException {
         {// check params
@@ -296,37 +278,33 @@ public final class ImageDecoder {
             }*/
         }
 
-        InputStream in = null;
         try {
             if (cancelable != null && cancelable.isCancelled()) {
                 throw new Callback.CancelledException("cancelled during decode image");
             }
-            int buffSize = 1024 * 16;
-            in = new BufferedInputStream(new FileInputStream(file), buffSize);
-            in.mark(buffSize);
-            Movie movie = Movie.decodeStream(in);
+            Movie movie = Movie.decodeFile(file.getAbsolutePath());
             if (movie == null) {
                 throw new IOException("decode image error");
             }
             return movie;
+        } catch (Callback.CancelledException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } catch (Throwable ex) {
             LogUtil.e(ex.getMessage(), ex);
             return null;
-        } finally {
-            IOUtil.closeQuietly(in);
         }
     }
 
     /**
      * 计算压缩采样倍数
      *
-     * @param rawWidth
-     * @param rawHeight
-     * @param maxWidth
-     * @param maxHeight
-     * @return
+     * @param rawWidth  图片宽度
+     * @param rawHeight 图片高度
+     * @param maxWidth  最大宽度
+     * @param maxHeight 最大高度
+     * @return 压缩采样倍数
      */
     public static int calculateSampleSize(final int rawWidth, final int rawHeight,
                                           final int maxWidth, final int maxHeight) {
@@ -357,9 +335,7 @@ public final class ImageDecoder {
     /**
      * 裁剪方形图片
      *
-     * @param source
-     * @param recycleSource 裁剪成功后销毁原图
-     * @return
+     * @param recycleSource 是否裁剪成功后销毁原图
      */
     public static Bitmap cut2Square(Bitmap source, boolean recycleSource) {
         int width = source.getWidth();
@@ -385,9 +361,7 @@ public final class ImageDecoder {
     /**
      * 裁剪圆形图片
      *
-     * @param source
-     * @param recycleSource 裁剪成功后销毁原图
-     * @return
+     * @param recycleSource 是否裁剪成功后销毁原图
      */
     public static Bitmap cut2Circular(Bitmap source, boolean recycleSource) {
         int width = source.getWidth();
@@ -414,11 +388,7 @@ public final class ImageDecoder {
     /**
      * 裁剪圆角
      *
-     * @param source
-     * @param radius
-     * @param isSquare
-     * @param recycleSource 裁剪成功后销毁原图
-     * @return
+     * @param recycleSource 是否裁剪成功后销毁原图
      */
     public static Bitmap cut2RoundCorner(Bitmap source, int radius, boolean isSquare, boolean recycleSource) {
         if (radius <= 0) return source;
@@ -454,11 +424,7 @@ public final class ImageDecoder {
     /**
      * 裁剪并缩放至指定大小
      *
-     * @param source
-     * @param dstWidth
-     * @param dstHeight
-     * @param recycleSource 裁剪成功后销毁原图
-     * @return
+     * @param recycleSource 是否裁剪成功后销毁原图
      */
     public static Bitmap cut2ScaleSize(Bitmap source, int dstWidth, int dstHeight, boolean recycleSource) {
         final int width = source.getWidth();
@@ -506,10 +472,7 @@ public final class ImageDecoder {
     /**
      * 旋转图片
      *
-     * @param source
-     * @param angle
-     * @param recycleSource
-     * @return
+     * @param recycleSource 是否旋转成功后销毁原图
      */
     public static Bitmap rotate(Bitmap source, int angle, boolean recycleSource) {
         Bitmap result = null;
@@ -539,24 +502,25 @@ public final class ImageDecoder {
     /**
      * 获取图片旋转角度
      *
-     * @param filePath
-     * @return
+     * @param filePath 图片文件路径
+     * @return 需要旋转的角度
      */
+    @SuppressLint("ExifInterface")
     public static int getRotateAngle(String filePath) {
         int angle = 0;
         try {
-            ExifInterface exif = new ExifInterface(filePath);
+            android.media.ExifInterface exif = new android.media.ExifInterface(filePath);
             int orientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_UNDEFINED);
+                    android.media.ExifInterface.TAG_ORIENTATION,
+                    android.media.ExifInterface.ORIENTATION_UNDEFINED);
             switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
+                case android.media.ExifInterface.ORIENTATION_ROTATE_90:
                     angle = 90;
                     break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
+                case android.media.ExifInterface.ORIENTATION_ROTATE_180:
                     angle = 180;
                     break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
+                case android.media.ExifInterface.ORIENTATION_ROTATE_270:
                     angle = 270;
                     break;
                 default:
@@ -571,10 +535,6 @@ public final class ImageDecoder {
 
     /**
      * 根据文件的修改时间和图片的属性保存缩略图
-     *
-     * @param file
-     * @param options
-     * @param thumbBitmap
      */
     private static void saveThumbCache(File file, ImageOptions options, Bitmap thumbBitmap) {
         DiskCacheEntity entity = new DiskCacheEntity();
@@ -586,7 +546,7 @@ public final class ImageDecoder {
             cacheFile = THUMB_CACHE.createDiskCacheFile(entity);
             if (cacheFile != null) {
                 out = new FileOutputStream(cacheFile);
-                thumbBitmap.compress(supportWebP ? Bitmap.CompressFormat.WEBP : Bitmap.CompressFormat.PNG, 80, out);
+                thumbBitmap.compress(Bitmap.CompressFormat.PNG, 80, out);
                 out.flush();
                 cacheFile = cacheFile.commit();
             }
@@ -601,10 +561,6 @@ public final class ImageDecoder {
 
     /**
      * 根据文件的修改时间和图片的属性获取缩略图
-     *
-     * @param file
-     * @param options
-     * @return
      */
     private static Bitmap getThumbCache(File file, ImageOptions options) {
         DiskCacheFile cacheFile = null;

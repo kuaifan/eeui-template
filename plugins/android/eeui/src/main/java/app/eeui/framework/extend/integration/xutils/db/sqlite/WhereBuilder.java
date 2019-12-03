@@ -17,7 +17,6 @@ package app.eeui.framework.extend.integration.xutils.db.sqlite;
 
 import android.text.TextUtils;
 
-import app.eeui.framework.extend.integration.xutils.db.converter.ColumnConverterFactory;
 import app.eeui.framework.extend.integration.xutils.db.table.ColumnUtils;
 
 import java.lang.reflect.Array;
@@ -40,8 +39,6 @@ public class WhereBuilder {
 
     /**
      * create new instance
-     *
-     * @return
      */
     public static WhereBuilder b() {
         return new WhereBuilder();
@@ -50,10 +47,7 @@ public class WhereBuilder {
     /**
      * create new instance
      *
-     * @param columnName
-     * @param op         operator: "=","LIKE","IN","BETWEEN"...
-     * @param value
-     * @return
+     * @param op operator: "=","LIKE","IN","BETWEEN"...
      */
     public static WhereBuilder b(String columnName, String op, Object value) {
         WhereBuilder result = new WhereBuilder();
@@ -64,10 +58,7 @@ public class WhereBuilder {
     /**
      * add AND condition
      *
-     * @param columnName
-     * @param op         operator: "=","LIKE","IN","BETWEEN"...
-     * @param value
-     * @return
+     * @param op operator: "=","LIKE","IN","BETWEEN"...
      */
     public WhereBuilder and(String columnName, String op, Object value) {
         appendCondition(whereItems.size() == 0 ? null : "AND", columnName, op, value);
@@ -78,7 +69,6 @@ public class WhereBuilder {
      * add AND condition
      *
      * @param where expr("[AND] (" + where.toString() + ")")
-     * @return
      */
     public WhereBuilder and(WhereBuilder where) {
         String condition = whereItems.size() == 0 ? " " : "AND ";
@@ -88,10 +78,7 @@ public class WhereBuilder {
     /**
      * add OR condition
      *
-     * @param columnName
-     * @param op         operator: "=","LIKE","IN","BETWEEN"...
-     * @param value
-     * @return
+     * @param op operator: "=","LIKE","IN","BETWEEN"...
      */
     public WhereBuilder or(String columnName, String op, Object value) {
         appendCondition(whereItems.size() == 0 ? null : "OR", columnName, op, value);
@@ -102,7 +89,6 @@ public class WhereBuilder {
      * add OR condition
      *
      * @param where expr("[OR] (" + where.toString() + ")")
-     * @return
      */
     public WhereBuilder or(WhereBuilder where) {
         String condition = whereItems.size() == 0 ? " " : "OR ";
@@ -180,18 +166,17 @@ public class WhereBuilder {
                     StringBuilder inSb = new StringBuilder("(");
                     for (Object item : items) {
                         Object itemColValue = ColumnUtils.convert2DbValueIfNeeded(item);
-                        if (ColumnDbType.TEXT.equals(ColumnConverterFactory.getDbColumnType(itemColValue.getClass()))) {
-                            String valueStr = itemColValue.toString();
-                            if (valueStr.indexOf('\'') != -1) { // convert single quotations
-                                valueStr = valueStr.replace("'", "''");
-                            }
+                        if (ColumnUtils.isTextColumnDbType(itemColValue)) {
+                            String valueStr = ColumnUtils.convert2SafeExpr(itemColValue);
                             inSb.append("'").append(valueStr).append("'");
                         } else {
                             inSb.append(itemColValue);
                         }
                         inSb.append(",");
                     }
-                    inSb.deleteCharAt(inSb.length() - 1);
+                    if (inSb.length() > 1) {
+                        inSb.deleteCharAt(inSb.length() - 1);
+                    }
                     inSb.append(")");
                     builder.append(inSb.toString());
                 } else {
@@ -212,24 +197,18 @@ public class WhereBuilder {
                 if (items != null) {
                     Iterator<?> iterator = items.iterator();
                     if (!iterator.hasNext())
-                        throw new IllegalArgumentException("value must have tow items.");
+                        throw new IllegalArgumentException("value must contains tow items.");
                     Object start = iterator.next();
                     if (!iterator.hasNext())
-                        throw new IllegalArgumentException("value must have tow items.");
+                        throw new IllegalArgumentException("value must contains tow items.");
                     Object end = iterator.next();
 
                     Object startColValue = ColumnUtils.convert2DbValueIfNeeded(start);
                     Object endColValue = ColumnUtils.convert2DbValueIfNeeded(end);
 
-                    if (ColumnDbType.TEXT.equals(ColumnConverterFactory.getDbColumnType(startColValue.getClass()))) {
-                        String startStr = startColValue.toString();
-                        if (startStr.indexOf('\'') != -1) { // convert single quotations
-                            startStr = startStr.replace("'", "''");
-                        }
-                        String endStr = endColValue.toString();
-                        if (endStr.indexOf('\'') != -1) { // convert single quotations
-                            endStr = endStr.replace("'", "''");
-                        }
+                    if (ColumnUtils.isTextColumnDbType(startColValue)) {
+                        String startStr = ColumnUtils.convert2SafeExpr(startColValue);
+                        String endStr = ColumnUtils.convert2SafeExpr(endColValue);
                         builder.append("'").append(startStr).append("'");
                         builder.append(" AND ");
                         builder.append("'").append(endStr).append("'");
@@ -243,11 +222,8 @@ public class WhereBuilder {
                 }
             } else {
                 value = ColumnUtils.convert2DbValueIfNeeded(value);
-                if (ColumnDbType.TEXT.equals(ColumnConverterFactory.getDbColumnType(value.getClass()))) {
-                    String valueStr = value.toString();
-                    if (valueStr.indexOf('\'') != -1) { // convert single quotations
-                        valueStr = valueStr.replace("'", "''");
-                    }
+                if (ColumnUtils.isTextColumnDbType(value)) {
+                    String valueStr = ColumnUtils.convert2SafeExpr(value);
                     builder.append("'").append(valueStr).append("'");
                 } else {
                     builder.append(value);

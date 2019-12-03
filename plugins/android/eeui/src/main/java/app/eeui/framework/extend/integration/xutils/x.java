@@ -1,11 +1,13 @@
 package app.eeui.framework.extend.integration.xutils;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
 import app.eeui.framework.extend.integration.xutils.common.TaskController;
 import app.eeui.framework.extend.integration.xutils.common.task.TaskControllerImpl;
 import app.eeui.framework.extend.integration.xutils.db.DbManagerImpl;
+import app.eeui.framework.extend.integration.xutils.ex.DbException;
 import app.eeui.framework.extend.integration.xutils.http.HttpManagerImpl;
 import app.eeui.framework.extend.integration.xutils.image.ImageManagerImpl;
 import app.eeui.framework.extend.integration.xutils.view.ViewInjectorImpl;
@@ -33,7 +35,8 @@ public final class x {
     public static Application app() {
         if (Ext.app == null) {
             try {
-                // 在IDE进行布局预览时使用
+                // 仅在IDE进行布局预览时使用，真机或模拟器不使用MockApplication.
+                @SuppressLint("PrivateApi")
                 Class<?> renderActionClass = Class.forName("com.android.layoutlib.bridge.impl.RenderAction");
                 Method method = renderActionClass.getDeclaredMethod("getCurrentContext");
                 Context context = (Context) method.invoke(null);
@@ -71,7 +74,7 @@ public final class x {
         return Ext.viewInjector;
     }
 
-    public static DbManager getDb(DbManager.DaoConfig daoConfig) {
+    public static DbManager getDb(DbManager.DaoConfig daoConfig) throws DbException {
         return DbManagerImpl.getInstance(daoConfig);
     }
 

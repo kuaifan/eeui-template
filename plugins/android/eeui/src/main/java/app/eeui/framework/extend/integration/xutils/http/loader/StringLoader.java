@@ -7,8 +7,6 @@ import app.eeui.framework.extend.integration.xutils.common.util.IOUtil;
 import app.eeui.framework.extend.integration.xutils.http.RequestParams;
 import app.eeui.framework.extend.integration.xutils.http.request.UriRequest;
 
-import java.io.InputStream;
-
 /**
  * Author: wyouflf
  * Time: 2014/05/30
@@ -34,15 +32,10 @@ import java.io.InputStream;
     }
 
     @Override
-    public String load(final InputStream in) throws Throwable {
-        resultStr = IOUtil.readStr(in, charset);
-        return resultStr;
-    }
-
-    @Override
     public String load(final UriRequest request) throws Throwable {
         request.sendRequest();
-        return this.load(request.getInputStream());
+        resultStr = IOUtil.readStr(request.getInputStream(), charset);
+        return resultStr;
     }
 
     @Override

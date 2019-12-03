@@ -3,9 +3,9 @@ package app.eeui.framework.extend.integration.xutils.http.loader;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import app.eeui.framework.extend.integration.xutils.http.RequestParams;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
@@ -29,23 +29,24 @@ public final class LoaderFactory {
         converterHashMap.put(String.class, new StringLoader());
         converterHashMap.put(File.class, new FileLoader());
         converterHashMap.put(byte[].class, new ByteArrayLoader());
+        converterHashMap.put(InputStream.class, new InputStreamLoader());
+
         BooleanLoader booleanLoader = new BooleanLoader();
         converterHashMap.put(boolean.class, booleanLoader);
         converterHashMap.put(Boolean.class, booleanLoader);
+
         IntegerLoader integerLoader = new IntegerLoader();
         converterHashMap.put(int.class, integerLoader);
         converterHashMap.put(Integer.class, integerLoader);
     }
 
-    @SuppressWarnings("unchecked")
-    public static Loader<?> getLoader(Type type, RequestParams params) {
+    public static Loader<?> getLoader(Type type) {
         Loader<?> result = converterHashMap.get(type);
         if (result == null) {
             result = new ObjectLoader(type);
         } else {
             result = result.newInstance();
         }
-        result.setParams(params);
         return result;
     }
 

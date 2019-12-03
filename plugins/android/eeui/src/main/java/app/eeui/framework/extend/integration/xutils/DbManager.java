@@ -29,34 +29,21 @@ public interface DbManager extends Closeable {
     /**
      * 保存实体类或实体类的List到数据库,
      * 如果该类型的id是自动生成的, 则保存完后会给id赋值.
-     *
-     * @param entity
-     * @return
-     * @throws DbException
      */
     boolean saveBindingId(Object entity) throws DbException;
 
     /**
      * 保存或更新实体类或实体类的List到数据库, 根据id对应的数据是否存在.
-     *
-     * @param entity
-     * @throws DbException
      */
     void saveOrUpdate(Object entity) throws DbException;
 
     /**
      * 保存实体类或实体类的List到数据库
-     *
-     * @param entity
-     * @throws DbException
      */
     void save(Object entity) throws DbException;
 
     /**
      * 保存或更新实体类或实体类的List到数据库, 根据id和其他唯一索引判断数据是否存在.
-     *
-     * @param entity
-     * @throws DbException
      */
     void replace(Object entity) throws DbException;
 
@@ -91,29 +78,17 @@ public interface DbManager extends Closeable {
 
     /**
      * 获取表信息
-     *
-     * @param entityType
-     * @param <T>
-     * @return
-     * @throws DbException
      */
     <T> TableEntity<T> getTable(Class<T> entityType) throws DbException;
 
     /**
      * 删除表
-     *
-     * @param entityType
-     * @throws DbException
      */
     void dropTable(Class<?> entityType) throws DbException;
 
     /**
      * 添加一列,
      * 新的entityType中必须定义了这个列的属性.
-     *
-     * @param entityType
-     * @param column
-     * @throws DbException
      */
     void addColumn(Class<?> entityType, String column) throws DbException;
 
@@ -121,16 +96,12 @@ public interface DbManager extends Closeable {
 
     /**
      * 删除库
-     *
-     * @throws DbException
      */
     void dropDb() throws DbException;
 
     /**
-     * 关闭数据库,
-     * xUtils对同一个库的链接是单实例的, 一般不需要关闭它.
-     *
-     * @throws IOException
+     * 关闭数据库.
+     * 同一个库是单实例的, 尽量不要调用这个方法, 会自动释放.
      */
     void close() throws IOException;
 
@@ -148,11 +119,11 @@ public interface DbManager extends Closeable {
     Cursor execQuery(String sql) throws DbException;
 
     public interface DbOpenListener {
-        void onDbOpened(DbManager db);
+        void onDbOpened(DbManager db) throws DbException;
     }
 
     public interface DbUpgradeListener {
-        void onUpgrade(DbManager db, int oldVersion, int newVersion);
+        void onUpgrade(DbManager db, int oldVersion, int newVersion) throws DbException;
     }
 
     public interface TableCreateListener {

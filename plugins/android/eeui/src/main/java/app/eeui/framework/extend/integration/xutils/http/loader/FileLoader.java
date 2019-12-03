@@ -42,6 +42,7 @@ public class FileLoader extends Loader<File> {
 
     private static final int CHECK_SIZE = 512;
 
+    private RequestParams params;
     private String tempSaveFilePath;
     private String saveFilePath;
     private boolean isAutoResume;
@@ -65,21 +66,19 @@ public class FileLoader extends Loader<File> {
         }
     }
 
-    @Override
-    public File load(final InputStream in) throws Throwable {
+    protected File load(final InputStream in) throws Throwable {
         File targetFile = null;
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
         try {
             targetFile = new File(tempSaveFilePath);
             if (targetFile.isDirectory()) {
-                // 防止文件正在写入时, 父文件夹被删除, 继续写入时造成偶现文件节点异常问题.
-                IOUtil.deleteFileOrDir(targetFile);
+                throw new IOException("could not create the file: " + tempSaveFilePath);
             }
             if (!targetFile.exists()) {
                 File dir = targetFile.getParentFile();
-                if (!dir.exists() && !dir.mkdirs()) {
-                    throw new IOException("can not create dir: " + dir.getAbsolutePath());
+                if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory()) {
+                    throw new IOException("could not create the dir: " + dir.getAbsolutePath());
                 }
             }
 
@@ -207,8 +206,8 @@ public class FileLoader extends Loader<File> {
                         range = fileLen - CHECK_SIZE;
                     }
                 }
-                // retry 时需要覆盖RANGE参数
-                params.setHeader("RANGE", "bytes=" + range + "-");
+                // retry 时需要覆盖Range参数
+                params.setHeader("Range", "bytes=" + range + "-");
             }
 
             if (progressHandler != null && !progressHandler.updateProgress(0, 0, false)) {
@@ -230,11 +229,15 @@ public class FileLoader extends Loader<File> {
             }
 
             if (diskCacheFile != null) {
-                DiskCacheEntity entity = diskCacheFile.getCacheEntity();
-                entity.setLastAccess(System.currentTimeMillis());
-                entity.setEtag(request.getETag());
-                entity.setExpires(request.getExpiration());
-                entity.setLastModify(new Date(request.getLastModified()));
+                try {
+                    DiskCacheEntity entity = diskCacheFile.getCacheEntity();
+                    entity.setLastAccess(System.currentTimeMillis());
+                    entity.setEtag(request.getETag());
+                    entity.setExpires(request.getExpiration());
+                    entity.setLastModify(new Date(request.getLastModified()));
+                } catch (Throwable ex) {
+                    LogUtil.e(ex.getMessage(), ex);
+                }
             }
             result = this.load(request.getInputStream());
         } catch (HttpException httpException) {
@@ -269,7 +272,6 @@ public class FileLoader extends Loader<File> {
 
         DiskCacheEntity entity = new DiskCacheEntity();
         entity.setKey(request.getCacheKey());
-        entity.setDirName(params.getCacheDirName());
         diskCacheFile = LruDiskCache.getDiskCache(params.getCacheDirName()).createDiskCacheFile(entity);
 
         if (diskCacheFile != null) {
@@ -344,6 +346,6 @@ public class FileLoader extends Loader<File> {
 
     @Override
     public void save2Cache(final UriRequest request) {
-        // already saved by diskCacheFile#commit
+        // the file caches already saved by diskCacheFile#commit
     }
 }

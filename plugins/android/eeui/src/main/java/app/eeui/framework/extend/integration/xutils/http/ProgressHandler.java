@@ -8,9 +8,6 @@ package app.eeui.framework.extend.integration.xutils.http;
  */
 public interface ProgressHandler {
     /**
-     * @param total
-     * @param current
-     * @param forceUpdateUI
      * @return continue
      */
     boolean updateProgress(long total, long current, boolean forceUpdateUI);

@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import app.eeui.framework.extend.integration.xutils.common.Callback;
 import app.eeui.framework.extend.integration.xutils.common.util.IOUtil;
+import app.eeui.framework.extend.integration.xutils.common.util.LogUtil;
 import app.eeui.framework.extend.integration.xutils.http.ProgressHandler;
 
 import java.io.ByteArrayInputStream;
@@ -63,7 +64,7 @@ public class InputStreamBody implements ProgressBody {
             throw new Callback.CancelledException("upload stopped!");
         }
 
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[4096];
         try {
             int len = 0;
             while ((len = content.read(buffer)) != -1) {
@@ -76,7 +77,7 @@ public class InputStreamBody implements ProgressBody {
             out.flush();
 
             if (callBackHandler != null) {
-                callBackHandler.updateProgress(total, total, true);
+                callBackHandler.updateProgress(total, current, true);
             }
         } finally {
             IOUtil.closeQuietly(content);
@@ -89,7 +90,8 @@ public class InputStreamBody implements ProgressBody {
                     inputStream instanceof ByteArrayInputStream) {
                 return inputStream.available();
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable ex) {
+            LogUtil.w(ex.getMessage(), ex);
         }
         return -1L;
     }

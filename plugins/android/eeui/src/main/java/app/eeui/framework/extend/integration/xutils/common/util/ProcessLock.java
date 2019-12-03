@@ -52,7 +52,7 @@ public final class ProcessLock implements Closeable {
     /**
      * 获取进程锁
      *
-     * @param lockName
+     * @param lockName  锁的名称, 相同的名称被认为是同一个锁.
      * @param writeMode 是否写入模式(支持读并发).
      * @return null 或 进程锁, 如果锁已经被占用, 返回null.
      */
@@ -63,7 +63,7 @@ public final class ProcessLock implements Closeable {
     /**
      * 获取进程锁
      *
-     * @param lockName
+     * @param lockName          锁的名称, 相同的名称被认为是同一个锁.
      * @param writeMode         是否写入模式(支持读并发).
      * @param maxWaitTimeMillis 最大值 1000 * 60
      * @return null 或 进程锁, 如果锁已经被占用, 则在超时时间内继续尝试获取该锁.
@@ -91,8 +91,6 @@ public final class ProcessLock implements Closeable {
 
     /**
      * 锁是否有效
-     *
-     * @return
      */
     public boolean isValid() {
         return isValid(mFileLock);
@@ -207,8 +205,8 @@ public final class ProcessLock implements Closeable {
                         throw new IOException("can not get file channel:" + file.getAbsolutePath());
                     }
                 }
-            } catch (Throwable ignored) {
-                LogUtil.d("tryLock: " + lockName + ", " + ignored.getMessage());
+            } catch (Throwable ex) {
+                LogUtil.d("tryLock: " + lockName + ", " + ex.getMessage());
                 IOUtil.closeQuietly(stream);
                 IOUtil.closeQuietly(channel);
             }

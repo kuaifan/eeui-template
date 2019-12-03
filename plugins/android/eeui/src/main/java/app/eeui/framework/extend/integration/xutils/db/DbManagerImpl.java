@@ -53,20 +53,29 @@ public final class DbManagerImpl extends DbBase {
     private DaoConfig daoConfig;
     private boolean allowTransaction;
 
-    private DbManagerImpl(DaoConfig config) {
+    private DbManagerImpl(DaoConfig config) throws DbException {
         if (config == null) {
             throw new IllegalArgumentException("daoConfig may not be null");
         }
+
         this.daoConfig = config;
         this.allowTransaction = config.isAllowTransaction();
-        this.database = openOrCreateDatabase(config);
-        DbOpenListener dbOpenListener = config.getDbOpenListener();
-        if (dbOpenListener != null) {
-            dbOpenListener.onDbOpened(this);
+        try {
+            this.database = openOrCreateDatabase(config);
+            DbOpenListener dbOpenListener = config.getDbOpenListener();
+            if (dbOpenListener != null) {
+                dbOpenListener.onDbOpened(this);
+            }
+        } catch (DbException ex) {
+            IOUtil.closeQuietly(this.database);
+            throw ex;
+        } catch (Throwable ex) {
+            IOUtil.closeQuietly(this.database);
+            throw new DbException(ex.getMessage(), ex);
         }
     }
 
-    public synchronized static DbManager getInstance(DaoConfig daoConfig) {
+    public synchronized static DbManager getInstance(DaoConfig daoConfig) throws DbException {
 
         if (daoConfig == null) {//使用默认配置
             daoConfig = new DaoConfig();
@@ -90,11 +99,7 @@ public final class DbManagerImpl extends DbBase {
                 if (upgradeListener != null) {
                     upgradeListener.onUpgrade(dao, oldVersion, newVersion);
                 } else {
-                    try {
-                        dao.dropDb();
-                    } catch (DbException e) {
-                        LogUtil.e(e.getMessage(), e);
-                    }
+                    dao.dropDb();
                 }
             }
             database.setVersion(newVersion);
@@ -124,13 +129,13 @@ public final class DbManagerImpl extends DbBase {
                 List<?> entities = (List<?>) entity;
                 if (entities.isEmpty()) return;
                 TableEntity<?> table = this.getTable(entities.get(0).getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 for (Object item : entities) {
                     saveOrUpdateWithoutTransaction(table, item);
                 }
             } else {
                 TableEntity<?> table = this.getTable(entity.getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 saveOrUpdateWithoutTransaction(table, entity);
             }
 
@@ -149,13 +154,13 @@ public final class DbManagerImpl extends DbBase {
                 List<?> entities = (List<?>) entity;
                 if (entities.isEmpty()) return;
                 TableEntity<?> table = this.getTable(entities.get(0).getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 for (Object item : entities) {
                     execNonQuery(SqlInfoBuilder.buildReplaceSqlInfo(table, item));
                 }
             } else {
                 TableEntity<?> table = this.getTable(entity.getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 execNonQuery(SqlInfoBuilder.buildReplaceSqlInfo(table, entity));
             }
 
@@ -174,13 +179,13 @@ public final class DbManagerImpl extends DbBase {
                 List<?> entities = (List<?>) entity;
                 if (entities.isEmpty()) return;
                 TableEntity<?> table = this.getTable(entities.get(0).getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 for (Object item : entities) {
                     execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(table, item));
                 }
             } else {
                 TableEntity<?> table = this.getTable(entity.getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 execNonQuery(SqlInfoBuilder.buildInsertSqlInfo(table, entity));
             }
 
@@ -200,7 +205,7 @@ public final class DbManagerImpl extends DbBase {
                 List<?> entities = (List<?>) entity;
                 if (entities.isEmpty()) return false;
                 TableEntity<?> table = this.getTable(entities.get(0).getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 for (Object item : entities) {
                     if (!saveBindingIdWithoutTransaction(table, item)) {
                         throw new DbException("saveBindingId error, transaction will not commit!");
@@ -208,7 +213,7 @@ public final class DbManagerImpl extends DbBase {
                 }
             } else {
                 TableEntity<?> table = this.getTable(entity.getClass());
-                createTableIfNotExist(table);
+                table.createTableIfNotExists();
                 result = saveBindingIdWithoutTransaction(table, entity);
             }
 
@@ -222,7 +227,7 @@ public final class DbManagerImpl extends DbBase {
     @Override
     public void deleteById(Class<?> entityType, Object idValue) throws DbException {
         TableEntity<?> table = this.getTable(entityType);
-        if (!table.tableIsExist()) return;
+        if (!table.tableIsExists()) return;
         try {
             beginTransaction();
 
@@ -243,13 +248,13 @@ public final class DbManagerImpl extends DbBase {
                 List<?> entities = (List<?>) entity;
                 if (entities.isEmpty()) return;
                 TableEntity<?> table = this.getTable(entities.get(0).getClass());
-                if (!table.tableIsExist()) return;
+                if (!table.tableIsExists()) return;
                 for (Object item : entities) {
                     execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(table, item));
                 }
             } else {
                 TableEntity<?> table = this.getTable(entity.getClass());
-                if (!table.tableIsExist()) return;
+                if (!table.tableIsExists()) return;
                 execNonQuery(SqlInfoBuilder.buildDeleteSqlInfo(table, entity));
             }
 
@@ -267,7 +272,7 @@ public final class DbManagerImpl extends DbBase {
     @Override
     public int delete(Class<?> entityType, WhereBuilder whereBuilder) throws DbException {
         TableEntity<?> table = this.getTable(entityType);
-        if (!table.tableIsExist()) return 0;
+        if (!table.tableIsExists()) return 0;
         int result = 0;
         try {
             beginTransaction();
@@ -290,13 +295,13 @@ public final class DbManagerImpl extends DbBase {
                 List<?> entities = (List<?>) entity;
                 if (entities.isEmpty()) return;
                 TableEntity<?> table = this.getTable(entities.get(0).getClass());
-                if (!table.tableIsExist()) return;
+                if (!table.tableIsExists()) return;
                 for (Object item : entities) {
                     execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(table, item, updateColumnNames));
                 }
             } else {
                 TableEntity<?> table = this.getTable(entity.getClass());
-                if (!table.tableIsExist()) return;
+                if (!table.tableIsExists()) return;
                 execNonQuery(SqlInfoBuilder.buildUpdateSqlInfo(table, entity, updateColumnNames));
             }
 
@@ -309,7 +314,7 @@ public final class DbManagerImpl extends DbBase {
     @Override
     public int update(Class<?> entityType, WhereBuilder whereBuilder, KeyValue... nameValuePairs) throws DbException {
         TableEntity<?> table = this.getTable(entityType);
-        if (!table.tableIsExist()) return 0;
+        if (!table.tableIsExists()) return 0;
 
         int result = 0;
         try {
@@ -326,13 +331,11 @@ public final class DbManagerImpl extends DbBase {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T findById(Class<T> entityType, Object idValue) throws DbException {
         TableEntity<T> table = this.getTable(entityType);
-        if (!table.tableIsExist()) return null;
+        if (!table.tableIsExists()) return null;
 
-        Selector selector = Selector.from(table).where(table.getId().getName(), "=", idValue);
-
+        Selector<T> selector = Selector.from(table).where(table.getId().getName(), "=", idValue);
         String sql = selector.limit(1).toString();
         Cursor cursor = execQuery(sql);
         if (cursor != null) {
@@ -464,6 +467,10 @@ public final class DbManagerImpl extends DbBase {
         return id;
     }
 
+    /**
+     * 关闭数据库.
+     * 同一个库的是单实例的, 尽量不要调用这个方法, 会自动释放.
+     */
     @Override
     public void close() throws IOException {
         if (DAO_MAP.containsKey(daoConfig)) {

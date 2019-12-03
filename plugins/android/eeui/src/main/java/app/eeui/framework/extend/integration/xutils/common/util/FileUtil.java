@@ -15,16 +15,14 @@ public class FileUtil {
     }
 
     public static File getCacheDir(String dirName) {
-        File result;
-        if (existsSdcard()) {
+        File result = null;
+        if (isDiskAvailable()) {
             File cacheDir = x.app().getExternalCacheDir();
-            if (cacheDir == null) {
-                result = new File(Environment.getExternalStorageDirectory(),
-                        "Android/data/" + x.app().getPackageName() + "/cache/" + dirName);
-            } else {
+            if (cacheDir != null) {
                 result = new File(cacheDir, dirName);
             }
-        } else {
+        }
+        if (result == null) {
             result = new File(x.app().getCacheDir(), dirName);
         }
         if (result.exists() || result.mkdirs()) {
@@ -41,23 +39,28 @@ public class FileUtil {
      */
     public static boolean isDiskAvailable() {
         long size = getDiskAvailableSize();
-        return size > 10 * 1024 * 1024; // > 10bm
+        return size > 10 * 1024 * 1024L; // > 10bm
     }
 
     /**
      * 获取磁盘可用空间
      *
-     * @return byte 单位 kb
+     * @return byte
      */
     public static long getDiskAvailableSize() {
         if (!existsSdcard()) return 0;
         File path = Environment.getExternalStorageDirectory(); // 取得sdcard文件路径
         StatFs stat = new StatFs(path.getAbsolutePath());
-        long blockSize = stat.getBlockSize();
-        long availableBlocks = stat.getAvailableBlocks();
+        long blockSize = 0;
+        long availableBlocks = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            blockSize = stat.getBlockSizeLong();
+            availableBlocks = stat.getAvailableBlocksLong();
+        } else {
+            blockSize = stat.getBlockSize();
+            availableBlocks = stat.getAvailableBlocks();
+        }
         return availableBlocks * blockSize;
-        // (availableBlocks * blockSize)/1024 KIB 单位
-        // (availableBlocks * blockSize)/1024 /1024 MIB单位
     }
 
     public static Boolean existsSdcard() {
@@ -113,5 +116,21 @@ public class FileUtil {
             }
         }
         return result;
+    }
+
+    public static boolean deleteFileOrDir(File path) {
+        if (path == null || !path.exists()) {
+            return true;
+        }
+        if (path.isFile()) {
+            return path.delete();
+        }
+        File[] files = path.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                deleteFileOrDir(file);
+            }
+        }
+        return path.delete();
     }
 }

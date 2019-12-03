@@ -109,11 +109,17 @@ public final class DbModelSelector {
         return this;
     }
 
+    /**
+     * 排序条件, 默认ASC
+     */
     public DbModelSelector orderBy(String columnName) {
         selector.orderBy(columnName);
         return this;
     }
 
+    /**
+     * 排序条件, 默认ASC
+     */
     public DbModelSelector orderBy(String columnName, boolean desc) {
         selector.orderBy(columnName, desc);
         return this;
@@ -135,7 +141,7 @@ public final class DbModelSelector {
 
     public DbModel findFirst() throws DbException {
         TableEntity<?> table = selector.getTable();
-        if (!table.tableIsExist()) return null;
+        if (!table.tableIsExists()) return null;
 
         this.limit(1);
         Cursor cursor = table.getDb().execQuery(this.toString());
@@ -155,7 +161,7 @@ public final class DbModelSelector {
 
     public List<DbModel> findAll() throws DbException {
         TableEntity<?> table = selector.getTable();
-        if (!table.tableIsExist()) return null;
+        if (!table.tableIsExists()) return null;
 
         List<DbModel> result = null;
 

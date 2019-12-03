@@ -20,6 +20,8 @@ import android.util.Log;
 
 import app.eeui.framework.extend.integration.xutils.x;
 
+import java.util.Locale;
+
 /**
  * Log工具，类似android.util.Log。
  * tag自动产生，格式: customTagPrefix:className.methodName(L:lineNumber),
@@ -40,76 +42,76 @@ public class LogUtil {
         String tag = "%s.%s(L:%d)";
         String callerClazzName = caller.getClassName();
         callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
-        tag = String.format(tag, callerClazzName, caller.getMethodName(), caller.getLineNumber());
+        tag = String.format(Locale.getDefault(), tag, callerClazzName, caller.getMethodName(), caller.getLineNumber());
         tag = TextUtils.isEmpty(customTagPrefix) ? tag : customTagPrefix + ":" + tag;
         return tag;
     }
 
     public static void d(String content) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.d(tag, content);
     }
 
     public static void d(String content, Throwable tr) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.d(tag, content, tr);
     }
 
     public static void e(String content) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.e(tag, content);
     }
 
     public static void e(String content, Throwable tr) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.e(tag, content, tr);
     }
 
     public static void i(String content) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.i(tag, content);
     }
 
     public static void i(String content, Throwable tr) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.i(tag, content, tr);
     }
 
     public static void v(String content) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.v(tag, content);
     }
 
     public static void v(String content, Throwable tr) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.v(tag, content, tr);
     }
 
     public static void w(String content) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.w(tag, content);
     }
 
     public static void w(String content, Throwable tr) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.w(tag, content, tr);
@@ -124,14 +126,14 @@ public class LogUtil {
 
 
     public static void wtf(String content) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.wtf(tag, content);
     }
 
     public static void wtf(String content, Throwable tr) {
-        if (!x.isDebug()) return;
+        if (!x.isDebug() || TextUtils.isEmpty(content)) return;
         String tag = generateTag();
 
         Log.wtf(tag, content, tr);

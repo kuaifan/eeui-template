@@ -26,7 +26,7 @@ public enum DbCookieStore implements CookieStore {
 
     INSTANCE;
 
-    private final DbManager db;
+    private DbManager db;
     private final Executor trimExecutor = new PriorityExecutor(1, true);
     private static final int LIMIT_COUNT = 5000; // 限制最多5000条数据
 
@@ -34,11 +34,27 @@ public enum DbCookieStore implements CookieStore {
     private static final long TRIM_TIME_SPAN = 1000;
 
     DbCookieStore() {
-        db = x.getDb(DbConfigs.COOKIE.getConfig());
-        try {
-            db.delete(CookieEntity.class, WhereBuilder.b("expiry", "=", -1L));
-        } catch (Throwable ex) {
-            LogUtil.e(ex.getMessage(), ex);
+        x.task().run(new Runnable() {
+            @Override
+            public void run() {
+                tryInit();
+            }
+        });
+    }
+
+    private void tryInit() {
+        if (db == null) {
+            synchronized (this) {
+                if (db == null) {
+                    try {
+                        db = x.getDb(DbConfigs.COOKIE.getConfig());
+                        db.delete(CookieEntity.class,
+                                WhereBuilder.b("expiry", "=", -1L));
+                    } catch (Throwable ex) {
+                        LogUtil.e(ex.getMessage(), ex);
+                    }
+                }
+            }
         }
     }
 
@@ -50,6 +66,8 @@ public enum DbCookieStore implements CookieStore {
         if (cookie == null) {
             return;
         }
+
+        tryInit();
 
         uri = getEffectiveURI(uri);
 
@@ -76,6 +94,8 @@ public enum DbCookieStore implements CookieStore {
         if (uri == null) {
             throw new NullPointerException("uri is null");
         }
+
+        tryInit();
 
         uri = getEffectiveURI(uri);
 
@@ -136,6 +156,8 @@ public enum DbCookieStore implements CookieStore {
      */
     @Override
     public List<HttpCookie> getCookies() {
+        tryInit();
+
         List<HttpCookie> rt = new ArrayList<HttpCookie>();
 
         try {
@@ -161,6 +183,8 @@ public enum DbCookieStore implements CookieStore {
      */
     @Override
     public List<URI> getURIs() {
+        tryInit();
+
         List<URI> uris = new ArrayList<URI>();
 
         try {
@@ -176,8 +200,8 @@ public enum DbCookieStore implements CookieStore {
                             LogUtil.e(ex.getMessage(), ex);
                             try {
                                 db.delete(CookieEntity.class, WhereBuilder.b("uri", "=", uri));
-                            } catch (Throwable ignored) {
-                                LogUtil.e(ignored.getMessage(), ignored);
+                            } catch (Throwable throwable) {
+                                LogUtil.e(throwable.getMessage(), throwable);
                             }
                         }
                     }
@@ -199,6 +223,8 @@ public enum DbCookieStore implements CookieStore {
         if (cookie == null) {
             return true;
         }
+
+        tryInit();
 
         boolean modified = false;
         try {
@@ -233,6 +259,8 @@ public enum DbCookieStore implements CookieStore {
      */
     @Override
     public boolean removeAll() {
+        tryInit();
+
         try {
             db.delete(CookieEntity.class);
         } catch (Throwable ex) {
@@ -245,6 +273,7 @@ public enum DbCookieStore implements CookieStore {
         trimExecutor.execute(new Runnable() {
             @Override
             public void run() {
+                tryInit();
 
                 long current = System.currentTimeMillis();
                 if (current - lastTrimTime < TRIM_TIME_SPAN) {
@@ -267,7 +296,7 @@ public enum DbCookieStore implements CookieStore {
                     int count = (int) db.selector(CookieEntity.class).count();
                     if (count > LIMIT_COUNT + 10) {
                         List<CookieEntity> rmList = db.selector(CookieEntity.class)
-                                .where("expiry", "!=", -1L).orderBy("expiry", false)
+                                .where("expiry", "!=", -1L).orderBy("expiry")
                                 .limit(count - LIMIT_COUNT).findAll();
                         if (rmList != null) {
                             db.delete(rmList);
@@ -289,7 +318,8 @@ public enum DbCookieStore implements CookieStore {
                     null,  // query component
                     null   // fragment component
             );
-        } catch (Throwable ignored) {
+        } catch (Throwable ex) {
+            LogUtil.w(ex.getMessage(), ex);
             effectiveURI = uri;
         }
 

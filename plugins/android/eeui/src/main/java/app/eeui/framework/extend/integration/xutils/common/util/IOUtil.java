@@ -25,8 +25,8 @@ public class IOUtil {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (Throwable ignored) {
-                LogUtil.d(ignored.getMessage(), ignored);
+            } catch (Throwable ex) {
+                LogUtil.d(ex.getMessage(), ex);
             }
         }
     }
@@ -35,8 +35,8 @@ public class IOUtil {
         if (cursor != null) {
             try {
                 cursor.close();
-            } catch (Throwable ignored) {
-                LogUtil.d(ignored.getMessage(), ignored);
+            } catch (Throwable ex) {
+                LogUtil.d(ex.getMessage(), ex);
             }
         }
     }
@@ -122,18 +122,6 @@ public class IOUtil {
     }
 
     public static boolean deleteFileOrDir(File path) {
-        if (path == null || !path.exists()) {
-            return true;
-        }
-        if (path.isFile()) {
-            return path.delete();
-        }
-        File[] files = path.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                deleteFileOrDir(file);
-            }
-        }
-        return path.delete();
+        return FileUtil.deleteFileOrDir(path);
     }
 }

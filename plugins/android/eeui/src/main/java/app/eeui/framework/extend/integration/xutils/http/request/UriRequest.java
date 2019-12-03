@@ -4,6 +4,7 @@ import app.eeui.framework.extend.integration.xutils.common.util.LogUtil;
 import app.eeui.framework.extend.integration.xutils.http.ProgressHandler;
 import app.eeui.framework.extend.integration.xutils.http.RequestParams;
 import app.eeui.framework.extend.integration.xutils.http.app.RequestInterceptListener;
+import app.eeui.framework.extend.integration.xutils.http.app.ResponseParser;
 import app.eeui.framework.extend.integration.xutils.http.loader.Loader;
 import app.eeui.framework.extend.integration.xutils.http.loader.LoaderFactory;
 import app.eeui.framework.extend.integration.xutils.x;
@@ -25,18 +26,19 @@ public abstract class UriRequest implements Closeable {
     protected final RequestParams params;
     protected final Loader<?> loader;
 
-    protected ClassLoader callingClassLoader = null;
     protected ProgressHandler progressHandler = null;
+    protected ResponseParser responseParser = null;
     protected RequestInterceptListener requestInterceptListener = null;
 
-    /*package*/ UriRequest(RequestParams params, Type loadType) throws Throwable {
+    public UriRequest(RequestParams params, Type loadType) throws Throwable {
         this.params = params;
         this.queryUrl = buildQueryUrl(params);
-        this.loader = LoaderFactory.getLoader(loadType, params);
+        this.loader = LoaderFactory.getLoader(loadType);
+        this.loader.setParams(params);
     }
 
     // build query
-    protected String buildQueryUrl(RequestParams params) {
+    protected String buildQueryUrl(RequestParams params) throws IOException {
         return params.getUri();
     }
 
@@ -45,8 +47,8 @@ public abstract class UriRequest implements Closeable {
         this.loader.setProgressHandler(progressHandler);
     }
 
-    public void setCallingClassLoader(ClassLoader callingClassLoader) {
-        this.callingClassLoader = callingClassLoader;
+    public void setResponseParser(ResponseParser responseParser) {
+        this.responseParser = responseParser;
     }
 
     public void setRequestInterceptListener(RequestInterceptListener requestInterceptListener) {
@@ -63,8 +65,6 @@ public abstract class UriRequest implements Closeable {
 
     /**
      * invoke via Loader
-     *
-     * @throws IOException
      */
     public abstract void sendRequest() throws Throwable;
 
@@ -74,9 +74,6 @@ public abstract class UriRequest implements Closeable {
 
     /**
      * 由loader发起请求, 拿到结果.
-     *
-     * @return
-     * @throws Throwable
      */
     public Object loadResult() throws Throwable {
         return this.loader.load(this);
@@ -84,9 +81,6 @@ public abstract class UriRequest implements Closeable {
 
     /**
      * 尝试从缓存获取结果, 并为请求头加入缓存控制参数.
-     *
-     * @return
-     * @throws Throwable
      */
     public abstract Object loadResultFromCache() throws Throwable;
 

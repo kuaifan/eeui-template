@@ -21,11 +21,11 @@ public final class DiskCacheEntity {
     @Column(name = "path")
     private String path;
 
-    @Column(name = "dirName")
-    private String dirName;
-
     @Column(name = "textContent")
     private String textContent;
+
+    @Column(name = "bytesContent")
+    private byte[] bytesContent;
 
     // from "max-age" (since http 1.1)
     @Column(name = "expires")
@@ -63,14 +63,6 @@ public final class DiskCacheEntity {
         this.key = key;
     }
 
-    public String getDirName() {
-        return dirName;
-    }
-
-    public void setDirName(String dirName) {
-        this.dirName = dirName;
-    }
-
     /*package*/ String getPath() {
         return path;
     }
@@ -85,6 +77,14 @@ public final class DiskCacheEntity {
 
     public void setTextContent(String textContent) {
         this.textContent = textContent;
+    }
+
+    public byte[] getBytesContent() {
+        return bytesContent;
+    }
+
+    public void setBytesContent(byte[] bytesContent) {
+        this.bytesContent = bytesContent;
     }
 
     public long getExpires() {

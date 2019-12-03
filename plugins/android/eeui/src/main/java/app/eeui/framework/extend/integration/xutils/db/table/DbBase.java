@@ -1,13 +1,10 @@
 package app.eeui.framework.extend.integration.xutils.db.table;
 
 import android.database.Cursor;
-import android.text.TextUtils;
 
 import app.eeui.framework.extend.integration.xutils.DbManager;
 import app.eeui.framework.extend.integration.xutils.common.util.IOUtil;
 import app.eeui.framework.extend.integration.xutils.common.util.LogUtil;
-import app.eeui.framework.extend.integration.xutils.db.sqlite.SqlInfo;
-import app.eeui.framework.extend.integration.xutils.db.sqlite.SqlInfoBuilder;
 import app.eeui.framework.extend.integration.xutils.ex.DbException;
 
 import java.util.HashMap;
@@ -28,6 +25,8 @@ public abstract class DbBase implements DbManager {
             if (table == null) {
                 try {
                     table = new TableEntity<T>(this, entityType);
+                } catch (DbException ex) {
+                    throw ex;
                 } catch (Throwable ex) {
                     throw new DbException(ex);
                 }
@@ -41,9 +40,9 @@ public abstract class DbBase implements DbManager {
     @Override
     public void dropTable(Class<?> entityType) throws DbException {
         TableEntity<?> table = this.getTable(entityType);
-        if (!table.tableIsExist()) return;
+        if (!table.tableIsExists()) return;
         execNonQuery("DROP TABLE \"" + table.getName() + "\"");
-        table.setCheckedDatabase(false);
+        table.setTableCheckedStatus(false);
         this.removeTable(entityType);
     }
 
@@ -63,7 +62,7 @@ public abstract class DbBase implements DbManager {
 
                 synchronized (tableMap) {
                     for (TableEntity<?> table : tableMap.values()) {
-                        table.setCheckedDatabase(false);
+                        table.setTableCheckedStatus(false);
                     }
                     tableMap.clear();
                 }
@@ -80,32 +79,15 @@ public abstract class DbBase implements DbManager {
         TableEntity<?> table = this.getTable(entityType);
         ColumnEntity col = table.getColumnMap().get(column);
         if (col != null) {
+            if (!table.tableIsExists()) return; // 不需要添加, 表创建时会自动添加
             StringBuilder builder = new StringBuilder();
             builder.append("ALTER TABLE ").append("\"").append(table.getName()).append("\"").
                     append(" ADD COLUMN ").append("\"").append(col.getName()).append("\"").
                     append(" ").append(col.getColumnDbType()).
                     append(" ").append(col.getProperty());
             execNonQuery(builder.toString());
-        }
-    }
-
-    protected void createTableIfNotExist(TableEntity<?> table) throws DbException {
-        if (!table.tableIsExist()) {
-            synchronized (table.getClass()) {
-                if (!table.tableIsExist()) {
-                    SqlInfo sqlInfo = SqlInfoBuilder.buildCreateTableSqlInfo(table);
-                    execNonQuery(sqlInfo);
-                    String execAfterTableCreated = table.getOnCreated();
-                    if (!TextUtils.isEmpty(execAfterTableCreated)) {
-                        execNonQuery(execAfterTableCreated);
-                    }
-                    table.setCheckedDatabase(true);
-                    TableCreateListener listener = this.getDaoConfig().getTableCreateListener();
-                    if (listener != null) {
-                        listener.onTableCreated(this, table);
-                    }
-                }
-            }
+        } else {
+            throw new DbException("the column(" + column + ") is not defined in table: " + table.getName());
         }
     }
 
