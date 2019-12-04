@@ -98,6 +98,7 @@ import app.eeui.framework.extend.module.eeuiMap;
 import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
+import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CameraManager;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CaptureActivityHandler;
 import app.eeui.framework.extend.module.rxtools.module.scaner.decoding.InactivityTimer;
@@ -832,12 +833,14 @@ public class PageActivity extends AppCompatActivity {
                 mAuto.setVisibility(View.VISIBLE);
                 eeuiIhttp.get("pageAuto", mPageInfo.getUrl(), null, new eeuiIhttp.ResultCallback() {
                     @Override
-                    public void success(String resData, boolean isCache) {
-                        String[] temp = resData.split("\n");
+                    public void success(HttpResponseParser resData, boolean isCache) {
                         String html = "";
-                        if (temp.length > 0) {
-                            html = temp[0];
-                            html = html.replaceAll(" ", "");
+                        if (!TextUtils.isEmpty(resData.getBody())) {
+                            String[] temp = resData.getBody().split("\n");
+                            if (temp.length > 0) {
+                                html = temp[0];
+                                html = html.replaceAll(" ", "");
+                            }
                         }
                         mPageInfo.setPageType(html.startsWith("//{\"framework\":\"Vue\"") ? "app" : "web");
                         initDefaultPageView();
@@ -845,7 +848,7 @@ public class PageActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void error(String error) {
+                    public void error(String error, int errCode) {
                         finish();
                     }
 

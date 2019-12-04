@@ -14,8 +14,10 @@ import app.eeui.framework.extend.integration.xutils.cache.LruDiskCache;
 import app.eeui.framework.extend.integration.xutils.common.Callback.Cancelable;
 import app.eeui.framework.extend.integration.xutils.common.Callback.CacheCallback;
 import app.eeui.framework.extend.integration.xutils.common.Callback.ProgressCallback;
+import app.eeui.framework.extend.integration.xutils.ex.HttpException;
 import app.eeui.framework.extend.integration.xutils.http.RequestParams;
 import app.eeui.framework.extend.integration.xutils.x;
+import app.eeui.framework.extend.module.http.HttpResponseParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SuppressLint("StaticFieldLeak")
@@ -202,24 +205,24 @@ public class eeuiIhttp {
      * @param callBack
      * @return
      */
-    private static CacheCallback<String> cacheCallback(String key, String url, ResultCallback callBack) {
+    private static CacheCallback<List<HttpResponseParser>> cacheCallback(String key, String url, ResultCallback callBack) {
         final boolean[] isCache = {false};
-        return new CacheCallback<String>() {
+        return new CacheCallback<List<HttpResponseParser>>() {
 
             @Override
-            public boolean onCache(String result) {
+            public boolean onCache(List<HttpResponseParser> result) {
                 isCache[0] = true;
                 if (callBack != null) {
-                    callBack.success(result, true);
+                    callBack.success(result.get(0), true);
                 }
                 return true;
             }
 
             @Override
-            public void onSuccess(String result) {
+            public void onSuccess(List<HttpResponseParser> result) {
                 if (!isCache[0]) {
                     if (callBack != null) {
-                        callBack.success(result, false);
+                        callBack.success(result.get(0), false);
                     }
                 }
             }
@@ -227,7 +230,12 @@ public class eeuiIhttp {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 if (callBack != null) {
-                    callBack.error(ex.toString());
+                    if (ex instanceof HttpException) {
+                        HttpException httpEx = (HttpException) ex;
+                        callBack.error(ex.toString(), httpEx.getCode());
+                    }else{
+                        callBack.error(ex.toString(), 0);
+                    }
                 }
             }
 
@@ -253,8 +261,8 @@ public class eeuiIhttp {
      * @param callBack
      * @return
      */
-    private static ProgressCallback<String> progressCallback(String key, String url, ResultCallback callBack) {
-        return new ProgressCallback<String>() {
+    private static ProgressCallback<List<HttpResponseParser>> progressCallback(String key, String url, ResultCallback callBack) {
+        return new ProgressCallback<List<HttpResponseParser>>() {
             @Override
             public void onWaiting() {
             }
@@ -268,16 +276,21 @@ public class eeuiIhttp {
             }
 
             @Override
-            public void onSuccess(String result) {
+            public void onSuccess(List<HttpResponseParser> result) {
                 if (callBack != null) {
-                    callBack.success(result, false);
+                    callBack.success(result.get(0), false);
                 }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 if (callBack != null) {
-                    callBack.error(ex.toString());
+                    if (ex instanceof HttpException) {
+                        HttpException httpEx = (HttpException) ex;
+                        callBack.error(ex.toString(), httpEx.getCode());
+                    }else{
+                        callBack.error(ex.toString(), 0);
+                    }
                 }
             }
 
@@ -304,9 +317,9 @@ public class eeuiIhttp {
      * 返回
      */
     public interface ResultCallback {
-        void success(String resData, boolean isCache);
+        void success(HttpResponseParser resData, boolean isCache);
 
-        void error(String error);
+        void error(String error, int errCode);
 
         void complete();
     }

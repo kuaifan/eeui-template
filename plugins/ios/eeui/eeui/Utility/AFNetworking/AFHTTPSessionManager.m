@@ -146,6 +146,27 @@
     return dataTask;
 }
 
+//eeui dev add
+- (NSURLSessionDataTask *)GET_EEUI:(NSString *)URLString
+                       parameters:(id)parameters
+                         progress:(void (^)(NSProgress * _Nonnull))downloadProgress
+                          success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable, NSInteger, NSDictionary *))success
+                          failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
+{
+
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod_EEUI:@"GET"
+                                                            URLString:URLString
+                                                           parameters:parameters
+                                                       uploadProgress:nil
+                                                     downloadProgress:downloadProgress
+                                                              success:success
+                                                              failure:failure];
+
+    [dataTask resume];
+
+    return dataTask;
+}
+
 - (NSURLSessionDataTask *)HEAD:(NSString *)URLString
                     parameters:(id)parameters
                        success:(void (^)(NSURLSessionDataTask *task))success
@@ -177,6 +198,20 @@
                        failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
 {
     NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"POST" URLString:URLString parameters:parameters uploadProgress:uploadProgress downloadProgress:nil success:success failure:failure];
+
+    [dataTask resume];
+
+    return dataTask;
+}
+
+//eeui dev add
+- (NSURLSessionDataTask *)POST_EEUI:(NSString *)URLString
+                    parameters:(id)parameters
+                      progress:(void (^)(NSProgress * _Nonnull))uploadProgress
+                       success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable, NSInteger, NSDictionary *))success
+                       failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
+{
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod_EEUI:@"POST" URLString:URLString parameters:parameters uploadProgress:uploadProgress downloadProgress:nil success:success failure:failure];
 
     [dataTask resume];
 
@@ -219,6 +254,46 @@
         } else {
             if (success) {
                 success(task, responseObject);
+            }
+        }
+    }];
+
+    [task resume];
+
+    return task;
+}
+
+//eeui dev add
+- (NSURLSessionDataTask *)POST_EEUI:(NSString *)URLString
+                    parameters:(id)parameters
+     constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
+                      progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
+                       success:(void (^)(NSURLSessionDataTask *task, id responseObject, NSInteger resCode, NSDictionary *resHeader))success
+                       failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure
+{
+    NSError *serializationError = nil;
+    NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters constructingBodyWithBlock:block error:&serializationError];
+    if (serializationError) {
+        if (failure) {
+            dispatch_async(self.completionQueue ?: dispatch_get_main_queue(), ^{
+                failure(nil, serializationError);
+            });
+        }
+
+        return nil;
+    }
+
+    __block NSURLSessionDataTask *task = [self uploadTaskWithStreamedRequest:request progress:uploadProgress completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
+        if (error) {
+            if (failure) {
+                failure(task, error);
+            }
+        } else {
+            if (success) {
+                NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse *)response;
+                NSInteger statusCode = [urlResponse statusCode];
+                NSDictionary *headerFields = [urlResponse allHeaderFields];
+                success(task, responseObject, statusCode, headerFields);
             }
         }
     }];
@@ -296,6 +371,49 @@
         } else {
             if (success) {
                 success(dataTask, responseObject);
+            }
+        }
+    }];
+
+    return dataTask;
+}
+
+//eeui dev add
+- (NSURLSessionDataTask *)dataTaskWithHTTPMethod_EEUI:(NSString *)method
+                                           URLString:(NSString *)URLString
+                                          parameters:(id)parameters
+                                      uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgress
+                                    downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgress
+                                             success:(void (^)(NSURLSessionDataTask *, id, NSInteger, NSDictionary *))success
+                                             failure:(void (^)(NSURLSessionDataTask *, NSError *))failure
+{
+    NSError *serializationError = nil;
+    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
+    if (serializationError) {
+        if (failure) {
+            dispatch_async(self.completionQueue ?: dispatch_get_main_queue(), ^{
+                failure(nil, serializationError);
+            });
+        }
+
+        return nil;
+    }
+
+    __block NSURLSessionDataTask *dataTask = nil;
+    dataTask = [self dataTaskWithRequest:request
+                          uploadProgress:uploadProgress
+                        downloadProgress:downloadProgress
+                       completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
+        if (error) {
+            if (failure) {
+                failure(dataTask, error);
+            }
+        } else {
+            if (success) {
+                NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse *)response;
+                NSInteger statusCode = [urlResponse statusCode];
+                NSDictionary *headerFields = [urlResponse allHeaderFields];
+                success(dataTask, responseObject, statusCode, headerFields);
             }
         }
     }];

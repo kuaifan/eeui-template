@@ -171,6 +171,13 @@ NS_ASSUME_NONNULL_BEGIN
                                success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
                                failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure;
 
+//eeui dev add
+- (nullable NSURLSessionDataTask *)GET_EEUI:(NSString *)URLString
+                                parameters:(nullable id)parameters
+                                  progress:(nullable void (^)(NSProgress *downloadProgress))downloadProgress
+                                   success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader))success
+                                   failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure;
+
 /**
  Creates and runs an `NSURLSessionDataTask` with a `HEAD` request.
 
@@ -218,6 +225,13 @@ NS_ASSUME_NONNULL_BEGIN
                                 success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
                                 failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure;
 
+//eeui dev add
+- (nullable NSURLSessionDataTask *)POST_EEUI:(NSString *)URLString
+                                parameters:(nullable id)parameters
+                                  progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
+                                   success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader))success
+                                   failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure;
+
 /**
  Creates and runs an `NSURLSessionDataTask` with a multipart `POST` request.
 
@@ -253,6 +267,14 @@ NS_ASSUME_NONNULL_BEGIN
                                progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
                                 success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
                                 failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure;
+
+//eeui dev add
+- (nullable NSURLSessionDataTask *)POST_EEUI:(NSString *)URLString
+                               parameters:(nullable id)parameters
+                constructingBodyWithBlock:(nullable void (^)(id <AFMultipartFormData> formData))block
+                                 progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
+                                  success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader))success
+                                  failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure;
 
 /**
  Creates and runs an `NSURLSessionDataTask` with a `PUT` request.

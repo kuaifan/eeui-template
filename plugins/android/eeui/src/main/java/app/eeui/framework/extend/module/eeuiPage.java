@@ -23,6 +23,7 @@ import app.eeui.framework.activity.PageActivityNoTransparent;
 import app.eeui.framework.activity.PageActivityTransparent;
 import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
+import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.tool.RxFileTool;
 
 /**
@@ -367,13 +368,13 @@ public class eeuiPage {
                 data.put("setting:cacheLabel", "page");
                 eeuiIhttp.get("eeuiPage", url, data, new eeuiIhttp.ResultCallback() {
                     @Override
-                    public void success(String resData, boolean isCache) {
-                        if (TextUtils.isEmpty(resData)) {
+                    public void success(HttpResponseParser resData, boolean isCache) {
+                        if (TextUtils.isEmpty(resData.getBody())) {
                             Log.d(TAG, "cachePage assetsError: " + url);
                             mOnCachePageCallback.error(resParams, url);
                             return;
                         }
-                        String tempUrl = saveCachePage(context, url, appboard + resData);
+                        String tempUrl = saveCachePage(context, url, appboard + resData.getBody());
                         if (TextUtils.isEmpty(tempUrl)) {
                             Log.d(TAG, "cachePage errors: " + url);
                             mOnCachePageCallback.success(resParams, url);
@@ -384,7 +385,7 @@ public class eeuiPage {
                     }
 
                     @Override
-                    public void error(String error) {
+                    public void error(String error, int errCode) {
                         Log.d(TAG, "cachePage error: " + url);
                         mOnCachePageCallback.success(resParams, url);
                     }

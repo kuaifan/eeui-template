@@ -39,6 +39,7 @@ import app.eeui.framework.extend.integration.glide.request.transition.Transition
 import app.eeui.framework.extend.integration.xutils.common.Callback;
 import app.eeui.framework.extend.integration.xutils.http.RequestParams;
 import app.eeui.framework.extend.integration.xutils.x;
+import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.tool.RxEncryptTool;
 import app.eeui.framework.extend.module.utilcode.util.FileUtils;
 import app.eeui.framework.extend.module.utilcode.util.ScreenUtils;
@@ -167,9 +168,9 @@ public class eeuiBase {
             data.put("setting:timeout", 1000);
             eeuiIhttp.get("eeuiPage", socketHome, data, new eeuiIhttp.ResultCallback() {
                 @Override
-                public void success(String resData, boolean isCache) {
-                    if (!TextUtils.isEmpty(resData)) {
-                        Matcher matcher = Pattern.compile("^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}").matcher(resData);
+                public void success(HttpResponseParser resData, boolean isCache) {
+                    if (!TextUtils.isEmpty(resData.getBody())) {
+                        Matcher matcher = Pattern.compile("^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}").matcher(resData.getBody());
                         if (matcher.find()) {
                             homePage[0] = socketHome;
                         }
@@ -178,7 +179,7 @@ public class eeuiBase {
                 }
 
                 @Override
-                public void error(String error) {
+                public void error(String error, int errCode) {
                     mOnHomeUrlListener.result(homePage[0]);
                 }
 
@@ -499,8 +500,8 @@ public class eeuiBase {
             data.put("debug", BuildConfig.DEBUG ? 1 : 0);
             eeuiIhttp.get("main", getUrl("app"), data, new eeuiIhttp.ResultCallback() {
                 @Override
-                public void success(String resData, boolean isCache) {
-                    JSONObject json = eeuiJson.parseObject(resData);
+                public void success(HttpResponseParser resData, boolean isCache) {
+                    JSONObject json = eeuiJson.parseObject(resData.getBody());
                     if (json.getIntValue("ret") == 1) {
                         JSONObject retData = json.getJSONObject("data");
                         eeuiCommon.setCachesString(eeui.getApplication(), "__system:appInfo", retData.toString(), 0);
@@ -510,7 +511,7 @@ public class eeuiBase {
                 }
 
                 @Override
-                public void error(String error) {
+                public void error(String error, int errCode) {
 
                 }
 

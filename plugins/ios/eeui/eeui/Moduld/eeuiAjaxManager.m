@@ -42,12 +42,23 @@
     NSString *dataType = params[@"dataType"] ? [WXConvert NSString:params[@"dataType"]] : @"json";
     NSInteger timeout = params[@"timeout"] ? [WXConvert NSInteger:params[@"timeout"]] : 15000;
     NSInteger cache = params[@"cache"] ? [WXConvert NSInteger:params[@"cache"]] : 0;
+    BOOL beforeAfter = params[@"beforeAfter"] ? [WXConvert BOOL:params[@"beforeAfter"]] : NO;
     NSDictionary *headers = params[@"headers"] ? params[@"headers"] : @{};
     NSMutableDictionary *data = [NSMutableDictionary dictionaryWithDictionary:params[@"data"] ? params[@"data"] : @{}];
     NSDictionary *files = params[@"files"] ? params[@"files"] : @{};
 
-    NSDictionary *result = @{@"status":@"ready", @"name":name, @"url":url, @"cache":@(NO), @"result":@{}};
-    callback(result, YES);
+    if (beforeAfter) {
+        NSDictionary *result = @{
+            @"status":@"ready",
+            @"name":name,
+            @"url":url,
+            @"cache":@(NO),
+            @"code":@(0),
+            @"header":@{},
+            @"result":@{}
+        };
+        callback(result, YES);
+    }
 
     //网络请求
     EELog(@"ajax = %@", url);
@@ -55,7 +66,15 @@
     //判断缓存
     NSDictionary *cacheResult = [self readFile:url];
     if (cacheResult) {
-        NSDictionary *res = @{@"status":@"success", @"name":name, @"url":url, @"cache":@(YES), @"result":cacheResult};
+        NSDictionary *res = @{
+            @"status":@"success",
+            @"name":name,
+            @"url":url,
+            @"cache":@(YES),
+            @"code":@(200),
+            @"header":@{},
+            @"result":cacheResult
+        };
         callback(res, YES);
         return;
     }
@@ -84,32 +103,68 @@
 #pragma mark GET
     if ([method compare:@"get"
                 options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        NSURLSessionDataTask *dataTask = [manager GET:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSURLSessionDataTask *dataTask = [manager GET_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader) {
             //EELog(@"%@\n%@", url, responseObject);
+            if (resCode == 200 && cache > 0) {
+                [ws saveFile:responseObject key:url cache:cache];
+            }
             if (responseObject && [responseObject isKindOfClass:[NSDictionary class]]) {
-                if ([[responseObject objectForKey:@"ret"] integerValue] == 1) {
-                    //加入缓存
-                    if (cache > 0 && [responseObject isKindOfClass:[NSDictionary class]]) {
-                        [ws saveFile:responseObject key:url cache:cache];
-                    }
-                }
+                //
             } else {
                 responseObject = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
             }
-            NSDictionary *res = @{@"status":@"success", @"name":name, @"url":url, @"cache":@(NO), @"result":responseObject};
-            callback(res, YES);
-
-            NSDictionary *result2 = @{@"status":@"complete", @"name":name, @"url":url, @"cache":@(NO), @"result":responseObject};
-            callback(result2, NO);
+            NSDictionary *res = @{
+                @"status":@"success",
+                @"name":name,
+                @"url":url,
+                @"cache":@(NO),
+                @"code":@(resCode),
+                @"header":resHeader,
+                @"result":responseObject
+            };
+            callback(res, beforeAfter ? YES : NO);
+            
+            if (beforeAfter) {
+                NSDictionary *result2 = @{
+                    @"status":@"complete",
+                    @"name":name,
+                    @"url":url,
+                    @"cache":@(NO),
+                    @"code":@(0),
+                    @"header":@{},
+                    @"result":responseObject
+                };
+                callback(result2, NO);
+            }
+            
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             //EELog(@"%@", error);
             id result = [[error userInfo] objectForKey:NSLocalizedDescriptionKey];
+            NSHTTPURLResponse *errorData = [[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey];
 
-            NSDictionary *res = @{@"status":@"error", @"name":name, @"url":url, @"cache":@(NO), @"result":result};
-            callback(res, YES);
+            NSDictionary *res = @{
+                @"status":@"error",
+                @"name":name,
+                @"url":url,
+                @"cache":@(NO),
+                @"code":@([errorData statusCode]),
+                @"header":[errorData allHeaderFields],
+                @"result":result
+            };
+            callback(res, beforeAfter ? YES : NO);
 
-            NSDictionary *result2 = @{@"status":@"complete", @"name":name, @"url":url, @"cache":@(NO), @"result":result};
-            callback(result2, NO);
+            if (beforeAfter) {
+                NSDictionary *result2 = @{
+                    @"status":@"complete",
+                    @"name":name,
+                    @"url":url,
+                    @"cache":@(NO),
+                    @"code":@(0),
+                    @"header":@{},
+                    @"result":result
+                };
+                callback(result2, NO);
+            }
         }];
 
         [self.taskDic setObject:dataTask forKey:name];
@@ -118,35 +173,68 @@
 #pragma mark POST
     else if ([method compare:@"post"
                      options:NSCaseInsensitiveSearch] == NSOrderedSame && files.count == 0) {
-        NSURLSessionDataTask *dataTask = [manager POST:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader) {
             //EELog(@"%@\n%@", url, responseObject);
+            if (resCode == 200 && cache > 0) {
+                [ws saveFile:responseObject key:url cache:cache];
+            }
             if (responseObject && [responseObject isKindOfClass:[NSDictionary class]]) {
-                if ([[responseObject objectForKey:@"ret"] integerValue] == 1) {
-                    NSDictionary *data = responseObject[@"data"];
-
-                    //加入缓存
-                    if (cache > 0 && [data isKindOfClass:[NSDictionary class]]) {
-                        [ws saveFile:data key:url cache:cache];
-                    }
-                }
+                //
             } else {
                 responseObject = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
             }
 
-            NSDictionary *res = @{@"status":@"success", @"name":name, @"url":url, @"cache":@(NO), @"result":responseObject};
-            callback(res, YES);
+            NSDictionary *res = @{
+                @"status":@"success",
+                @"name":name,
+                @"url":url,
+                @"cache":@(NO),
+                @"code":@(resCode),
+                @"header":resHeader,
+                @"result":responseObject
+            };
+            callback(res, beforeAfter ? YES : NO);
 
-            NSDictionary *result2 = @{@"status":@"complete", @"name":name, @"url":url, @"cache":@(NO), @"result":responseObject};
-            callback(result2, NO);
+            if (beforeAfter) {
+                NSDictionary *result2 = @{
+                    @"status":@"complete",
+                    @"name":name,
+                    @"url":url,
+                    @"cache":@(NO),
+                    @"code":@(0),
+                    @"header":@{},
+                    @"result":responseObject
+                };
+                callback(result2, NO);
+            }
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             //EELog(@"%@", error);
             id result = [[error userInfo] objectForKey:NSLocalizedDescriptionKey];
+            NSHTTPURLResponse *errorData = [[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey];
+            
+            NSDictionary *res = @{
+                @"status":@"error",
+                @"name":name,
+                @"url":url,
+                @"cache":@(NO),
+                @"code":@([errorData statusCode]),
+                @"header":[errorData allHeaderFields],
+                @"result":result
+            };
+            callback(res, beforeAfter ? YES : NO);
 
-            NSDictionary *res = @{@"status":@"error", @"name":name, @"url":url, @"cache":@(NO), @"result":result};
-            callback(res, YES);
-
-            NSDictionary *result2 = @{@"status":@"complete", @"name":name, @"url":url, @"cache":@(NO), @"result":result};
-            callback(result2, NO);
+            if (beforeAfter) {
+                NSDictionary *result2 = @{
+                    @"status":@"complete",
+                    @"name":name,
+                    @"url":url,
+                    @"cache":@(NO),
+                    @"code":@(0),
+                    @"header":@{},
+                    @"result":result
+                };
+                callback(result2, NO);
+            }
         }];
 
         [self.taskDic setObject:dataTask forKey:name];
@@ -154,7 +242,7 @@
 
 #pragma mark Upload
     else if (files.count > 0) {
-        NSURLSessionDataTask *dataTask = [manager POST:url parameters:data constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
             for (NSString *key in files.allKeys) {
                 id obj = files[key];
                 if ([obj isKindOfClass:[NSString class]]) {
@@ -188,22 +276,59 @@
                     }
                 }
             }
-        } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader) {
             //EELog(@"%@", responseObject);
-            NSDictionary *res = @{@"status":@"success", @"name":name, @"url":url, @"cache":@(NO), @"result":responseObject};
-            callback(res, YES);
+            NSDictionary *res = @{
+                @"status":@"success",
+                @"name":name,
+                @"url":url,
+                @"cache":@(NO),
+                @"code":@(resCode),
+                @"header":resHeader,
+                @"result":responseObject
+            };
+            callback(res, beforeAfter ? YES : NO);
 
-            NSDictionary *result2 = @{@"status":@"complete", @"name":name, @"url":url, @"cache":@(NO), @"result":@{}};
-            callback(result2, NO);
+            if (beforeAfter) {
+                NSDictionary *result2 = @{
+                    @"status":@"complete",
+                    @"name":name,
+                    @"url":url,
+                    @"cache":@(NO),
+                    @"code":@(0),
+                    @"header":@{},
+                    @"result":@{}
+                };
+                callback(result2, NO);
+            }
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             //EELog(@"%@", error);
             id result = [[error userInfo] objectForKey:NSLocalizedDescriptionKey];
+            NSHTTPURLResponse *errorData = [[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey];
 
-            NSDictionary *res = @{@"status":@"error", @"name":name, @"url":url, @"cache":@(NO), @"result":result};
-            callback(res, YES);
+            NSDictionary *res = @{
+                @"status":@"error",
+                @"name":name,
+                @"url":url,
+                @"cache":@(NO),
+                @"code":@([errorData statusCode]),
+                @"header":[errorData allHeaderFields],
+                @"result":result
+            };
+            callback(res, beforeAfter ? YES : NO);
 
-            NSDictionary *result2 = @{@"status":@"complete", @"name":name, @"url":url, @"cache":@(NO), @"result":result};
-            callback(result2, NO);
+            if (beforeAfter) {
+                NSDictionary *result2 = @{
+                    @"status":@"complete",
+                    @"name":name,
+                    @"url":url,
+                    @"cache":@(NO),
+                    @"code":@(0),
+                    @"header":@{},
+                    @"result":result
+                };
+                callback(result2, NO);
+            }
         }];
 
         [self.taskDic setObject:dataTask forKey:name];
