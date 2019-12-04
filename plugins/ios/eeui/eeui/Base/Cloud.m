@@ -278,7 +278,9 @@ static ClickWelcome myClickWelcome;
                 [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
             }
         }]];
-        [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
+        });
     }else{
         [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
     }
