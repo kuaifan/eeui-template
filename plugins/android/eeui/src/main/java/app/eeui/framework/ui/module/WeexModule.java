@@ -279,6 +279,14 @@ public class WeexModule extends WXModule {
         return myApp().rewriteUrl(mWXSDKInstance, url);
     }
 
+    /**
+     * 客户触发检测热更新
+     */
+    @JSMethod
+    public void checkUpdate() {
+        myApp().checkUpdate();
+    }
+
     /****************************************************************************************/
     /****************************************************************************************/
 

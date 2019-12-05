@@ -133,7 +133,7 @@ NSDictionary *mLaunchOptions;
             case kCTCellularDataRestricted:{
                 //1权限关闭的情况下 再次请求网络数据会弹出设置网络提示
                 EELog(@"gggggggg::网络权限关闭");
-                [Cloud appData];
+                [Cloud appData:NO];
                 self.isDataRestricted = YES;
                 break;
             }
@@ -150,7 +150,7 @@ NSDictionary *mLaunchOptions;
             case kCTCellularDataRestrictedStateUnknown:{
                 //3未知情况 （还没有遇到推测是有网络但是连接不正常的情况下）
                 EELog(@"gggggggg::网络权限未知");
-                [Cloud appData];
+                [Cloud appData:NO];
                 break;
             }
         }
@@ -414,7 +414,7 @@ NSDictionary *mLaunchOptions;
             [[[ViewController alloc]init] loadUrl:path forceRefresh:YES];
         }];
 
-        [Cloud appData];
+        [Cloud appData:NO];
         [DeviceUtil clearAppboardContent];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([Cloud welcome:self.window click:nil] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [Cloud welcomeClose];

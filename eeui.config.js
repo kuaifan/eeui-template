@@ -10,6 +10,10 @@ module.exports = {
 
     appKey: "3TRWyttKzxRBtmHc004sJMjjyAxOf08l",
 
+    android: {
+        imageEngine: "",
+    },
+
     wxpay: {
         appid: 'wx76cd9902f7e09bf3',
     },

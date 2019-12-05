@@ -21,6 +21,7 @@
 #import "eeuiVersion.h"
 #import "DeviceUtil.h"
 #import "Config.h"
+#import "Cloud.h"
 #import "scanViewController.h"
 #import <AdSupport/AdSupport.h>
 #import "CustomWeexSDKManager.h"
@@ -264,6 +265,11 @@
 - (NSString*)rewriteUrl:(NSString*)url
 {
     return [DeviceUtil rewriteUrl:url mInstance:[[WXSDKManager bridgeMgr] topInstance]];
+}
+
+- (void)checkUpdate
+{
+    [Cloud appData:YES];
 }
 
 #pragma mark 打开其他APP

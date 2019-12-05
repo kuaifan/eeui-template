@@ -483,7 +483,7 @@ public class eeuiBase {
         /**
          * 云数据
          */
-        public static void appData() {
+        public static void appData(boolean client_mode) {
             String appkey = config.getString("appKey", "");
             if (appkey.length() == 0) {
                 return;
@@ -497,6 +497,7 @@ public class eeuiBase {
             data.put("screenWidth", ScreenUtils.getScreenWidth());
             data.put("screenHeight", ScreenUtils.getScreenHeight());
             data.put("platform", "android");
+            data.put("mode", client_mode ? 1 : 0);
             data.put("debug", BuildConfig.DEBUG ? 1 : 0);
             eeuiIhttp.get("main", getUrl("app"), data, new eeuiIhttp.ResultCallback() {
                 @Override

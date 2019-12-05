@@ -109,7 +109,7 @@ static ClickWelcome myClickWelcome;
 }
 
 //云数据
-+ (void) appData
++ (void) appData:(BOOL)client_mode
 {
     NSString *appkey = [Config getString:@"appKey" defaultVal:@""];
     if (appkey.length == 0) {
@@ -132,6 +132,7 @@ static ClickWelcome myClickWelcome;
                              @"screenWidth": screenWidth,
                              @"screenHeight": screenHeight,
                              @"platform": @"ios",
+                             @"mode": client_mode == YES ? @"1" : @"0",
                              @"debug": debug};
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager GET:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -273,7 +274,7 @@ static ClickWelcome myClickWelcome;
         [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             if ([rebootInfo[@"confirm_reboot"] integerValue] == 1) {
                 [self reboot];
-                [self appData];
+                [self appData:NO];
             }else{
                 [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
             }

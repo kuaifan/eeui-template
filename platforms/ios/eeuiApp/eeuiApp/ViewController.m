@@ -94,7 +94,7 @@ eeuiViewController *homeController;
             homeController.backgroundColor = [Config getHomeParams:@"backgroundColor" defaultVal:@"#ffffff"];
             homeController.statusBlock = ^(NSString *status) {
                 if ([status isEqualToString:@"create"]) {
-                    [Cloud appData];
+                    [Cloud appData:NO];
                     //
                     if (pageUrl.length > 0) {
                         [[eeuiNewPageManager sharedIntstance] openPage:@{@"url": pageUrl, @"pageType": @"app"} weexInstance:nil callback:nil];

@@ -12,6 +12,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.WXSDKManager;
 import com.taobao.weex.adapter.IWXImgLoaderAdapter;
 import com.taobao.weex.common.WXImageStrategy;
@@ -35,6 +38,8 @@ import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiPage;
 
 public class ImageAdapter implements IWXImgLoaderAdapter {
+
+    public static String imageEngine = "";
 
     private static final String TAG = "ImageAdapter";
 
@@ -83,38 +88,74 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
         }
         String tempUrl = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, handCachePageUrl(view.getContext(), url)));
         Log.d(TAG, "loadImage: " + tempUrl);
+        //
         try {
-            RequestBuilder<Drawable> myLoad;
-            if (tempUrl.startsWith("file://assets/")) {
-                Bitmap myBitmap = getImageFromAssetsFile(view.getContext(), tempUrl.substring(14));
-                myLoad = Glide.with(view.getContext()).load(myBitmap);
-            } else {
-                myLoad = Glide.with(view.getContext()).load(tempUrl);
-            }
-            //
-            RequestOptions myOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
-            myLoad.apply(myOptions).listener(new RequestListener<Drawable>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                    if (strategy.getImageListener() != null) {
-                        strategy.getImageListener().onImageFinish(url, view, false, null);
-                    }
-                    return false;
+            if (imageEngine.equals("picasso")) {
+                if (tempUrl.startsWith("file://assets/")) {
+                    tempUrl = "file:///android_asset/" + tempUrl.substring(14);
                 }
+                Picasso.with(view.getContext()).load(tempUrl).into(view, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        if (strategy.getImageListener() != null) {
+                            strategy.getImageListener().onImageFinish(url, view, true, null);
+                        }
+                        recordImgLoadResult(strategy.instanceId, true, null);
 
-                @Override
-                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                    if (strategy.getImageListener() != null) {
-                        strategy.getImageListener().onImageFinish(url, view, true, null);
+                        if (!TextUtils.isEmpty(strategy.placeHolder)) {
+                            ((Picasso) view.getTag(strategy.placeHolder.hashCode())).cancelRequest(view);
+                        }
                     }
-                    return false;
+
+                    @Override
+                    public void onError() {
+                        if (strategy.getImageListener() != null) {
+                            strategy.getImageListener().onImageFinish(url, view, false, null);
+                        }
+                        recordImgLoadResult(strategy.instanceId, false, null);
+                    }
+                });
+            } else {
+                RequestBuilder<Drawable> myLoad;
+                if (tempUrl.startsWith("file://assets/")) {
+                    Bitmap myBitmap = getImageFromAssetsFile(view.getContext(), tempUrl.substring(14));
+                    myLoad = Glide.with(view.getContext()).load(myBitmap);
+                } else {
+                    myLoad = Glide.with(view.getContext()).load(tempUrl);
                 }
-            }).into(view);
+                //
+                RequestOptions myOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
+                myLoad.apply(myOptions).listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        if (strategy.getImageListener() != null) {
+                            strategy.getImageListener().onImageFinish(url, view, false, null);
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        if (strategy.getImageListener() != null) {
+                            strategy.getImageListener().onImageFinish(url, view, true, null);
+                        }
+                        return false;
+                    }
+                }).into(view);
+            }
         } catch (IllegalArgumentException ignored) {
 
         } catch (Exception ignored) {
 
         }
+    }
+
+    private void recordImgLoadResult(String instanceId, boolean succeed, String errorCode) {
+        WXSDKInstance instance = WXSDKManager.getInstance().getAllInstanceMap().get(instanceId);
+        if (null == instance || instance.isDestroy()) {
+            return;
+        }
+        instance.getApmForInstance().actionLoadImgResult(succeed, errorCode);
     }
 
     private Bitmap getImageFromAssetsFile(Context context, String fileName)

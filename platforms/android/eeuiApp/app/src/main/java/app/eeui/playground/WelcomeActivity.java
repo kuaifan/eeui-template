@@ -82,7 +82,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     Map<String, Object> retData = eeuiMap.objectToMap(data);
                     String status = eeuiParse.parseStr(retData.get("status"));
                     if (status.equals("create")) {
-                        eeuiBase.cloud.appData();
+                        eeuiBase.cloud.appData(false);
                         //
                         if (!"".equals(pageUrl)) {
                             String pageName = eeuiParse.parseStr(retData.get("pageName"));

@@ -21,6 +21,7 @@
 #import "eeuiVersion.h"
 #import "DeviceUtil.h"
 #import "Config.h"
+#import "Cloud.h"
 #import "scanViewController.h"
 #import "CustomWeexSDKManager.h"
 #import "UIImage+itdCategory.h"
@@ -200,6 +201,7 @@ WX_EXPORT_METHOD_SYNC(@selector(getCustomConfig))
 WX_EXPORT_METHOD_SYNC(@selector(clearCustomConfig))
 WX_EXPORT_METHOD_SYNC(@selector(realUrl:))
 WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
+WX_EXPORT_METHOD(@selector(checkUpdate))
 
 - (void)openPage:(NSDictionary*)params callback:(WXModuleKeepAliveCallback)callback
 {
@@ -329,6 +331,11 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 - (NSString*)rewriteUrl:(NSString*)url
 {
     return [DeviceUtil rewriteUrl:url mInstance:weexInstance];
+}
+
+- (void)checkUpdate
+{
+    [Cloud appData:YES];
 }
 
 #pragma mark 打开其他APP

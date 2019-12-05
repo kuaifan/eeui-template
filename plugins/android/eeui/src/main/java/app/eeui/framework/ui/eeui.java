@@ -150,6 +150,8 @@ public class eeui {
         eeui.application = app;
         eeui.application.registerActivityLifecycleCallbacks(mCallbacks);
 
+        ImageAdapter.imageEngine = eeuiJson.getString(eeuiBase.config.getObject("android"), "imageEngine").toLowerCase();
+
         eeuiIhttp.init(application);
 
         Iconify.with(new IoniconsModule());
@@ -930,6 +932,13 @@ public class eeui {
      */
     public String rewriteUrl(Object context, String url) {
         return eeuiPage.rewriteUrl(context, url);
+    }
+
+    /**
+     * 客户触发检测热更新
+     */
+    public void checkUpdate() {
+        eeuiBase.cloud.appData(true);
     }
 
     /****************************************************************************************/

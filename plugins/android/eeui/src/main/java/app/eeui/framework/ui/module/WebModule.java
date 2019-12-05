@@ -97,7 +97,7 @@ public class WebModule {
      * 修改状态栏字体颜色风格
      * @param isLight 是否亮色
      */
-    public void setStatusBarStyle(ExtendWebView webView, boolean isLight) {
+    public static void setStatusBarStyle(ExtendWebView webView, boolean isLight) {
         myApp().setStatusBarStyle(webView.getContext(), isLight);
     }
 
@@ -105,7 +105,7 @@ public class WebModule {
      * 修改状态栏字体颜色风格
      * @param isLight 是否亮色
      */
-    public void statusBarStyle(ExtendWebView webView, boolean isLight) {
+    public static void statusBarStyle(ExtendWebView webView, boolean isLight) {
         myApp().setStatusBarStyle(webView.getContext(), isLight);
     }
 
@@ -197,7 +197,7 @@ public class WebModule {
      * @param key
      * @return
      */
-    public Object getConfigRaw(ExtendWebView webView, String key) {
+    public static Object getConfigRaw(ExtendWebView webView, String key) {
         return myApp().getConfigRaw(key);
     }
     /**
@@ -206,7 +206,7 @@ public class WebModule {
      * @param key
      * @return
      */
-    public String getConfigString(ExtendWebView webView, String key) {
+    public static String getConfigString(ExtendWebView webView, String key) {
         return myApp().getConfigString(key);
     }
 
@@ -215,21 +215,21 @@ public class WebModule {
      * @param key
      * @param value
      */
-    public void setCustomConfig(String key, Object value) {
+    public static void setCustomConfig(String key, Object value) {
         myApp().setCustomConfig(key, value);
     }
 
     /**
      * 获取自定义配置
      */
-    public Object getCustomConfig() {
+    public static Object getCustomConfig() {
         return myApp().getCustomConfig();
     }
 
     /**
      * 清空自定义配置
      */
-    public void clearCustomConfig() {
+    public static void clearCustomConfig() {
         myApp().clearCustomConfig();
     }
 
@@ -239,7 +239,7 @@ public class WebModule {
      * @param url
      * @return
      */
-    public String realUrl(ExtendWebView webView, String url) {
+    public static String realUrl(ExtendWebView webView, String url) {
         return myApp().realUrl(url);
     }
 
@@ -249,8 +249,15 @@ public class WebModule {
      * @param url
      * @return
      */
-    public String rewriteUrl(ExtendWebView webView, String url) {
+    public static String rewriteUrl(ExtendWebView webView, String url) {
         return myApp().rewriteUrl(webView, url);
+    }
+
+    /**
+     * 客户触发检测热更新
+     */
+    public static void checkUpdate() {
+        myApp().checkUpdate();
     }
 
     /****************************************************************************************/

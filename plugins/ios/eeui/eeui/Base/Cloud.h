@@ -17,7 +17,7 @@ typedef void (^ClickWelcome)(void);
 + (NSString*) getUrl:(NSString*) act;
 + (NSInteger) welcome:(nullable UIView *) view click:(nullable ClickWelcome) click;
 + (void) welcomeClose;
-+ (void) appData;
++ (void) appData:(BOOL)client_mode;
 + (NSMutableDictionary *) getAppInfo;
 + (void) saveWelcomeImage:(NSString*)url wait:(NSInteger)wait;
 + (void) checkUpdateLists:(NSMutableArray*)lists number:(NSInteger)number isReboot:(BOOL)isReboot;
