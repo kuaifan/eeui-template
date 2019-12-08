@@ -4,6 +4,7 @@
 /common/differ
 /common/dist
 /common/zip
+/common/tools
 /node_modules
 /plugins-dev
 .DS_Store
