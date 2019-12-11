@@ -142,6 +142,7 @@ NSDictionary *mLaunchOptions;
                 EELog(@"gggggggg::网络权限开启");
                 [self addReachabilityManager:application didFinishLaunchingWithOptions:launchOptions];
                 if (self.isDataRestricted == YES) {
+                    [Cloud appData:NO];
                     [self refresh];
                 }
                 self.isDataRestricted = NO;

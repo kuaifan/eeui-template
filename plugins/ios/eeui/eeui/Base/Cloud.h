@@ -20,7 +20,7 @@ typedef void (^ClickWelcome)(void);
 + (void) appData:(BOOL)client_mode;
 + (NSMutableDictionary *) getAppInfo;
 + (void) saveWelcomeImage:(NSString*)url wait:(NSInteger)wait;
-+ (void) checkUpdateLists:(NSMutableArray*)lists number:(NSInteger)number isReboot:(BOOL)isReboot;
++ (void) checkUpdateLists:(NSMutableArray*)lists number:(NSInteger)number;
 + (void) reboot;
 + (void) clearUpdate;
 

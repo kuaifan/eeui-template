@@ -133,7 +133,8 @@ static ClickWelcome myClickWelcome;
                              @"screenHeight": screenHeight,
                              @"platform": @"ios",
                              @"mode": client_mode == YES ? @"1" : @"0",
-                             @"debug": debug};
+                             @"debug": debug,
+                             @"__": @([[NSDate date] timeIntervalSince1970])};
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager GET:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         @try {
@@ -144,7 +145,7 @@ static ClickWelcome myClickWelcome;
                     [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:appInfo" value:[DeviceUtil dictionaryToJson:jsonData] expired:0];
                     [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[[jsonData objectForKey:@"__system:welcome_wait"] integerValue]];
                     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                        [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0 isReboot:NO];
+                        [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0];
                     });
                 }
             }
@@ -186,12 +187,9 @@ static ClickWelcome myClickWelcome;
 }
 
 //更新部分
-+ (void) checkUpdateLists:(NSMutableArray*)lists number:(NSInteger)number isReboot:(BOOL)isReboot
++ (void) checkUpdateLists:(NSMutableArray*)lists number:(NSInteger)number
 {
     if (number >= [lists count]) {
-        if (isReboot) {
-            [self reboot];
-        }
         return;
     }
     NSMutableDictionary *data = [lists objectAtIndex:number];
@@ -200,13 +198,13 @@ static ClickWelcome myClickWelcome;
     NSInteger valid = [WXConvert NSInteger:data[@"valid"]];
     NSInteger clearCache = [WXConvert NSInteger:data[@"clear_cache"]];
     if (![url hasPrefix:@"http"]) {
-        [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
+        [self checkUpdateLists:lists number:number+1];
         return;
     }
     //
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *tempDir = [Config getSandPath:@"update"];
-    NSString *lockFile = [Config getSandPath:[[NSString alloc] initWithFormat:@"update/%@.lock", [Config MD5ForLower32Bate:url]]];
+    NSString *lockFile = [Config getSandPath:[[NSString alloc] initWithFormat:@"update/%@.lock", id]];
     if (![fm fileExistsAtPath:tempDir]) {
         [fm createDirectoryAtPath:tempDir withIntermediateDirectories:YES attributes:nil error:nil];
     }
@@ -216,7 +214,7 @@ static ClickWelcome myClickWelcome;
     if (valid == 1) {
         //开始修复
         if ([Config isFile:lockFile]) {
-            [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
+            [self checkUpdateLists:lists number:number+1];
             return;
         }
         //开始下载
@@ -246,7 +244,7 @@ static ClickWelcome myClickWelcome;
             isDelete = YES;
         }
         if (!isDelete) {
-            [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
+            [self checkUpdateLists:lists number:number+1];
             return;
         }
         //标记回调
@@ -259,31 +257,31 @@ static ClickWelcome myClickWelcome;
         [Config clearCache];
     }
     //
-    NSString *reboot = [NSString stringWithFormat:@"%@", data[@"reboot"]];
-    if ([reboot isEqualToString:@"1"]) {
-        [self checkUpdateLists:lists number:number+1 isReboot:YES];
-    }else if ([reboot isEqualToString:@"2"]) {
-        NSMutableDictionary *rebootInfo = [data objectForKey:@"reboot_info"];
-        UIAlertController * alertController = [UIAlertController
-                                               alertControllerWithTitle: [NSString stringWithFormat:@"%@", rebootInfo[@"title"]]
-                                               message: [NSString stringWithFormat:@"%@", rebootInfo[@"message"]]
-                                               preferredStyle:UIAlertControllerStyleAlert];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
-        }]];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            if ([rebootInfo[@"confirm_reboot"] integerValue] == 1) {
-                [self reboot];
-                [self appData:NO];
-            }else{
-                [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
-            }
-        }]];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
-        });
+    if ([lists count] > number + 1) {
+        [self checkUpdateLists:lists number:number+1];
     }else{
-        [self checkUpdateLists:lists number:number+1 isReboot:isReboot];
+        NSString *reboot = [NSString stringWithFormat:@"%@", data[@"reboot"]];
+        if ([reboot isEqualToString:@"1"]) {
+            [self reboot];
+        }else if ([reboot isEqualToString:@"2"]) {
+            NSMutableDictionary *rebootInfo = [data objectForKey:@"reboot_info"];
+            UIAlertController * alertController = [UIAlertController
+                                                   alertControllerWithTitle: [NSString stringWithFormat:@"%@", rebootInfo[@"title"]]
+                                                   message: [NSString stringWithFormat:@"%@", rebootInfo[@"message"]]
+                                                   preferredStyle:UIAlertControllerStyleAlert];
+            [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                //
+            }]];
+            [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                if ([rebootInfo[@"confirm_reboot"] integerValue] == 1) {
+                    [self reboot];
+                    [self appData:NO];
+                }
+            }]];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
+            });
+        }
     }
 }
 
