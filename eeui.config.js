@@ -11,7 +11,7 @@ module.exports = {
     appKey: "3TRWyttKzxRBtmHc004sJMjjyAxOf08l",
 
     android: {
-        imageEngine: "",
+        imageEngine: "picasso",
     },
 
     wxpay: {
