@@ -711,11 +711,22 @@ public class WebModule {
     /****************************************************************************************/
 
     /**
-     * 打开其他APP
+     * 打开指定APP
      * @param type
      */
     public static void openOtherApp(ExtendWebView webView, String type) {
         myApp().openOtherApp(webView.getContext(), type);
+    }
+
+    /**
+     * 打开其他APP
+     * @param webView
+     * @param pkg
+     * @param cls
+     * @param callback
+     */
+    public static void openOtherAppTo(ExtendWebView webView, String pkg, String cls, JsCallback callback) {
+        myApp().openOtherAppTo(webView.getContext(), pkg, cls, eeui.MCallback(callback));
     }
 
     /****************************************************************************************/

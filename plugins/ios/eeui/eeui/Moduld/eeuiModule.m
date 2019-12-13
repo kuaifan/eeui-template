@@ -341,6 +341,7 @@ WX_EXPORT_METHOD(@selector(checkUpdate))
 #pragma mark 打开其他APP
 
 WX_EXPORT_METHOD(@selector(openOtherApp:))
+WX_EXPORT_METHOD(@selector(openOtherAppTo:cls:callback:))
 
 - (void)openOtherApp:(NSString*)type
 {
@@ -361,6 +362,18 @@ WX_EXPORT_METHOD(@selector(openOtherApp:))
 
     if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
+    }
+}
+
+- (void)openOtherAppTo:(NSString*)pkg cls:(NSString*)cls callback:(WXModuleKeepAliveCallback)callback
+{
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", pkg, cls]];
+
+    if ([[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+        callback(@{@"status":@"success", @"error":@""}, NO);
+    }else{
+        callback(@{@"status":@"error", @"error":@"无法跳转到指定APP"}, NO);
     }
 }
 

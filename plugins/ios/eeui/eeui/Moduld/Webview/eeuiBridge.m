@@ -296,6 +296,18 @@
     }
 }
 
+- (void)openOtherAppTo:(NSString*)pkg cls:(NSString*)cls callback:(WXModuleKeepAliveCallback)callback
+{
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", pkg, cls]];
+
+    if ([[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+        callback(@{@"status":@"success", @"error":@""}, NO);
+    }else{
+        callback(@{@"status":@"error", @"error":@"无法跳转到指定APP"}, NO);
+    }
+}
+
 #pragma mark 复制粘贴
 
 - (void)copyText:(NSString*)text

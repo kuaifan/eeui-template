@@ -7,6 +7,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.taobao.weex.bridge.JSCallback;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static android.widget.Toast.LENGTH_SHORT;
 
 @SuppressLint("ShowToast")
@@ -73,6 +78,30 @@ public class eeuiOpenApp {
             context.startActivity(intent);
         } catch (Exception e) {
             Toast.makeText(context, "无法跳转到京东APP，请手动启动京东APP！", LENGTH_SHORT);
+        }
+    }
+
+    /**
+     * 自定义打开
+     */
+    public static void openOther(Context context, String pkg, String cls, JSCallback callback) {
+        try {
+            Intent intent = new Intent();
+            ComponentName cmp= new ComponentName(pkg, cls);
+            intent.setAction(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setComponent(cmp);
+            context.startActivity(intent);
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "success");
+            data.put("error", "");
+            callback.invoke(data);
+        } catch (Exception e) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "error");
+            data.put("error", e.getMessage());
+            callback.invoke(data);
         }
     }
 }

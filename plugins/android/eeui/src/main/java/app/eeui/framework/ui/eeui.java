@@ -1539,7 +1539,7 @@ public class eeui {
     /****************************************************************************************/
 
     /**
-     * 打开其他APP
+     * 打开指定APP
      * @param type
      */
     public void openOtherApp(Context context, String type) {
@@ -1563,6 +1563,17 @@ public class eeui {
                 eeuiOpenApp.openJd(context);
                 break;
         }
+    }
+
+    /**
+     * 打开其他App
+     * @param context
+     * @param pkg
+     * @param cls
+     * @param callback
+     */
+    public void openOtherAppTo(Context context, String pkg, String cls, JSCallback callback) {
+        eeuiOpenApp.openOther(context, pkg, cls, callback);
     }
 
     /****************************************************************************************/
