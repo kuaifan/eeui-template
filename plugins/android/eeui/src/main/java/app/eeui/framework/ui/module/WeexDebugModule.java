@@ -13,15 +13,13 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import app.eeui.framework.BuildConfig;
 import app.eeui.framework.activity.PageActivity;
+import app.eeui.framework.extend.module.eeuiDebug;
 import app.eeui.framework.extend.module.eeuiJson;
 import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 
 
 public class WeexDebugModule extends WXModule {
-
-    private static JSCallback mJSCallback = null;
-    private static JSONArray historys = null;
 
     @JSMethod
     public void addLog(String type, Object log) {
@@ -35,28 +33,7 @@ public class WeexDebugModule extends WXModule {
                     pageUrl = pageUrl.substring(pos + 1);
                 }
             }
-            if (historys == null) {
-                historys = new JSONArray();
-            }
-            //
-            JSONObject data = new JSONObject();
-            data.put("type", type);
-            data.put("text", log);
-            data.put("page", pageUrl);
-            data.put("time", (int) (System.currentTimeMillis() / 1000));
-            if (mJSCallback != null) {
-                mJSCallback.invokeAndKeepAlive(data);
-            }
-            if (historys.size() > 1200) {
-                JSONArray tmpLists = new JSONArray();
-                for (int i = 0; i < historys.size(); i++) {
-                    if (i > 200) {
-                        tmpLists.add(eeuiJson.parseObject(historys.get(i)));
-                    }
-                }
-                historys = tmpLists;
-            }
-            historys.add(data);
+            eeuiDebug.addDebug(type, log, pageUrl);
             //
             if (!TextUtils.isEmpty(pageUrl)) {
                 pageUrl = " (" + pageUrl + ")";
@@ -101,6 +78,7 @@ public class WeexDebugModule extends WXModule {
 
     @JSMethod
     public void getLog(String type, JSCallback callback) {
+        JSONArray historys = eeuiDebug.getHistorys();
         if (callback == null || historys == null) {
             return;
         }
@@ -116,6 +94,7 @@ public class WeexDebugModule extends WXModule {
 
     @JSMethod
     public void getLogAll(JSCallback callback) {
+        JSONArray historys = eeuiDebug.getHistorys();
         if (callback == null || historys == null) {
             return;
         }
@@ -124,6 +103,7 @@ public class WeexDebugModule extends WXModule {
 
     @JSMethod
     public void clearLog(String type) {
+        JSONArray historys = eeuiDebug.getHistorys();
         if (historys == null) {
             return;
         }
@@ -134,25 +114,26 @@ public class WeexDebugModule extends WXModule {
                 tmpLists.add(item);
             }
         }
-        historys = tmpLists;
+        eeuiDebug.setHistorys(tmpLists);
     }
 
     @JSMethod
     public void clearLogAll() {
+        JSONArray historys = eeuiDebug.getHistorys();
         if (historys == null) {
             return;
         }
-        historys = new JSONArray();
+        eeuiDebug.setHistorys(new JSONArray());
     }
 
     @JSMethod
     public void setLogListener(JSCallback callback) {
-        mJSCallback = callback;
+        eeuiDebug.setJSCallback(callback);
     }
 
     @JSMethod
     public void removeLogListener() {
-        mJSCallback = null;
+        eeuiDebug.setJSCallback(null);
     }
 
     @JSMethod

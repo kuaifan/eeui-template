@@ -13,6 +13,7 @@
 #import "CustomWeexSDKManager.h"
 #import "DeviceUtil.h"
 #import "Config.h"
+#import "Debug.h"
 #import "SGEasyButton.h"
 #import "SDWebImageDownloader.h"
 #import "UINavigationController+FDFullscreenPopGesture.h"
@@ -459,6 +460,7 @@ static int easyNavigationButtonTag = 8000;
             [weakSelf updateStatus:@"error"];
             [weakSelf showErrorBox:jsException.errorCode];
             weakSelf.errorContent = jsException.exception;
+            [Debug addDebug:@"error" log:[NSString stringWithFormat: @"%@ (errCode:%@)", weakSelf.errorContent, jsException.errorCode] pageUrl:weakSelf.url];
         });
     };
 
@@ -479,6 +481,7 @@ static int easyNavigationButtonTag = 8000;
             
             [weakSelf showErrorBox:[NSString stringWithFormat: @"%ld", (long)[error code]]];
             weakSelf.errorContent = [error description];
+            [Debug addDebug:@"error" log:[NSString stringWithFormat: @"%@ (errCode:%ld)", weakSelf.errorContent, (long)[error code]] pageUrl:weakSelf.url];
         });
     };
 

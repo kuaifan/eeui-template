@@ -40,26 +40,7 @@ WX_EXPORT_METHOD(@selector(closeConsole))
             pageUrl = [pageUrl substringFromIndex:range.location + 1];
         }
     }
-    //
-    if (historys == nil) {
-        historys = [NSMutableArray new];
-    }
-    NSInteger time = [[NSDate date] timeIntervalSince1970];
-    NSDictionary *data = @{@"type":type, @"text": log, @"page": pageUrl, @"time":@(time)};
-    if (mJSCallback != nil) {
-        mJSCallback(data, YES);
-    }
-    long int count = [historys count];
-    if (count > 1200) {
-        NSMutableArray *tmpLists = [NSMutableArray new];
-        for (int i = 0 ; i < count; i++) {
-            if (i > 200) {
-                [tmpLists addObject:[historys objectAtIndex:i]];
-            }
-        }
-        historys = tmpLists;
-    }
-    [historys addObject:data];
+    [Debug addDebug:type log:log pageUrl:pageUrl];
     //
     if (pageUrl.length > 0) {
         pageUrl = [[NSString alloc] initWithFormat:@" (%@)", pageUrl];
@@ -89,6 +70,7 @@ WX_EXPORT_METHOD(@selector(closeConsole))
 
 - (void)getLog:(NSString*)type :(WXModuleCallback)callback
 {
+    NSMutableArray* historys = [Debug getDebugHistorys];
     if (callback == nil || historys == nil) {
         return;
     }
@@ -103,6 +85,7 @@ WX_EXPORT_METHOD(@selector(closeConsole))
 
 - (void)getLogAll:(WXModuleCallback)callback
 {
+    NSMutableArray* historys = [Debug getDebugHistorys];
     if (callback == nil || historys == nil) {
         return;
     }
@@ -111,6 +94,7 @@ WX_EXPORT_METHOD(@selector(closeConsole))
 
 - (void)clearLog:(NSString*)type
 {
+    NSMutableArray* historys = [Debug getDebugHistorys];
     if (historys == nil) {
         return;
     }
@@ -120,25 +104,26 @@ WX_EXPORT_METHOD(@selector(closeConsole))
             [tmpLists addObject:obj];
         }
     }
-    historys = tmpLists;
+    [Debug setDebugHistorys:tmpLists];
 }
 
 - (void)clearLogAll
 {
+    NSMutableArray* historys = [Debug getDebugHistorys];
     if (historys == nil) {
         return;
     }
-    historys = [NSMutableArray new];
+    [Debug setDebugHistorys:[NSMutableArray new]];
 }
 
 - (void)setLogListener:(WXModuleKeepAliveCallback)callback
 {
-    mJSCallback = callback;
+    [Debug setDebugJSCallback:callback];
 }
 
 - (void)removeLogListener
 {
-    mJSCallback = nil;
+    [Debug setDebugJSCallback:nil];
 }
 
 - (void)openConsole

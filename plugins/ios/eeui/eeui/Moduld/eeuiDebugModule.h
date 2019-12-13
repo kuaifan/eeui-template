@@ -6,10 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "WeexSDK.h"
-
-static WXModuleKeepAliveCallback _Nullable mJSCallback;
-static NSMutableArray * _Nullable historys;
+#import "Debug.h"
 
 @interface eeuiDebugModule : NSObject <WXModuleProtocol>
 

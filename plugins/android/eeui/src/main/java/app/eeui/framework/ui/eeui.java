@@ -543,7 +543,11 @@ public class eeui {
             }
             return null;
         }
-        return eeuiPage.getWinInfo(pageName).toMap();
+        PageBean mPageBean = eeuiPage.getWinInfo(pageName);
+        if (mPageBean == null) {
+            return new HashMap<>();
+        }
+        return mPageBean.toMap();
     }
 
     /**

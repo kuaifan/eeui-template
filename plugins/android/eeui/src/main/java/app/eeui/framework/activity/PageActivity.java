@@ -92,6 +92,7 @@ import app.eeui.framework.extend.module.eeuiAlertDialog;
 import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiCommon;
 import app.eeui.framework.extend.module.eeuiConstants;
+import app.eeui.framework.extend.module.eeuiDebug;
 import app.eeui.framework.extend.module.eeuiIhttp;
 import app.eeui.framework.extend.module.eeuiJson;
 import app.eeui.framework.extend.module.eeuiMap;
@@ -1112,6 +1113,8 @@ public class PageActivity extends AppCompatActivity {
                 mError.setVisibility(View.VISIBLE);
                 mErrorCode.setText(String.valueOf(-5202));
                 mErrorMsg = "加载页面失败或不存在！";
+                //
+                eeuiDebug.addDebug("error", mErrorMsg + " (errCode:" + mErrorCode.getText() + ")", mPageInfo.getUrl());
             }
         });
     }
@@ -1185,6 +1188,8 @@ public class PageActivity extends AppCompatActivity {
                 mError.setVisibility(View.VISIBLE);
                 mErrorCode.setText(errCode);
                 mErrorMsg = errMsg;
+                //
+                eeuiDebug.addDebug("error", mErrorMsg + " (errCode:" + mErrorCode.getText() + ")", mPageInfo.getUrl());
             }
         };
     }
