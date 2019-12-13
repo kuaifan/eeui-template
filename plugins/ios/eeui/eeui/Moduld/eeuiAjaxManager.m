@@ -47,6 +47,10 @@
     NSMutableDictionary *data = [NSMutableDictionary dictionaryWithDictionary:params[@"data"] ? params[@"data"] : @{}];
     NSDictionary *files = params[@"files"] ? params[@"files"] : @{};
 
+    if (callback == nil) {
+        callback = ^(id result, BOOL keepAlive) { };
+    }
+    
     if (beforeAfter) {
         NSDictionary *result = @{
             @"status":@"ready",
@@ -147,8 +151,8 @@
                 @"name":name,
                 @"url":url,
                 @"cache":@(NO),
-                @"code":@([errorData statusCode]),
-                @"header":[errorData allHeaderFields],
+                @"code":errorData==nil?@(0):@([errorData statusCode]),
+                @"header":errorData==nil?@{}:[errorData allHeaderFields],
                 @"result":result
             };
             callback(res, beforeAfter ? YES : NO);
