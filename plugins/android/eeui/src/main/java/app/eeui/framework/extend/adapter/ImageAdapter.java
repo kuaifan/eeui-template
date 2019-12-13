@@ -131,6 +131,7 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
                         if (strategy.getImageListener() != null) {
                             strategy.getImageListener().onImageFinish(url, view, false, null);
                         }
+                        recordImgLoadResult(strategy.instanceId, false, null);
                         return false;
                     }
 
@@ -139,6 +140,7 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
                         if (strategy.getImageListener() != null) {
                             strategy.getImageListener().onImageFinish(url, view, true, null);
                         }
+                        recordImgLoadResult(strategy.instanceId, true, null);
                         return false;
                     }
                 }).into(view);

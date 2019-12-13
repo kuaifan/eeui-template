@@ -1800,7 +1800,7 @@ public class PageActivity extends AppCompatActivity {
         if (mPageInfo == null) {
             return;
         }
-        if (!("app".equals(mPageInfo.getPageType()) || "web".equals(mPageInfo.getPageType()))) {
+        if (!("app".equals(mPageInfo.getPageType()) || "web".equals(mPageInfo.getPageType()) || "auto".equals(mPageInfo.getPageType()))) {
             return;
         }
         deBugButton = new TextView(this);
