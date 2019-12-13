@@ -204,7 +204,7 @@ static ClickWelcome myClickWelcome;
     //
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *tempDir = [Config getSandPath:@"update"];
-    NSString *lockFile = [Config getSandPath:[[NSString alloc] initWithFormat:@"update/%@.lock", id]];
+    NSString *lockFile = [Config getSandPath:[[NSString alloc] initWithFormat:@"update/%@.lock", [Config MD5ForLower32Bate:url]]];
     if (![fm fileExistsAtPath:tempDir]) {
         [fm createDirectoryAtPath:tempDir withIntermediateDirectories:YES attributes:nil error:nil];
     }

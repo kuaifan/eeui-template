@@ -504,6 +504,7 @@ public class eeuiBase {
             data.put("platform", "android");
             data.put("mode", client_mode ? 1 : 0);
             data.put("debug", BuildConfig.DEBUG ? 1 : 0);
+            data.put("__", eeuiCommon.timeStamp());
             eeuiIhttp.get("main", getUrl("app"), data, new eeuiIhttp.ResultCallback() {
                 @Override
                 public void success(HttpResponseParser resData, boolean isCache) {
