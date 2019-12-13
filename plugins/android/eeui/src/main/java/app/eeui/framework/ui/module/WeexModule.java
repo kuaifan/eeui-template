@@ -776,6 +776,16 @@ public class WeexModule extends WXModule {
         myApp().saveImage(mWXSDKInstance.getContext(), url, callback);
     }
 
+    /**
+     * 保存图片到本地（自定义目录）
+     * @param url
+     * @param childDir
+     */
+    @JSMethod
+    public void saveImageTo(String url, String childDir, JSCallback callback) {
+        myApp().saveImageTo(mWXSDKInstance.getContext(), url, childDir, callback);
+    }
+
     /****************************************************************************************/
     /****************************************************************************************/
 

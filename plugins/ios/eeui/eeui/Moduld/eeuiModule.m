@@ -414,8 +414,14 @@ WX_EXPORT_METHOD(@selector(openScaner:callback:))
 #pragma mark 保存图片至本地
 
 WX_EXPORT_METHOD(@selector(saveImage:callback:))
+WX_EXPORT_METHOD(@selector(saveImageTo:childDir:callback:))
 
 - (void)saveImage:(NSString*)imgUrl callback:(WXKeepAliveCallback)callback
+{
+    [[eeuiSaveImageManager sharedIntstance] saveImage:imgUrl callback:callback];
+}
+
+- (void)saveImageTo:(NSString*)imgUrl childDir:(NSString*)childDir callback:(WXKeepAliveCallback)callback
 {
     [[eeuiSaveImageManager sharedIntstance] saveImage:imgUrl callback:callback];
 }

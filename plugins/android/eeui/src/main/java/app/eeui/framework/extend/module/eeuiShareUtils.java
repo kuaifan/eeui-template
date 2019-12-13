@@ -40,7 +40,7 @@ public class eeuiShareUtils {
             return;
         }
         LoadingDialog.init(context, null, null);
-        eeuiCommon.saveImage(context, imgUrl, new JSCallback() {
+        eeuiCommon.saveImage(context, imgUrl, null, new JSCallback() {
             @Override
             public void invoke(Object data) {
                 LoadingDialog.close(null);

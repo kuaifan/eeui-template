@@ -346,6 +346,11 @@
     [[eeuiSaveImageManager sharedIntstance] saveImage:imgUrl callback:callback];
 }
 
+- (void)saveImageTo:(NSString*)imgUrl childDir:(NSString*)childDir callback:(WXKeepAliveCallback)callback
+{
+    [[eeuiSaveImageManager sharedIntstance] saveImage:imgUrl callback:callback];
+}
+
 #pragma mark 分享
 
 - (void)shareText:(NSString*)text

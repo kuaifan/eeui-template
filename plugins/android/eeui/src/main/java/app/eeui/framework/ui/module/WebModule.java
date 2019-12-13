@@ -698,6 +698,15 @@ public class WebModule {
         myApp().saveImage(webView.getContext(), url, eeui.MCallback(callback));
     }
 
+    /**
+     * 保存图片到本地（自定义目录）
+     * @param url
+     * @param childDir
+     */
+    public static void saveImageTo(ExtendWebView webView, String url, String childDir, JsCallback callback) {
+        myApp().saveImageTo(webView.getContext(), url, childDir, eeui.MCallback(callback));
+    }
+
     /****************************************************************************************/
     /****************************************************************************************/
 

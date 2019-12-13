@@ -1523,7 +1523,16 @@ public class eeui {
      * @param url
      */
     public void saveImage(Context context, String url, JSCallback callback) {
-        eeuiCommon.saveImage(context, url, callback);
+        eeuiCommon.saveImage(context, url, null, callback);
+    }
+
+    /**
+     * 保存图片到本地（自定义目录）
+     * @param url
+     * @param childDir
+     */
+    public void saveImageTo(Context context, String url, String childDir, JSCallback callback) {
+        eeuiCommon.saveImage(context, url, childDir, callback);
     }
 
     /****************************************************************************************/

@@ -885,9 +885,10 @@ public class eeuiCommon {
      * 保存图片
      * @param context
      * @param url
+     * @param childDir
      * @param mJSCallback
      */
-    public static void saveImage(Context context, String url, JSCallback mJSCallback) {
+    public static void saveImage(Context context, String url, String childDir, JSCallback mJSCallback) {
         if (url == null) {
             if (mJSCallback != null) {
                 Map<String, Object> data = new HashMap<>();
@@ -898,7 +899,11 @@ public class eeuiCommon {
             }
             return;
         }
+        if (TextUtils.isEmpty(childDir)) {
+            childDir = x.app().getPackageName();
+        }
         final boolean[] loadSure = {false};
+        final String finalChildDir = childDir;
         Glide.with(context)
                 .asBitmap()
                 .load(url)
@@ -908,7 +913,7 @@ public class eeuiCommon {
                     public void onResourceReady(@NonNull Bitmap resource, Transition<? super Bitmap> transition) {
                         if (!loadSure[0]) {
                             loadSure[0] = true;
-                            File appDir = new File(Environment.getExternalStorageDirectory(), x.app().getPackageName());
+                            File appDir = new File(Environment.getExternalStorageDirectory(), finalChildDir);
                             String fileName = RxEncryptTool.encryptMD5ToString(url) + ".jpg";
                             eeuiCommon.saveImageToGallery(context, resource, fileName, appDir, path -> {
                                 if (mJSCallback != null) {
