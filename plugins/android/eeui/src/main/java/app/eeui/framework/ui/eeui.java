@@ -123,15 +123,18 @@ public class eeui {
 
     public static void reboot() {
         LinkedList<Activity> activityList = eeui.getActivityList();
-        for (int i = 0; i < activityList.size() - 1; i++) {
-            activityList.get(i).finish();
-        }
-        Activity lastActivity = activityList.getLast();
-        Intent intent = lastActivity.getPackageManager().getLaunchIntentForPackage(lastActivity.getPackageName());
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            lastActivity.startActivity(intent);
-            lastActivity.finish();
+        for (Activity context : activityList) {
+            if (context instanceof PageActivity) {
+                PageBean mPageBean = ((PageActivity) context).getPageInfo();
+                if (mPageBean.isFirstPage()) {
+                    eeuiBase.config.getHomeUrl(homeUrl -> {
+                        ((PageActivity) context).setPageUrl(homeUrl);
+                        ((PageActivity) context).reload();
+                    });
+                }else{
+                    context.finish();
+                }
+            }
         }
     }
 

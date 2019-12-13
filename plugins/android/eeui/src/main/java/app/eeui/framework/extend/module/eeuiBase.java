@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +44,7 @@ import app.eeui.framework.extend.integration.xutils.x;
 import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.tool.RxEncryptTool;
 import app.eeui.framework.extend.module.utilcode.util.FileUtils;
+import app.eeui.framework.extend.module.utilcode.util.PermissionUtils;
 import app.eeui.framework.extend.module.utilcode.util.ScreenUtils;
 import app.eeui.framework.extend.module.utilcode.util.TimeUtils;
 import app.eeui.framework.extend.module.utilcode.util.ZipUtils;
@@ -382,6 +385,8 @@ public class eeuiBase {
      */
     public static class cloud {
 
+        private static Timer checkUpdateTimer;
+
         /**
          * 获取服务端地址
          * @param act
@@ -507,7 +512,7 @@ public class eeuiBase {
                         JSONObject retData = json.getJSONObject("data");
                         eeuiCommon.setCachesString(eeui.getApplication(), "__system:appInfo", retData.toString(), 0);
                         saveWelcomeImage(retData.getString("welcome_image"), retData.getIntValue("welcome_wait"));
-                        checkUpdateLists(retData.getJSONArray("uplists"), 0, false);
+                        checkUpdateLists(retData.getJSONArray("uplists"), 0);
                     }
                 }
 
@@ -551,11 +556,8 @@ public class eeuiBase {
          * @param lists
          * @param number
          */
-        private static void checkUpdateLists(JSONArray lists, int number, boolean isReboot) {
+        private static void checkUpdateLists(JSONArray lists, int number) {
             if (number >= lists.size()) {
-                if (isReboot) {
-                    reboot();
-                }
                 return;
             }
             //
@@ -565,7 +567,7 @@ public class eeuiBase {
             int valid = eeuiJson.getInt(data, "valid");
             int clearCache = eeuiJson.getInt(data, "clear_cache");
             if (!url.startsWith("http")) {
-                checkUpdateLists(lists, number + 1, isReboot);
+                checkUpdateLists(lists, number + 1);
                 return;
             }
             //
@@ -577,7 +579,7 @@ public class eeuiBase {
             if (valid == 1) {
                 //开始修复
                 if (config.isFile(lockFile)) {
-                    checkUpdateLists(lists, number + 1, isReboot);
+                    checkUpdateLists(lists, number + 1);
                     return;
                 }
                 if (tempDir != null && (tempDir.exists() || tempDir.mkdirs())) {
@@ -603,9 +605,14 @@ public class eeuiBase {
                                 fos.close();
                                 //
                                 eeuiIhttp.get("checkUpdateLists", getUrl("update-success") + "&id=" + id, null, null);
-                                checkUpdateHint(lists, data, number, isReboot);
+                                eeuiBase.config.clear();
                                 if (clearCache == 1) {
                                     eeuiBase.config.clearCache();
+                                }
+                                if (lists.size() > number + 1) {
+                                    checkUpdateLists(lists, number + 1);
+                                }else{
+                                    checkUpdateHint(data);
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -640,27 +647,47 @@ public class eeuiBase {
                     isDelete = true;
                 }
                 if (!isDelete) {
-                    checkUpdateLists(lists, number + 1, isReboot);
+                    checkUpdateLists(lists, number + 1);
                     return;
                 }
                 eeuiIhttp.get("checkUpdateLists", getUrl("update-delete") + "&id=" + id, null, null);
-                checkUpdateHint(lists, data, number, isReboot);
+                eeuiBase.config.clear();
                 if (clearCache == 1) {
                     eeuiBase.config.clearCache();
+                }
+                if (lists.size() > number + 1) {
+                    checkUpdateLists(lists, number + 1);
+                }else{
+                    checkUpdateHint(data);
                 }
             }
         }
 
         /**
          * 更新部分(提示处理)
-         * @param lists
-         * @param number
          */
-        private static void checkUpdateHint(JSONArray lists, JSONObject data, int number, boolean isReboot) {
-            eeuiBase.config.clear();
+        private static void checkUpdateHint(JSONObject data) {
+            if (PermissionUtils.isShowApply || PermissionUtils.isShowRationale || PermissionUtils.isShowOpenAppSetting) {
+                if (checkUpdateTimer != null) {
+                    checkUpdateTimer.cancel();
+                    checkUpdateTimer = null;
+                }
+                checkUpdateTimer = new Timer();
+                checkUpdateTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (!PermissionUtils.isShowApply && !PermissionUtils.isShowRationale && !PermissionUtils.isShowOpenAppSetting) {
+                            checkUpdateTimer.cancel();
+                            checkUpdateTimer = null;
+                            checkUpdateHint(data);
+                        }
+                    }
+                }, 3000, 2000);
+                return;
+            }
             switch (eeuiJson.getInt(data, "reboot")) {
                 case 1:
-                    checkUpdateLists(lists, number + 1, true);
+                    reboot();
                     break;
 
                 case 2:
@@ -672,14 +699,12 @@ public class eeuiBase {
                         @Override
                         public void invoke(Object data) {
                             Map<String, Object> retData = eeuiMap.objectToMap(data);
-                            if (eeuiParse.parseStr(retData.get("status")).equals("click")) {
+                            if (retData != null && eeuiParse.parseStr(retData.get("status")).equals("click")) {
                                 if (eeuiParse.parseStr(retData.get("title")).equals("确定")) {
                                     if (eeuiJson.getBoolean(rebootInfo, "confirm_reboot")) {
                                         reboot();
-                                        return;
                                     }
                                 }
-                                checkUpdateLists(lists, number + 1, isReboot);
                             }
                         }
 
@@ -688,10 +713,6 @@ public class eeuiBase {
 
                         }
                     });
-                    break;
-
-                default:
-                    checkUpdateLists(lists, number + 1, isReboot);
                     break;
             }
         }
