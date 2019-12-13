@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "WeexSDK.h"
 
+static WXModuleKeepAliveCallback __nullable debugBtnCallback;
 static WXModuleKeepAliveCallback __nullable debugJSCallback;
 static NSMutableArray * __nullable debugHistorys;
 
@@ -16,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Debug : NSObject
 
 + (void)addDebug:(NSString*)type log:(id)log pageUrl:(NSString*)pageUrl;
+
++ (void)setDebugBtnCallback:(WXModuleKeepAliveCallback __nullable)callback;
++ (WXModuleKeepAliveCallback)getDebugBtnCallback;
 
 + (void)setDebugJSCallback:(WXModuleKeepAliveCallback __nullable)callback;
 + (WXModuleKeepAliveCallback)getDebugJSCallback;

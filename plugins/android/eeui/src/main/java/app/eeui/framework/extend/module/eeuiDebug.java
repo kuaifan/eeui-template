@@ -1,14 +1,22 @@
 package app.eeui.framework.extend.module;
 
+import android.app.Activity;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.bridge.JSCallback;
+
+import java.util.List;
+
+import app.eeui.framework.activity.PageActivity;
+import app.eeui.framework.ui.eeui;
 
 
 public class eeuiDebug {
 
     private static JSCallback mJSCallback = null;
     private static JSONArray historys = null;
+    private static boolean newDebug = false;
 
     public static void setHistorys(JSONArray historys) {
         eeuiDebug.historys = historys;
@@ -24,6 +32,23 @@ public class eeuiDebug {
 
     public static JSCallback getJSCallback() {
         return mJSCallback;
+    }
+
+    public static void setNewDebug(boolean newDebug) {
+        if (eeuiDebug.newDebug != newDebug) {
+            eeuiDebug.newDebug = newDebug;
+            List<Activity> activityList = eeui.getActivityList();
+            for (int i = activityList.size() - 1; i >= 0; --i) {
+                Activity activity = activityList.get(i);
+                if (activity instanceof PageActivity) {
+                    ((PageActivity) activity).deBugButtonRefresh(0);
+                }
+            }
+        }
+    }
+
+    public static boolean isNewDebug() {
+        return newDebug;
     }
 
     /**
@@ -55,5 +80,6 @@ public class eeuiDebug {
             historys = tmpLists;
         }
         historys.add(data);
+        setNewDebug(true);
     }
 }

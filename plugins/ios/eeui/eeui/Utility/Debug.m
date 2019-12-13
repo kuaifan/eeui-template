@@ -19,6 +19,7 @@
     if (debugJSCallback != nil) {
         debugJSCallback(data, YES);
     }
+    //
     long int count = [debugHistorys count];
     if (count > 1200) {
         NSMutableArray *tmpLists = [NSMutableArray new];
@@ -30,6 +31,20 @@
         debugHistorys = tmpLists;
     }
     [debugHistorys addObject:data];
+    //
+    if (debugBtnCallback != nil) {
+        debugBtnCallback(nil, YES);
+    }
+}
+
++ (void)setDebugBtnCallback:(WXModuleKeepAliveCallback __nullable)callback
+{
+    debugBtnCallback = callback;
+}
+
++ (WXModuleKeepAliveCallback)getDebugBtnCallback
+{
+    return debugBtnCallback;
 }
 
 + (void)setDebugJSCallback:(WXModuleKeepAliveCallback __nullable)callback

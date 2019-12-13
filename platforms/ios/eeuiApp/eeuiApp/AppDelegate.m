@@ -19,6 +19,7 @@
 #import <SocketRocket/SRWebSocket.h>
 #import "Config.h"
 #import "Cloud.h"
+#import "Debug.h"
 #import "eeuiToastManager.h"
 
 @interface AppDelegate ()<SRWebSocketDelegate>
@@ -33,6 +34,7 @@
 
 ViewController *mController;
 MNAssistiveBtn *debugBtn;
+UIView *debugRView;
 NSString *socketHost;
 NSString *socketPort;
 NSString *deBugWsOpenUrl;
@@ -219,6 +221,16 @@ NSDictionary *mLaunchOptions;
                                 backgroundImage:[UIImage imageNamed:isSuccess ? @"debugButtonSuccess" : @"debugButtonConnect"]];
     [self.window addSubview:debugBtn];
     [debugBtn addTarget:self action:@selector(clickDebugBtn) forControlEvents:UIControlEventTouchUpInside];
+    //
+    debugRView = [[UIView alloc] initWithFrame:CGRectMake(33, 2, 8, 8)];
+    debugRView.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0];
+    debugRView.tag = 9000;
+    debugRView.layer.cornerRadius = 4;
+    [debugBtn addSubview:debugRView];
+    [Debug setDebugBtnCallback:^(id  _Nullable result, BOOL keepAlive) {
+        debugRView.backgroundColor = [UIColor redColor];
+        debugRView.tag = 9001;
+    }];
 }
 
 //点击悬浮按钮
@@ -250,7 +262,9 @@ NSDictionary *mLaunchOptions;
         [DeviceUtil clearAppboardContent];
         [self refresh];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Console" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    [alertController addAction:[UIAlertAction actionWithTitle:debugRView.tag == 9001 ? @"Console[新]" : @"Console" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        debugRView.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0];
+        debugRView.tag = 9000;
         [self console];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"隐藏DEV" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {

@@ -285,11 +285,6 @@ public class PageActivity extends AppCompatActivity {
                 break;
 
             case "swipeCaptcha":
-                break;
-
-            case "scanerCode":
-                initSwipeBackFinish();
-                break;
 
             case "transparentPage":
                 break;
@@ -1782,7 +1777,7 @@ public class PageActivity extends AppCompatActivity {
 
     private TextView deBugButton;
     private WsManager deBugSocketWsManager;
-    private int deBugButtonSize = 128;
+    private int deBugButtonSize = SizeUtils.dp2px(48);
     private String deBugWsOpenUrl = "";
     private String deBugKeepScreen = "";
     private Timer deBugSocketTimer;
@@ -1814,9 +1809,9 @@ public class PageActivity extends AppCompatActivity {
         deBugButton.setTextSize(14);
         deBugButton.setGravity(Gravity.CENTER);
         if (eeuiCommon.getVariateInt("__system:deBugSocket:Status") == 1) {
-            deBugButton.setBackgroundResource(R.drawable.debug_button_success);
+            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_success_r : R.drawable.debug_button_success);
         }else{
-            deBugButton.setBackgroundResource(R.drawable.debug_button_connect);
+            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_connect_r : R.drawable.debug_button_connect);
         }
         if (PageActivity.hideDev) {
             deBugButton.setVisibility(View.GONE);
@@ -1840,19 +1835,25 @@ public class PageActivity extends AppCompatActivity {
      * 刷新debug按钮
      * @param status
      */
-    private void deBugButtonRefresh(int status) {
+    public void deBugButtonRefresh(int status) {
         if (deBugButton == null) {
             return;
         }
         if (status == 1) {
-            deBugButton.setBackgroundResource(R.drawable.debug_button_success);
+            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_success_r : R.drawable.debug_button_success);
             eeuiCommon.setVariate("__system:deBugSocket:Status", 1);
-        }else if (status == 2) {
-            deBugButton.setBackgroundResource(R.drawable.debug_button_connect);
+        } else if (status == 2) {
+            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_connect_r : R.drawable.debug_button_connect);
             eeuiCommon.setVariate("__system:deBugSocket:Status", 2);
-        }else if (status == 3) {
+        } else if (status == 3) {
             deBugButton.setVisibility(View.GONE);
             return;
+        } else {
+            if (eeuiCommon.getVariateInt("__system:deBugSocket:Status") == 1) {
+                deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_success_r : R.drawable.debug_button_success);
+            } else {
+                deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_connect_r : R.drawable.debug_button_connect);
+            }
         }
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(deBugButtonSize, deBugButtonSize);
         int left = eeuiParse.parseInt(eeuiCommon.getVariate("__system:pageActivity:FloatDrag:Left"), ScreenUtils.getScreenWidth() - deBugButtonSize);
@@ -1936,7 +1937,7 @@ public class PageActivity extends AppCompatActivity {
         mActionItem.add(new ActionItem(3, "页面信息"));
         mActionItem.add(new ActionItem(4, "扫一扫"));
         mActionItem.add(new ActionItem(5, "刷新"));
-        mActionItem.add(new ActionItem(6, "Console"));
+        mActionItem.add(new ActionItem(6, eeuiDebug.isNewDebug() ? "Console [新]" : "Console"));
         mActionItem.add(new ActionItem(7, "隐藏DEV"));
         mActionItem.add(new ActionItem(8, "重启APP"));
         mActionItem.add(new ActionItem(9, "清除缓存"));
@@ -2053,6 +2054,7 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 5: {
+                                eeuiDebug.setNewDebug(false);
                                 showConsole();
                                 break;
                             }
