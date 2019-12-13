@@ -93,15 +93,19 @@ public class eeuiOpenApp {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setComponent(cmp);
             context.startActivity(intent);
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "success");
-            data.put("error", "");
-            callback.invoke(data);
+            if (callback != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("status", "success");
+                data.put("error", "");
+                callback.invoke(data);
+            }
         } catch (Exception e) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("status", "error");
-            data.put("error", e.getMessage());
-            callback.invoke(data);
+            if (callback != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("status", "error");
+                data.put("error", e.getMessage());
+                callback.invoke(data);
+            }
         }
     }
 }

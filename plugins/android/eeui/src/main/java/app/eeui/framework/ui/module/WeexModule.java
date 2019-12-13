@@ -800,10 +800,12 @@ public class WeexModule extends WXModule {
 
     /**
      * 打开其他APP
-     * @param type
+     * @param pkg
+     * @param cls
+     * @param callback
      */
     @JSMethod
-    public void openOtherAppTo(String type, String pkg, String cls, JSCallback callback) {
+    public void openOtherAppTo(String pkg, String cls, JSCallback callback) {
         myApp().openOtherAppTo(mWXSDKInstance.getContext(), pkg, cls, callback);
     }
 

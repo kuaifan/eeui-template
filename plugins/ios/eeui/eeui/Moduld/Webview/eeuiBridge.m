@@ -302,9 +302,13 @@
 
     if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
-        callback(@{@"status":@"success", @"error":@""}, NO);
+        if (callback != nil) {
+            callback(@{@"status":@"success", @"error":@""}, NO);
+        }
     }else{
-        callback(@{@"status":@"error", @"error":@"无法跳转到指定APP"}, NO);
+        if (callback != nil) {
+            callback(@{@"status":@"error", @"error":@"无法跳转到指定APP"}, NO);
+        }
     }
 }
 
