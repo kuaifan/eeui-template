@@ -114,6 +114,7 @@ WX_EXPORT_METHOD(@selector(closeConsole))
         return;
     }
     [Debug setDebugHistorys:[NSMutableArray new]];
+    [Debug setDebugBtnStatus:NO];
 }
 
 - (void)setLogListener:(WXModuleKeepAliveCallback)callback
@@ -139,6 +140,7 @@ WX_EXPORT_METHOD(@selector(closeConsole))
     if ([[DeviceUtil getTopviewControler] isKindOfClass:[eeuiViewController class]]) {
         eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
         [vc hideFixedConsole];
+        [Debug setDebugBtnStatus:NO];
     }
 }
 

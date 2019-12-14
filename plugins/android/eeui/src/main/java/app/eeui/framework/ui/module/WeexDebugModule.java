@@ -124,6 +124,7 @@ public class WeexDebugModule extends WXModule {
             return;
         }
         eeuiDebug.setHistorys(new JSONArray());
+        eeuiDebug.setNewDebug(false);
     }
 
     @JSMethod
@@ -149,6 +150,7 @@ public class WeexDebugModule extends WXModule {
         if (mWXSDKInstance.getContext() instanceof PageActivity) {
             PageActivity mActivity = (PageActivity) mWXSDKInstance.getContext();
             mActivity.closeConsole();
+            eeuiDebug.setNewDebug(false);
         }
     }
 }

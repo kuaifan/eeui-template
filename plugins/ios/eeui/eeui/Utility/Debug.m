@@ -33,7 +33,14 @@
     [debugHistorys addObject:data];
     //
     if (debugBtnCallback != nil) {
-        debugBtnCallback(nil, YES);
+        debugBtnCallback(@(YES), YES);
+    }
+}
+
++ (void)setDebugBtnStatus:(BOOL)status
+{
+    if (debugBtnCallback != nil) {
+        debugBtnCallback(@(status), YES);
     }
 }
 

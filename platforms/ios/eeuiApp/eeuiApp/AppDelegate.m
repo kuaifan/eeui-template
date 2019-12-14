@@ -228,8 +228,13 @@ NSDictionary *mLaunchOptions;
     debugRView.layer.cornerRadius = 4;
     [debugBtn addSubview:debugRView];
     [Debug setDebugBtnCallback:^(id  _Nullable result, BOOL keepAlive) {
-        debugRView.backgroundColor = [UIColor redColor];
-        debugRView.tag = 9001;
+        if ([WXConvert BOOL:result] == NO) {
+            debugRView.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0];
+            debugRView.tag = 9000;
+        }else{
+            debugRView.backgroundColor = [UIColor redColor];
+            debugRView.tag = 9001;
+        }
     }];
 }
 
