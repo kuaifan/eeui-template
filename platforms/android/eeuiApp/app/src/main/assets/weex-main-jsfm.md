@@ -2,7 +2,7 @@
 
 ```js
 //顶部添加
-var eeuiNativeLog={app:null,debug:null,create:function(e,type){if(this.app!=null){if(this.debug==null){this.debug=this.app.requireModule("debug")}this.debug.addLog(type.toLowerCase(),e)}return e.concat(["__"+type])}};
+var eeuiNativeLog={app:null,create:function(e,type){try{if(this.app!=null){this.app.addLog(type.toLowerCase(),e)}}catch(e){}return e.concat(["__"+type])}};
 ```
 
 ## 二 
@@ -14,7 +14,7 @@ var a,s,c,l,u=(a=e,s={weex:r,
 替换成
 
 ```
-eeuiNativeLog.app=r;var a,s,c,l,u=(a=e,s={weex:r,app:r,
+eeuiNativeLog.app=r.requireModule("debug");var a,s,c,l,u=(a=e,s={weex:r,app:r,
 ```
 
 ## 三
