@@ -250,30 +250,10 @@ public class eeuiBase {
                 return originalUrl;
             }
 
-            if (verifyDir == null) {
-                verifyDir = new JSONArray();
-                String localVersion = String.valueOf(eeuiCommon.getLocalVersion(eeui.getApplication()));
-                File[] files = path.listFiles();
-                List<File> fileList = Arrays.asList(files);
-                Collections.sort(fileList, (o1, o2) -> {
-                    if (o1.isDirectory() && o2.isFile()) {
-                        return -1;
-                    }else if (o1.isFile() && o2.isDirectory()) {
-                        return 1;
-                    }
-                    return o1.getName().compareTo(o2.getName());
-                });
-                Collections.reverse(fileList);
-                for (File file1 : files) {
-                    if (file1.isDirectory() && isFile(new File(file1.getPath() + "/" + localVersion + ".release"))) {
-                        verifyDir.add(file1.getName());
-                    }
-                }
-            }
-
             String newUrl = "";
-            for (int i = 0; i < verifyDir.size(); i++) {
-                File tempPath = eeui.getApplication().getExternalFilesDir("update/" + verifyDir.getString(i));
+            JSONArray tempArray = verifyData();
+            for (int i = 0; i < tempArray.size(); i++) {
+                File tempPath = eeui.getApplication().getExternalFilesDir("update/" + tempArray.getString(i));
                 if (tempPath != null) {
                     tempPath = new File(tempPath.getPath() + "/" + originalPath);
                     if (isFile(tempPath)) {
@@ -284,6 +264,39 @@ public class eeuiBase {
             }
 
             return newUrl.length() > 0 ? newUrl : originalUrl;
+        }
+
+        /**
+         * 获取热更新目录
+         * @return
+         */
+        public static JSONArray verifyData() {
+            if (verifyDir == null) {
+                verifyDir = new JSONArray();
+                String localVersion = String.valueOf(eeuiCommon.getLocalVersion(eeui.getApplication()));
+                File path = eeui.getApplication().getExternalFilesDir("update");
+                if (path != null) {
+                    File[] files = path.listFiles();
+                    if (files != null) {
+                        List<File> fileList = Arrays.asList(files);
+                        Collections.sort(fileList, (o1, o2) -> {
+                            if (o1.isDirectory() && o2.isFile()) {
+                                return -1;
+                            } else if (o1.isFile() && o2.isDirectory()) {
+                                return 1;
+                            }
+                            return o1.getName().compareTo(o2.getName());
+                        });
+                        Collections.reverse(fileList);
+                        for (File file1 : files) {
+                            if (file1.isDirectory() && isFile(new File(file1.getPath() + "/" + localVersion + ".release"))) {
+                                verifyDir.add(file1.getName());
+                            }
+                        }
+                    }
+                }
+            }
+            return verifyDir;
         }
 
         /**

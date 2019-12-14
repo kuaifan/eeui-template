@@ -187,9 +187,33 @@ static NSMutableArray *verifyDir;
     NSFileManager *myFileManager = [NSFileManager defaultManager];
     BOOL isDir = NO;
     BOOL isExist = NO;
-    long localVersion = (long)[Config getLocalVersion];
 
+    NSString *newUrl = @"";
+    NSMutableArray *tempArray = [self verifyData];
+    for (NSString * dirName in tempArray) {
+        NSString *tempPath = [NSString stringWithFormat:@"%@/%@/%@", path, dirName, originalPath];
+        isExist = [myFileManager fileExistsAtPath:tempPath isDirectory:&isDir];
+        if (isExist && !isDir) {
+            newUrl = [NSString stringWithFormat:@"%@%@", isFilePre ? @"file://" : @"", tempPath];;
+            break;
+        }
+    }
+
+    if (newUrl.length == 0) {
+        return originalUrl;
+    }
+    return newUrl;
+}
+
++ (NSMutableArray*) verifyData
+{
     if (verifyDir == nil) {
+        NSString *path = [Config getSandPath:@"update"];
+        NSFileManager *myFileManager = [NSFileManager defaultManager];
+        BOOL isDir = NO;
+        BOOL isExist = NO;
+        long localVersion = (long)[Config getLocalVersion];
+        //
         verifyDir = [NSMutableArray array];
         NSArray *tmpArray = [myFileManager contentsOfDirectoryAtPath:path error:nil];
         for (NSString * dirName in tmpArray) {
@@ -209,21 +233,7 @@ static NSMutableArray *verifyDir;
             }
         }];
     }
-
-    NSString *newUrl = @"";
-    for (NSString * dirName in verifyDir) {
-        NSString *tempPath = [NSString stringWithFormat:@"%@/%@/%@", path, dirName, originalPath];
-        isExist = [myFileManager fileExistsAtPath:tempPath isDirectory:&isDir];
-        if (isExist && !isDir) {
-            newUrl = [NSString stringWithFormat:@"%@%@", isFilePre ? @"file://" : @"", tempPath];;
-            break;
-        }
-    }
-
-    if (newUrl.length == 0) {
-        return originalUrl;
-    }
-    return newUrl;
+    return verifyDir;
 }
 
 //是否有升级文件

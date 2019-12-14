@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) getHomeUrl:(void(^)(NSString* path))callback;
 + (NSString *) getHomeParams:(NSString*)key defaultVal:(NSString *)defaultVal;
 + (NSString *) verifyFile:(NSString*)originalUrl;
++ (NSMutableArray*) verifyData;
 + (BOOL) verifyIsUpdate;
 + (void) setCustomConfig:(NSString*)key value:(id)value;
 + (NSMutableDictionary *) getCustomConfig;

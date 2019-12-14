@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.InitConfig.Builder;
 import com.taobao.weex.WXSDKEngine;
@@ -939,6 +940,18 @@ public class eeui {
      */
     public String rewriteUrl(Object context, String url) {
         return eeuiPage.rewriteUrl(context, url);
+    }
+
+    /**
+     * 获取已热更新至的数据ID
+     * @return
+     */
+    public int getUpdateId() {
+        JSONArray tempArray = eeuiBase.config.verifyData();
+        if (tempArray.size() == 0) {
+            return 0;
+        }
+        return eeuiParse.parseInt(tempArray.get(0));
     }
 
     /**

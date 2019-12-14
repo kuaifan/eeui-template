@@ -267,6 +267,16 @@
     return [DeviceUtil rewriteUrl:url mInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
+- (NSInteger)getUpdateId
+{
+    NSMutableArray *tempArray = [Config verifyData];
+    if (tempArray.count == 0) {
+        return 0;
+    }else{
+        return [WXConvert NSInteger:[tempArray objectAtIndex:0]];
+    }
+}
+
 - (void)checkUpdate
 {
     [Cloud appData:YES];

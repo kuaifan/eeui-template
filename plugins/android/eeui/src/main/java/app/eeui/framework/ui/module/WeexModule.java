@@ -280,6 +280,15 @@ public class WeexModule extends WXModule {
     }
 
     /**
+     * 获取已热更新至的数据ID
+     * @return
+     */
+    @JSMethod(uiThread = false)
+    public int getUpdateId() {
+        return myApp().getUpdateId();
+    }
+
+    /**
      * 客户触发检测热更新
      */
     @JSMethod

@@ -201,7 +201,6 @@ WX_EXPORT_METHOD_SYNC(@selector(getCustomConfig))
 WX_EXPORT_METHOD_SYNC(@selector(clearCustomConfig))
 WX_EXPORT_METHOD_SYNC(@selector(realUrl:))
 WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
-WX_EXPORT_METHOD(@selector(checkUpdate))
 
 - (void)openPage:(NSDictionary*)params callback:(WXModuleKeepAliveCallback)callback
 {
@@ -331,6 +330,19 @@ WX_EXPORT_METHOD(@selector(checkUpdate))
 - (NSString*)rewriteUrl:(NSString*)url
 {
     return [DeviceUtil rewriteUrl:url mInstance:weexInstance];
+}
+
+WX_EXPORT_METHOD_SYNC(@selector(getUpdateId))
+WX_EXPORT_METHOD(@selector(checkUpdate))
+
+- (NSInteger)getUpdateId
+{
+    NSMutableArray *tempArray = [Config verifyData];
+    if (tempArray.count == 0) {
+        return 0;
+    }else{
+        return [WXConvert NSInteger:[tempArray objectAtIndex:0]];
+    }
 }
 
 - (void)checkUpdate

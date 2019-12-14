@@ -254,6 +254,14 @@ public class WebModule {
     }
 
     /**
+     * 获取已热更新至的数据ID
+     * @return
+     */
+    public static int getUpdateId() {
+        return myApp().getUpdateId();
+    }
+
+    /**
      * 客户触发检测热更新
      */
     public static void checkUpdate() {
