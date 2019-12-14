@@ -221,8 +221,8 @@
                 @"name":name,
                 @"url":url,
                 @"cache":@(NO),
-                @"code":@([errorData statusCode]),
-                @"header":[errorData allHeaderFields],
+                @"code":errorData==nil?@(0):@([errorData statusCode]),
+                @"header":errorData==nil?@{}:[errorData allHeaderFields],
                 @"result":result
             };
             callback(res, beforeAfter ? YES : NO);
@@ -315,8 +315,8 @@
                 @"name":name,
                 @"url":url,
                 @"cache":@(NO),
-                @"code":@([errorData statusCode]),
-                @"header":[errorData allHeaderFields],
+                @"code":errorData==nil?@(0):@([errorData statusCode]),
+                @"header":errorData==nil?@{}:[errorData allHeaderFields],
                 @"result":result
             };
             callback(res, beforeAfter ? YES : NO);
