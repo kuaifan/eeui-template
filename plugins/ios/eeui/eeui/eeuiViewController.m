@@ -724,7 +724,7 @@ static int easyNavigationButtonTag = 8000;
             [myView addSubview:self->_updateWeexView];
             UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, self->_updateWeexView);
         };
-        NSString *tempUrl = [NSString stringWithFormat:@"file://%@/%@.js", [Config getResourcePath:@"bundlejs/update/"], templateId];
+        NSString *tempUrl = [NSString stringWithFormat:@"file://%@", [Config getResourcePath:[NSString stringWithFormat:@"bundlejs/update/%@.js", templateId]]];
         NSString *appboard = [DeviceUtil getAppboardContent];
         if (appboard.length > 0) {
             [DeviceUtil downloadScript:tempUrl appboard:appboard cache:0 callback:^(NSString *path) {

@@ -2,6 +2,9 @@ package app.eeui.framework.extend.module;
 
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
@@ -55,9 +58,12 @@ public class eeuiUpdate {
     /**
      * 开始升级
      */
-    public static void startUpdate() {
+    public static void startUpdate(Context context) {
         if (url.startsWith("http://") || url.startsWith("https://")) {
-            //未完成
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+            context.startActivity(intent);
         }else{
             Toast.makeText(eeui.getApplication(), "当前已是最新版本！", Toast.LENGTH_SHORT).show();
         }

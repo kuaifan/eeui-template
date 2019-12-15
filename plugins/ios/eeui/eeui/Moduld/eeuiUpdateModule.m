@@ -58,7 +58,7 @@ WX_EXPORT_METHOD(@selector(startUpdate))
         return;
     }
     if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) {
-        //未完成
+        [[eeuiNewPageManager sharedIntstance] openWeb:url];
     }
 }
 

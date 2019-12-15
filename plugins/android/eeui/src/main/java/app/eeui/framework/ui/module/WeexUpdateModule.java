@@ -30,6 +30,6 @@ public class WeexUpdateModule extends WXModule {
 
     @JSMethod
     public void startUpdate() {
-        eeuiUpdate.startUpdate();
+        eeuiUpdate.startUpdate(mWXSDKInstance.getContext());
     }
 }

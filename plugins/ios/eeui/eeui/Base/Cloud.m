@@ -160,7 +160,7 @@ static NSMutableDictionary *checkUpdateVersion;
                                     id view = [viewData objectForKey:pageName];
                                     if ([view isKindOfClass:[eeuiViewController class]]) {
                                         eeuiViewController *vc = (eeuiViewController*)view;
-                                        [vc showFixedUpdate: data[@"templateId"] ? [WXConvert NSString:data[@"templateId"]] : @"1"];
+                                        [vc showFixedUpdate: checkUpdateVersion[@"templateId"] ? [WXConvert NSString:checkUpdateVersion[@"templateId"]] : @"1"];
                                     }
                                 }
                             }
