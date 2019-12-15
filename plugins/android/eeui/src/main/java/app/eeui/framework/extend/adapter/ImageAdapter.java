@@ -90,7 +90,7 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
         Log.d(TAG, "loadImage: " + tempUrl);
         //
         try {
-            if (imageEngine.equals("picasso")) {
+            if (imageEngine.equals("picasso") && !tempUrl.startsWith("data:image/")) {
                 if (tempUrl.startsWith("file://assets/")) {
                     tempUrl = "file:///android_asset/" + tempUrl.substring(14);
                 }

@@ -93,15 +93,18 @@ public class eeuiHtml {
         if (url.startsWith("file://file://")) {
             url = url.substring(7);
         }
+        if (url.startsWith("data:image/")) {
+            return url;
+        }
 
-        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("ftp://") || url.startsWith("data:image/")) {
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("ftp://")) {
             Uri mUri = Uri.parse(url);
             if (TextUtils.equals("http", mUri.getScheme()) || TextUtils.equals("https", mUri.getScheme())) {
                 String weexTpl = mUri.getQueryParameter("_wx_tpl");
                 url = TextUtils.isEmpty(weexTpl) ? mUri.toString() : weexTpl;
             }
         }
-        if (url == null || url.startsWith("http://") || url.startsWith("https://") || url.startsWith("ftp://") || url.startsWith("data:image/")) {
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("ftp://")) {
             return realUrl(url);
         }
 
