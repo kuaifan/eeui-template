@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import app.eeui.framework.R;
+import app.eeui.framework.extend.module.utilcode.util.SizeUtils;
 
 /**
  * Create By ZZY on 2019/5/14
@@ -171,8 +172,8 @@ public class SkipView extends View {
             textColor = typedArray.getColor(R.styleable.SkipView_textColor, Color.WHITE);
             progressColor = typedArray.getColor(R.styleable.SkipView_progressColor, Color.RED);
             progressWidth = typedArray.getInt(R.styleable.SkipView_progressWidth, 6);
-            textSize = typedArray.getInt(R.styleable.SkipView_textSize, 36);
-            textPadding = typedArray.getInt(R.styleable.SkipView_textPadding, 12);
+            textSize = typedArray.getInt(R.styleable.SkipView_textSize, 13);
+            textPadding = typedArray.getInt(R.styleable.SkipView_textPadding, 7);
             totalTime = typedArray.getInt(R.styleable.SkipView_totalTime, 4 * 1000);
             text = typedArray.getString(R.styleable.SkipView_text);
             startPosition = typedArray.getInt(R.styleable.SkipView_startPosition, StartPosition.TOP.getValue());
@@ -189,8 +190,8 @@ public class SkipView extends View {
             progressColor = Color.RED;
             textColor = Color.WHITE;
             progressWidth = 6;
-            textSize = 36;
-            textPadding = 12;
+            textSize = 13;
+            textPadding = 7;
             totalTime = 4 * 1000;
             text = "跳过";
             startPosition = StartPosition.TOP.getValue();
@@ -202,8 +203,8 @@ public class SkipView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        mPaint.setTextSize(textSize);
-        circleRadius = (int) mPaint.measureText(text) / 2 + textPadding
+        mPaint.setTextSize(SizeUtils.sp2px(textSize));
+        circleRadius = (int) mPaint.measureText(text) / 2 + SizeUtils.dp2px(textPadding)
                 + progressWidth;
         setMeasuredDimension(circleRadius * 2, circleRadius * 2);
     }
@@ -234,7 +235,7 @@ public class SkipView extends View {
         mPaint.setColor(textColor);
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mPaint.setTextSize(textSize);
+        mPaint.setTextSize(SizeUtils.sp2px(textSize));
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setStrokeWidth(2);
         float textY = mCenterY - (mPaint.descent() + mPaint.ascent()) / 2;
