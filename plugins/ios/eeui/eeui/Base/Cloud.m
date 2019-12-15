@@ -21,6 +21,7 @@ static UIImageView *welcomeView;
 static UIView *welcomeSuperView;
 static UITapGestureRecognizer *welcomeTapGesture;
 static ClickWelcome myClickWelcome;
+static NSMutableDictionary *checkUpdateVersion;
 
 + (NSString*) getUrl:(NSString*) act
 {
@@ -145,7 +146,25 @@ static ClickWelcome myClickWelcome;
                     [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:appInfo" value:[DeviceUtil dictionaryToJson:jsonData] expired:0];
                     [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[[jsonData objectForKey:@"__system:welcome_wait"] integerValue]];
                     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                        [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0];
+                        //
+                        if ([[jsonData objectForKey:@"uplists"] isKindOfClass:[NSArray class]]) {
+                            [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0];
+                        }
+                        //
+                        if ([[jsonData objectForKey:@"update"] isKindOfClass:[NSDictionary class]]) {
+                            checkUpdateVersion = [jsonData objectForKey:@"update"];
+                            NSString *url = checkUpdateVersion[@"url"];
+                            if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) {
+                                NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
+                                for (NSString *pageName in viewData) {
+                                    id view = [viewData objectForKey:pageName];
+                                    if ([view isKindOfClass:[eeuiViewController class]]) {
+                                        eeuiViewController *vc = (eeuiViewController*)view;
+                                        [vc showFixedUpdate: data[@"templateId"] ? [WXConvert NSString:data[@"templateId"]] : @"1"];
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
             }
@@ -282,6 +301,15 @@ static ClickWelcome myClickWelcome;
                 [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
             });
         }
+    }
+}
+
++ (NSDictionary *) getUpdateVersionData
+{
+    if (checkUpdateVersion == nil) {
+        return @{};
+    }else{
+        return checkUpdateVersion;
     }
 }
 

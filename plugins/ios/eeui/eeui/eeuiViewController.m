@@ -51,6 +51,9 @@ static int easyNavigationButtonTag = 8000;
 @property (nonatomic, strong) UIView *consoleView;
 @property (nonatomic, strong) UIView *consoleWeexView;
 
+@property (nonatomic, strong) UIView *updateView;
+@property (nonatomic, strong) UIView *updateWeexView;
+
 @end
 
 @implementation eeuiViewController
@@ -692,6 +695,54 @@ static int easyNavigationButtonTag = 8000;
     if (self.consoleView != nil) {
         [self.consoleView removeFromSuperview];
         self.consoleView = nil;
+    }
+}
+
+- (void)showFixedUpdate:(NSString *)templateId
+{
+    if (self.updateView == nil) {
+        UIEdgeInsets safeArea = UIEdgeInsetsZero;
+        self.updateView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        self.updateView.tag = 1003;
+        if (@available(iOS 11.0, *)) {
+            safeArea = self.view.safeAreaInsets;
+        }
+        [self.updateView setBackgroundColor:[[UIColor blackColor] colorWithAlphaComponent:0.0f]];
+        UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+        CGRect temp = myView.frame;
+        temp.origin.y+= safeArea.top;
+        temp.size.height-= safeArea.top;
+        [myView setFrame:temp];
+        [self.updateView addSubview:myView];
+        [self.view addSubview:self.updateView];
+        
+        WXSDKInstance *instance = [[WXSDKInstance alloc] init];
+        instance.frame = CGRectMake(0, 0, temp.size.width, temp.size.height - safeArea.bottom);
+        instance.onCreate = ^(UIView *view) {
+            [self->_updateWeexView removeFromSuperview];
+            self->_updateWeexView = view;
+            [myView addSubview:self->_updateWeexView];
+            UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, self->_updateWeexView);
+        };
+        NSString *tempUrl = [NSString stringWithFormat:@"file://%@/%@.js", [Config getResourcePath:@"bundlejs/update/"], templateId];
+        NSString *appboard = [DeviceUtil getAppboardContent];
+        if (appboard.length > 0) {
+            [DeviceUtil downloadScript:tempUrl appboard:appboard cache:0 callback:^(NSString *path) {
+                [instance renderWithURL:[NSURL URLWithString:path == nil ? tempUrl : path] options:nil data:nil];
+            }];
+        }else{
+            [instance renderWithURL:[NSURL URLWithString:tempUrl] options:nil data:nil];
+        }
+    }else{
+        [self.view bringSubviewToFront:self.updateView];
+    }
+}
+
+- (void)hideFixedUpdate
+{
+    if (self.updateView != nil) {
+        [self.updateView removeFromSuperview];
+        self.updateView = nil;
     }
 }
 

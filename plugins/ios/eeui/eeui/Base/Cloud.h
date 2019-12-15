@@ -21,6 +21,7 @@ typedef void (^ClickWelcome)(void);
 + (NSMutableDictionary *) getAppInfo;
 + (void) saveWelcomeImage:(NSString*)url wait:(NSInteger)wait;
 + (void) checkUpdateLists:(NSMutableArray*)lists number:(NSInteger)number;
++ (NSDictionary *) getUpdateVersionData;
 + (void) reboot;
 + (void) clearUpdate;
 

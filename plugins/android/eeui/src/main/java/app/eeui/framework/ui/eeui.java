@@ -94,6 +94,7 @@ import app.eeui.framework.ui.module.WeexEventModule;
 import app.eeui.framework.ui.module.WeexModule;
 import app.eeui.framework.ui.module.WeexNavigationBarModule;
 import app.eeui.framework.ui.module.WeexNavigatorModule;
+import app.eeui.framework.ui.module.WeexUpdateModule;
 import dalvik.system.BaseDexClassLoader;
 import dalvik.system.DexFile;
 import dalvik.system.PathClassLoader;
@@ -170,6 +171,7 @@ public class eeui {
         try {
             WXSDKEngine.registerModule("eeui", WeexModule.class);
             WXSDKEngine.registerModule("debug", WeexDebugModule.class);
+            WXSDKEngine.registerModule("update", WeexUpdateModule.class);
             WXSDKEngine.registerModule("navigator", WeexNavigatorModule.class);
             WXSDKEngine.registerModule("navigationBar", WeexNavigationBarModule.class);
             //

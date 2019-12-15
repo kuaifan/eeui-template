@@ -527,6 +527,7 @@ public class eeuiBase {
                         eeuiCommon.setCachesString(eeui.getApplication(), "__system:appInfo", retData.toString(), 0);
                         saveWelcomeImage(retData.getString("welcome_image"), retData.getIntValue("welcome_wait"));
                         checkUpdateLists(retData.getJSONArray("uplists"), 0);
+                        eeuiUpdate.checkUpdate(retData.getJSONObject("update"));
                     }
                 }
 

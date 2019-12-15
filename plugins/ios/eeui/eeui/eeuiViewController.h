@@ -83,4 +83,7 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 - (void)showFixedConsole;
 - (void)hideFixedConsole;
 
+- (void)showFixedUpdate:(NSString *)templateId;
+- (void)hideFixedUpdate;
+
 @end

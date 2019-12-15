@@ -99,6 +99,7 @@ import app.eeui.framework.extend.module.eeuiMap;
 import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
+import app.eeui.framework.extend.module.eeuiUpdate;
 import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CameraManager;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CaptureActivityHandler;
@@ -156,6 +157,7 @@ public class PageActivity extends AppCompatActivity {
     private String mErrorMsg;
     private View mPageInfoView;
     private View mPageLogView;
+    private View mPageUpdateView;
 
     //申请权限部分
     private PermissionUtils mPermissionInstance;
@@ -2442,5 +2444,64 @@ public class PageActivity extends AppCompatActivity {
         }
         mBody.removeView(mPageLogView);
         mPageLogView = null;
+    }
+
+    /**
+     * 显示升级提示
+     */
+    public void showUpdate(String templateId) {
+        if (mPageUpdateView != null) {
+            return;
+        }
+        mPageUpdateView = PageActivity.this.getLayoutInflater().inflate(R.layout.activity_page_update, null);
+        if ("immersion".equals(mPageInfo.getStatusBarType())) {
+            mPageUpdateView.setPadding(0, eeuiCommon.getStatusBarHeight(PageActivity.this), 0, 0);
+        } else {
+            mPageUpdateView.setPadding(0, 0, 0, 0);
+        }
+        FrameLayout mLayout = mPageUpdateView.findViewById(R.id.v_view);
+        WXSDKInstance mInstance = new WXSDKInstance(this);
+        mInstance.registerRenderListener(new IWXRenderListener() {
+            @Override
+            public void onViewCreated(WXSDKInstance instance, View view) {
+                mLayout.removeAllViews();
+                mLayout.addView(view);
+            }
+            @Override
+            public void onRenderSuccess(WXSDKInstance instance, int width, int height) {
+
+            }
+            @Override
+            public void onRefreshSuccess(WXSDKInstance instance, int width, int height) {
+
+            }
+            @Override
+            public void onException(WXSDKInstance instance, String errCode, String msg) {
+
+            }
+        });
+        eeuiPage.cachePage(this, "file://assets/update/" + templateId + ".js", 0, null, new eeuiPage.OnCachePageCallback() {
+            @Override
+            public void success(Map<String, Object> resParams, String newUrl) {
+                mInstance.renderByUrl("Update::" + mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
+            }
+
+            @Override
+            public void error(Map<String, Object> resParams, String newUrl) {
+                //
+            }
+        });
+        mBody.addView(mPageUpdateView);
+    }
+
+    /**
+     * 关闭升级提示
+     */
+    public void closeUpdate() {
+        if (mPageUpdateView == null) {
+            return;
+        }
+        mBody.removeView(mPageUpdateView);
+        mPageUpdateView = null;
     }
 }
