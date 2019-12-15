@@ -1,16 +1,16 @@
 //
-//  eeuiUpdateModule.m
+//  eeuiVersionUpdateModule.m
 //  Pods
 //
 //  Created by 高一 on 2019/12/15.
 //
 
-#import "eeuiUpdateModule.h"
+#import "eeuiVersionUpdateModule.h"
 #import "eeuiNewPageManager.h"
 #import "eeuiViewController.h"
 #import "Cloud.h"
 
-@implementation eeuiUpdateModule
+@implementation eeuiVersionUpdateModule
 
 @synthesize weexInstance;
 
@@ -45,7 +45,7 @@ WX_EXPORT_METHOD(@selector(startUpdate))
         id view = [viewData objectForKey:pageName];
         if ([view isKindOfClass:[eeuiViewController class]]) {
             eeuiViewController *vc = (eeuiViewController*)view;
-            [vc hideFixedUpdate];
+            [vc hideFixedVersionUpdate];
         }
     }
 }

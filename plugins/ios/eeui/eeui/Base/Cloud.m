@@ -151,8 +151,8 @@ static NSMutableDictionary *checkUpdateVersion;
                             [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0];
                         }
                         //
-                        if ([[jsonData objectForKey:@"update"] isKindOfClass:[NSDictionary class]]) {
-                            checkUpdateVersion = [jsonData objectForKey:@"update"];
+                        if ([[jsonData objectForKey:@"version_update"] isKindOfClass:[NSDictionary class]]) {
+                            checkUpdateVersion = [jsonData objectForKey:@"version_update"];
                             NSString *url = checkUpdateVersion[@"url"];
                             if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) {
                                 NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
@@ -160,7 +160,7 @@ static NSMutableDictionary *checkUpdateVersion;
                                     id view = [viewData objectForKey:pageName];
                                     if ([view isKindOfClass:[eeuiViewController class]]) {
                                         eeuiViewController *vc = (eeuiViewController*)view;
-                                        [vc showFixedUpdate: checkUpdateVersion[@"templateId"] ? [WXConvert NSString:checkUpdateVersion[@"templateId"]] : @"1"];
+                                        [vc showFixedVersionUpdate: checkUpdateVersion[@"templateId"] ? [WXConvert NSString:checkUpdateVersion[@"templateId"]] : @"1"];
                                     }
                                 }
                             }

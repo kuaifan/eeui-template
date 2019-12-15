@@ -49,7 +49,7 @@
     //Module
     [WXSDKEngine registerModule:@"eeui" withClass:NSClassFromString(@"eeuiModule")];
     [WXSDKEngine registerModule:@"debug" withClass:NSClassFromString(@"eeuiDebugModule")];
-    [WXSDKEngine registerModule:@"update" withClass:NSClassFromString(@"eeuiUpdateModule")];
+    [WXSDKEngine registerModule:@"versionUpdate" withClass:NSClassFromString(@"eeuiVersionUpdateModule")];
     [WXSDKEngine registerModule:@"navigator" withClass:NSClassFromString(@"eeuiNavigatorModule")];
     [WXSDKEngine registerModule:@"navigationBar" withClass:NSClassFromString(@"eeuiNavigationBarModule")];
 

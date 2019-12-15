@@ -3,33 +3,33 @@ package app.eeui.framework.ui.module;
 import com.taobao.weex.annotation.JSMethod;
 import com.taobao.weex.common.WXModule;
 
-import app.eeui.framework.extend.module.eeuiUpdate;
+import app.eeui.framework.extend.module.eeuiVersionUpdate;
 
 
-public class WeexUpdateModule extends WXModule {
+public class WeexVersionUpdateModule extends WXModule {
 
     @JSMethod(uiThread = false)
     public String getTitle() {
-        return eeuiUpdate.getTitle();
+        return eeuiVersionUpdate.getTitle();
     }
 
     @JSMethod(uiThread = false)
     public String getContent() {
-        return eeuiUpdate.getContent();
+        return eeuiVersionUpdate.getContent();
     }
 
     @JSMethod(uiThread = false)
     public boolean canCancel() {
-        return eeuiUpdate.isCanCancel();
+        return eeuiVersionUpdate.isCanCancel();
     }
 
     @JSMethod
     public void closeUpdate() {
-        eeuiUpdate.closeUpdate();
+        eeuiVersionUpdate.closeUpdate();
     }
 
     @JSMethod
     public void startUpdate() {
-        eeuiUpdate.startUpdate(mWXSDKInstance.getContext());
+        eeuiVersionUpdate.startUpdate(mWXSDKInstance.getContext());
     }
 }

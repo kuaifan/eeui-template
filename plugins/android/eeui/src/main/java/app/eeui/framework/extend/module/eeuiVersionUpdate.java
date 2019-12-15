@@ -14,7 +14,7 @@ import java.util.List;
 import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.ui.eeui;
 
-public class eeuiUpdate {
+public class eeuiVersionUpdate {
 
     private static String url = "";
 
@@ -77,7 +77,7 @@ public class eeuiUpdate {
         for (Activity activity : activityList) {
             if (activity instanceof PageActivity) {
                 PageActivity mActivity = (PageActivity) activity;
-                mActivity.showUpdate(templateId);
+                mActivity.showVersionUpdate(templateId);
             }
         }
     }
@@ -90,7 +90,7 @@ public class eeuiUpdate {
         for (Activity activity : activityList) {
             if (activity instanceof PageActivity) {
                 PageActivity mActivity = (PageActivity) activity;
-                mActivity.closeUpdate();
+                mActivity.closeVersionUpdate();
             }
         }
     }

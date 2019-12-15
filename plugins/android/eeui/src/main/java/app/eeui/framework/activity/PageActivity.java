@@ -99,7 +99,6 @@ import app.eeui.framework.extend.module.eeuiMap;
 import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
-import app.eeui.framework.extend.module.eeuiUpdate;
 import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CameraManager;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CaptureActivityHandler;
@@ -157,7 +156,7 @@ public class PageActivity extends AppCompatActivity {
     private String mErrorMsg;
     private View mPageInfoView;
     private View mPageLogView;
-    private View mPageUpdateView;
+    private View mPageVersionUpdateView;
 
     //申请权限部分
     private PermissionUtils mPermissionInstance;
@@ -2449,17 +2448,17 @@ public class PageActivity extends AppCompatActivity {
     /**
      * 显示升级提示
      */
-    public void showUpdate(String templateId) {
-        if (mPageUpdateView != null) {
+    public void showVersionUpdate(String templateId) {
+        if (mPageVersionUpdateView != null) {
             return;
         }
-        mPageUpdateView = PageActivity.this.getLayoutInflater().inflate(R.layout.activity_page_update, null);
+        mPageVersionUpdateView = PageActivity.this.getLayoutInflater().inflate(R.layout.activity_page_version_update, null);
         if ("immersion".equals(mPageInfo.getStatusBarType())) {
-            mPageUpdateView.setPadding(0, eeuiCommon.getStatusBarHeight(PageActivity.this), 0, 0);
+            mPageVersionUpdateView.setPadding(0, eeuiCommon.getStatusBarHeight(PageActivity.this), 0, 0);
         } else {
-            mPageUpdateView.setPadding(0, 0, 0, 0);
+            mPageVersionUpdateView.setPadding(0, 0, 0, 0);
         }
-        FrameLayout mLayout = mPageUpdateView.findViewById(R.id.v_view);
+        FrameLayout mLayout = mPageVersionUpdateView.findViewById(R.id.v_view);
         WXSDKInstance mInstance = new WXSDKInstance(this);
         mInstance.registerRenderListener(new IWXRenderListener() {
             @Override
@@ -2480,10 +2479,10 @@ public class PageActivity extends AppCompatActivity {
 
             }
         });
-        eeuiPage.cachePage(this, "file://assets/update/" + templateId + ".js", 0, null, new eeuiPage.OnCachePageCallback() {
+        eeuiPage.cachePage(this, "file://assets/version_update/" + templateId + ".js", 0, null, new eeuiPage.OnCachePageCallback() {
             @Override
             public void success(Map<String, Object> resParams, String newUrl) {
-                mInstance.renderByUrl("Update::" + mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
+                mInstance.renderByUrl("VersionUpdate::" + mPageInfo.getPageName(), newUrl, resParams, null, WXRenderStrategy.APPEND_ASYNC);
             }
 
             @Override
@@ -2491,17 +2490,17 @@ public class PageActivity extends AppCompatActivity {
                 //
             }
         });
-        mBody.addView(mPageUpdateView);
+        mBody.addView(mPageVersionUpdateView);
     }
 
     /**
      * 关闭升级提示
      */
-    public void closeUpdate() {
-        if (mPageUpdateView == null) {
+    public void closeVersionUpdate() {
+        if (mPageVersionUpdateView == null) {
             return;
         }
-        mBody.removeView(mPageUpdateView);
-        mPageUpdateView = null;
+        mBody.removeView(mPageVersionUpdateView);
+        mPageVersionUpdateView = null;
     }
 }
