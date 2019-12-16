@@ -281,28 +281,28 @@ static NSMutableDictionary *checkUpdateVersion;
     if ([lists count] > number + 1) {
         [self checkUpdateLists:lists number:number+1];
     }else{
-        NSString *reboot = [NSString stringWithFormat:@"%@", data[@"reboot"]];
-        if ([reboot isEqualToString:@"1"]) {
-            [self reboot];
-        }else if ([reboot isEqualToString:@"2"]) {
-            NSMutableDictionary *rebootInfo = [data objectForKey:@"reboot_info"];
-            UIAlertController * alertController = [UIAlertController
-                                                   alertControllerWithTitle: [NSString stringWithFormat:@"%@", rebootInfo[@"title"]]
-                                                   message: [NSString stringWithFormat:@"%@", rebootInfo[@"message"]]
-                                                   preferredStyle:UIAlertControllerStyleAlert];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                //
-            }]];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                if ([rebootInfo[@"confirm_reboot"] integerValue] == 1) {
-                    [self reboot];
-                    [self appData:NO];
-                }
-            }]];
-            dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *reboot = [NSString stringWithFormat:@"%@", data[@"reboot"]];
+            if ([reboot isEqualToString:@"1"]) {
+                [self reboot];
+            }else if ([reboot isEqualToString:@"2"]) {
+                NSMutableDictionary *rebootInfo = [data objectForKey:@"reboot_info"];
+                UIAlertController * alertController = [UIAlertController
+                                                       alertControllerWithTitle: [NSString stringWithFormat:@"%@", rebootInfo[@"title"]]
+                                                       message: [NSString stringWithFormat:@"%@", rebootInfo[@"message"]]
+                                                       preferredStyle:UIAlertControllerStyleAlert];
+                [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                    //
+                }]];
+                [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                    if ([rebootInfo[@"confirm_reboot"] integerValue] == 1) {
+                        [self reboot];
+                        [self appData:NO];
+                    }
+                }]];
                 [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
-            });
-        }
+            }
+        });
     }
 }
 

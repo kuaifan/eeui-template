@@ -453,6 +453,9 @@ static int easyNavigationButtonTag = 8000;
         if (weakSelf.consoleView != nil) {
             [weakSelf.view bringSubviewToFront:weakSelf.consoleView];
         }
+        if (weakSelf.versionUpdateView != nil) {
+            [weakSelf.view bringSubviewToFront:weakSelf.versionUpdateView];
+        }
 
         [weakSelf updateStatus:@"viewCreated"];
     };
