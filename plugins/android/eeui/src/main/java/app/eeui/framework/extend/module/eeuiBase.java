@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -52,6 +53,8 @@ import app.eeui.framework.extend.view.SkipView;
 import app.eeui.framework.ui.eeui;
 
 public class eeuiBase {
+
+    private static String TAG = "eeuiBase";
 
     public static String appName = "EEUI";
     public static String appGroup = "EEUI";
@@ -694,7 +697,13 @@ public class eeuiBase {
                         if (!PermissionUtils.isShowApply && !PermissionUtils.isShowRationale && !PermissionUtils.isShowOpenAppSetting) {
                             checkUpdateTimer.cancel();
                             checkUpdateTimer = null;
-                            checkUpdateHint(data);
+                            eeui.getActivityList().getLast().runOnUiThread(() -> {
+                                try {
+                                    checkUpdateHint(data);
+                                } catch (Exception e) {
+                                    Log.d(TAG, "run: checkUpdate error:" + e.getMessage());
+                                }
+                            });
                         }
                     }
                 }, 3000, 2000);
