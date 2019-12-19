@@ -1888,7 +1888,13 @@ public class PageActivity extends AppCompatActivity {
                         if (!PermissionUtils.isShowApply && !PermissionUtils.isShowRationale && !PermissionUtils.isShowOpenAppSetting) {
                             deBugSocketTimer.cancel();
                             deBugSocketTimer = null;
-                            deBugSocketConnect("initialize");
+                            PageActivity.this.runOnUiThread(() -> {
+                                try {
+                                    deBugSocketConnect("initialize");
+                                } catch (Exception e) {
+                                    Log.d(TAG, "run: deBugSocketConnect error:" + e.getMessage());
+                                }
+                            });
                         }
                     }
                 }, 3000, 2000);
