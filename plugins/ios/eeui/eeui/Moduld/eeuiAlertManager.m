@@ -8,6 +8,7 @@
 
 #import "eeuiAlertManager.h"
 #import "DeviceUtil.h"
+#import "UIAlertController+HLTapDismiss.h"
 
 #define AlertTag 700
 
@@ -62,7 +63,9 @@
         }
     }];
     [alertCtrl addAction:confirmAction];
-    [[DeviceUtil getTopviewControler] presentViewController:alertCtrl animated:YES completion:nil];
+    [[DeviceUtil getTopviewControler] presentViewController:alertCtrl animated:YES completion:cancelable ? (^{
+        [alertCtrl alertTapDismiss];
+    }) : nil];
 }
 
 #pragma mark confirm
@@ -122,7 +125,9 @@
         }
     }
 
-    [[DeviceUtil getTopviewControler] presentViewController:alertCtrl animated:YES completion:nil];
+    [[DeviceUtil getTopviewControler] presentViewController:alertCtrl animated:YES completion:cancelable ? (^{
+        [alertCtrl alertTapDismiss];
+    }) : nil];
 }
 
 #pragma mark input
@@ -248,7 +253,9 @@
         }
     }
 
-    [[DeviceUtil getTopviewControler] presentViewController:alertCtrl animated:YES completion:nil];
+    [[DeviceUtil getTopviewControler] presentViewController:alertCtrl animated:YES completion:cancelable ? (^{
+        [alertCtrl alertTapDismiss];
+    }) : nil];
 }
 
 - (UIKeyboardType)keyboardType:(NSString*)name
