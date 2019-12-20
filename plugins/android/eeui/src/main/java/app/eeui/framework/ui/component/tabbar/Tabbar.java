@@ -122,12 +122,18 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                 @Override
                 public void invoke(Object data) {
                     Map<String, Object> retData = eeuiMap.objectToMap(data);
+                    if (retData == null) {
+                        return;
+                    }
                     mViewPager.lifecycleListener(mViewPager.getCurrentItem(), eeuiParse.parseStr(retData.get("status")));
                 }
 
                 @Override
                 public void invokeAndKeepAlive(Object data) {
                     Map<String, Object> retData = eeuiMap.objectToMap(data);
+                    if (retData == null) {
+                        return;
+                    }
                     mViewPager.lifecycleListener(mViewPager.getCurrentItem(), eeuiParse.parseStr(retData.get("status")));
                 }
             });

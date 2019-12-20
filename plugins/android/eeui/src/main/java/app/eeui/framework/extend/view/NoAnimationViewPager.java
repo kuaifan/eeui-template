@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.extend.module.eeuiCommon;
 import app.eeui.framework.extend.module.eeuiConstants;
 import app.eeui.framework.extend.view.tablayout.listener.CustomTabEntity;
@@ -103,8 +104,9 @@ public class NoAnimationViewPager extends ViewPager {
      * 生命周期
      * @param position
      * @param status
+     * @param isFinal
      */
-    public void lifecycleListener(int position, String status) {
+    public void lifecycleListener(int position, String status, boolean isFinal) {
         if (position < WXSDKList.size()) {
             String getTabName = getTabName(position);
             WXSDKBean sdkBean = WXSDKList.get(getTabName);
@@ -113,6 +115,10 @@ public class NoAnimationViewPager extends ViewPager {
                     switch (status) {
                         case "WXSDKViewCreated":
                             status = "ready";
+                            break;
+
+                        case "__destroy":
+                            status = "destroy";
                             break;
 
                         case "resume":
@@ -132,16 +138,30 @@ public class NoAnimationViewPager extends ViewPager {
                             WXBridgeManager.getInstance().fireEventOnNode(sdkBean.getInstance().getInstanceId(), mWXComponent.getRef(), eeuiConstants.Event.LIFECYCLE, retData, null);
                         }
                         //
-                        List<View> lists = eeuiCommon.getAllChildViews(mWXComponent.getHostView());
-                        for(View mView: lists) {
-                            if (mView instanceof NoAnimationViewPager) {
-                                ((NoAnimationViewPager) mView).lifecycleListener(status);
+                        if (status.equals("pause")) {
+                            if (((PageActivity) sdkBean.getInstance().getContext()).isFinishing()) {
+                                for (int i = 0; i < WXSDKList.size(); i++) {
+                                    lifecycleListener(i, "__destroy", true);
+                                }
+                            }
+                        }
+                        //
+                        if (!isFinal) {
+                            List<View> lists = eeuiCommon.getAllChildViews(mWXComponent.getHostView());
+                            for (View mView : lists) {
+                                if (mView instanceof NoAnimationViewPager) {
+                                    ((NoAnimationViewPager) mView).lifecycleListener(status);
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    public void lifecycleListener(int position, String status) {
+        lifecycleListener(position, status, false);
     }
 
     public void lifecycleListener(String status) {

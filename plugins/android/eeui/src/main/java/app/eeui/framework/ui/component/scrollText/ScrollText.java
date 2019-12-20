@@ -2,6 +2,7 @@ package app.eeui.framework.ui.component.scrollText;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.View;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.annotation.JSMethod;
+import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.ui.action.BasicComponentData;
 import com.taobao.weex.ui.component.WXVContainer;
 
@@ -19,13 +21,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.eeui.framework.R;
+import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.extend.module.eeuiCommon;
 import app.eeui.framework.extend.module.eeuiConstants;
 
 import app.eeui.framework.extend.module.eeuiJson;
+import app.eeui.framework.extend.module.eeuiMap;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
 import app.eeui.framework.extend.view.AutoScrollTextView;
+import app.eeui.framework.ui.eeui;
 
 /**
  * Created by WDM on 2018/3/5.
@@ -42,6 +47,8 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
 
     private AutoScrollTextView v_autotext;
 
+    private int isPause = 0;
+
     public ScrollText(WXSDKInstance instance, WXVContainer parent, BasicComponentData basicComponentData) {
         super(instance, parent, basicComponentData);
     }
@@ -56,7 +63,57 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
             fireEvent(eeuiConstants.Event.READY, null);
         }
         //
+        if (context instanceof PageActivity) {
+            ((PageActivity) context).setPageStatusListener("__ScrollText::" + eeuiCommon.randomString(6), new JSCallback() {
+                @Override
+                public void invoke(Object data) {
+                }
+
+                @Override
+                public void invokeAndKeepAlive(Object data) {
+                    Map<String, Object> retData = eeuiMap.objectToMap(data);
+                    if (retData == null) {
+                        return;
+                    }
+                    String status = eeuiParse.parseStr(retData.get("status"));
+                    switch (status) {
+                        case "pause":
+                            isPause++;
+                            stopScroll();
+                            break;
+
+                        case "resume":
+                            resumeScroll(0);
+                            break;
+                    }
+                }
+            });
+        }
+        //
         return (ViewGroup) mView;
+    }
+
+    /**
+     * 恢复滚动
+     * @param num
+     */
+    private void resumeScroll(int num) {
+        new Handler().postDelayed(() -> {
+            if (eeui.finishingNumber > 0 && num < 35) {
+                resumeScroll(num + 1);
+                return;
+            }
+            if (isPause == 0) {
+                return;
+            }
+            isPause--;
+            if (isPause == 0) {
+                if (v_autotext == null) {
+                    return;
+                }
+                v_autotext.startScroll();
+            }
+        }, 300);
     }
 
     @Override
@@ -145,6 +202,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
         if (var != null) {
             mText = var;
         }
+        if (v_autotext == null) {
+            return;
+        }
         v_autotext.setText(mText);
         v_autotext.init(getParent().getLayoutWidth());
     }
@@ -158,6 +218,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
         if (var == null) {
             return;
         }
+        if (v_autotext == null) {
+            return;
+        }
         setText(mText + var);
     }
 
@@ -166,6 +229,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
      */
     @JSMethod
     public void startScroll() {
+        if (v_autotext == null) {
+            return;
+        }
         v_autotext.startScroll();
     }
 
@@ -174,6 +240,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
      */
     @JSMethod
     public void stopScroll() {
+        if (v_autotext == null) {
+            return;
+        }
         v_autotext.stopScroll();
     }
 
@@ -182,6 +251,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
      */
     @JSMethod(uiThread = false)
     public boolean isStarting() {
+        if (v_autotext == null) {
+            return false;
+        }
         return v_autotext.isStarting;
     }
 
@@ -200,6 +272,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
      */
     @JSMethod
     public void setSpeed(float var) {
+        if (v_autotext == null) {
+            return;
+        }
         v_autotext.setSpeed(var);
     }
 
@@ -209,6 +284,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
      */
     @JSMethod
     public void setTextSize(Object var) {
+        if (v_autotext == null) {
+            return;
+        }
         v_autotext.setTextSize(TypedValue.COMPLEX_UNIT_PX, eeuiScreenUtils.weexPx2dp(getInstance(), var, 24));
     }
 
@@ -218,6 +296,9 @@ public class ScrollText extends WXVContainer<ViewGroup> implements View.OnClickL
      */
     @JSMethod
     public void setTextColor(String var) {
+        if (v_autotext == null) {
+            return;
+        }
         v_autotext.setTextColor(eeuiParse.parseColor(var));
     }
 

@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *variateDic;
 
+@property (nonatomic, strong) NSMutableDictionary *pageScriptUrlDic;
+
 + (eeuiStorageManager *)sharedIntstance;
 
 - (void)setCaches:(NSString*)key value:(id)value expired:(NSInteger)expired;
@@ -34,5 +36,9 @@
 - (id)getAllVariate;
 
 - (void)clearAllVariate;
+
+- (void)setPageScriptUrl:(NSString*)scriptURL url:(NSString*)url;
+
+- (NSString *)getPageScriptUrl:(NSString*)scriptURL defaultVal:(NSString*)defaultVal;
 
 @end

@@ -111,6 +111,8 @@ public class eeui {
 
     private static LinkedList<Activity> mActivityList = new LinkedList<>();
 
+    public static int finishingNumber = 0;
+
     public static Application getApplication() {
         return application;
     }

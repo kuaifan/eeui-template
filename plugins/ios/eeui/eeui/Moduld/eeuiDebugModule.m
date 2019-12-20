@@ -6,6 +6,7 @@
 //
 
 #import "eeuiDebugModule.h"
+#import "eeuiStorageManager.h"
 #import "eeuiNewPageManager.h"
 #import "DeviceUtil.h"
 #import "eeuiViewController.h"
@@ -31,6 +32,8 @@ WX_EXPORT_METHOD(@selector(closeConsole))
     if ([weexInstance.viewController isKindOfClass:[eeuiViewController class]]) {
         eeuiViewController *top = (eeuiViewController *) weexInstance.viewController;
         pageUrl = top.url;
+    }else{
+        pageUrl = [[eeuiStorageManager sharedIntstance] getPageScriptUrl:[NSString stringWithFormat:@"%@", weexInstance.scriptURL] defaultVal:@""];
     }
     if (pageUrl.length == 0) {
         pageUrl = @"";

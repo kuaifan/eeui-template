@@ -12,7 +12,8 @@
 typedef NS_ENUM(NSInteger, LifeCycleType) {
     LifeCycleReady = 0,
     LifeCycleResume,
-    LifeCyclePause
+    LifeCyclePause,
+    LifeCycleDestroy
 };
 
 @interface eeuiViewController : UIViewController
@@ -72,7 +73,7 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 - (void)clearStatusListener:(NSString*)name;
 - (void)postStatusListener:(NSString*)name data:(id)data;
 
-- (void)liftCycleEvent:(LifeCycleType)type;
+- (void)lifeCycleEvent:(LifeCycleType)type;
 
 - (void)setNavigationTitle:(id) params callback:(WXModuleKeepAliveCallback) callback;
 - (void)setNavigationItems:(id) params position:(NSString *)position callback:(WXModuleKeepAliveCallback) callback;

@@ -9,6 +9,7 @@
 #import "eeuiViewController.h"
 #import "WeexSDK.h"
 #import "WeexSDKManager.h"
+#import "eeuiStorageManager.h"
 #import "eeuiNewPageManager.h"
 #import "CustomWeexSDKManager.h"
 #import "DeviceUtil.h"
@@ -36,8 +37,8 @@ static int easyNavigationButtonTag = 8000;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, strong) UIView *statusBar;
 @property (nonatomic, assign) NSString *notificationStatus;
-@property (nonatomic, assign) NSString *liftCycleLastStatus;
-@property (nonatomic, assign) NSString *liftCycleLastStatusChild;
+@property (nonatomic, assign) NSString *lifeCycleLastStatus;
+@property (nonatomic, assign) NSString *lifeCycleLastStatusChild;
 @property (nonatomic, assign) BOOL didWillEnter;
 
 @property (nonatomic, strong) NSMutableDictionary *navigationCallbackDictionary;
@@ -179,7 +180,7 @@ static int easyNavigationButtonTag = 8000;
     }
 
     [self updateStatus:@"resume"];
-    [self liftCycleEvent:LifeCycleResume];
+    [self lifeCycleEvent:LifeCycleResume];
 
     [CustomWeexSDKManager setSoftInputMode:_softInputMode];
 }
@@ -189,7 +190,7 @@ static int easyNavigationButtonTag = 8000;
     [super viewWillDisappear:animated];
 
     [self updateStatus:@"pause"];
-    [self liftCycleEvent:LifeCyclePause];
+    [self lifeCycleEvent:LifeCyclePause];
 
     if (!self.isChildSubview) {
         //状态栏样式
@@ -261,9 +262,11 @@ static int easyNavigationButtonTag = 8000;
 - (void)dealloc
 {
     EELog(@"gggggggg::dealloc:%@", self.pageName);
+    [[eeuiStorageManager sharedIntstance] setPageScriptUrl:[NSString stringWithFormat:@"%@", _instance.scriptURL] url:_url];
 
     self.identify = @"";
     [self updateStatus:@"destroy"];
+    [self lifeCycleEvent:LifeCycleDestroy];
 
     [_instance destroyInstance];
 #ifdef DEBUG
@@ -298,7 +301,7 @@ static int easyNavigationButtonTag = 8000;
 }
 
 #pragma mark 生命周期
-- (void)liftCycleEvent:(LifeCycleType)type
+- (void)lifeCycleEvent:(LifeCycleType)type
 {
     //页面生命周期:生命周期
     NSString *status = @"";
@@ -312,26 +315,29 @@ static int easyNavigationButtonTag = 8000;
         case LifeCyclePause:
             status = @"pause";
             break;
+        case LifeCycleDestroy:
+            status = @"destroy";
+            break;
         default:
             return;
     }
-    if ([status isEqualToString:_liftCycleLastStatus]) {
+    if ([status isEqualToString:_lifeCycleLastStatus]) {
         return;
     }
-    _liftCycleLastStatus = status;
+    _lifeCycleLastStatus = status;
 
     for (UIViewController * childViewController in self.childViewControllers) {
         if ([childViewController isKindOfClass:[eeuiViewController class]]) {
             eeuiViewController *vc = (eeuiViewController*) childViewController;
             if ([status isEqualToString:@"pause"]) {
-                if ([vc.liftCycleLastStatus isEqualToString:@"resume"]) {
-                    [vc liftCycleEvent:type];
-                    vc.liftCycleLastStatusChild = status;
+                if ([vc.lifeCycleLastStatus isEqualToString:@"resume"]) {
+                    [vc lifeCycleEvent:type];
+                    vc.lifeCycleLastStatusChild = status;
                 }
             }else if ([status isEqualToString:@"resume"]) {
-                if ([vc.liftCycleLastStatusChild isEqualToString:@"pause"]) {
-                    [vc liftCycleEvent:type];
-                    vc.liftCycleLastStatusChild = status;
+                if ([vc.lifeCycleLastStatusChild isEqualToString:@"pause"]) {
+                    [vc lifeCycleEvent:type];
+                    vc.lifeCycleLastStatusChild = status;
                 }
             }
         }
@@ -496,8 +502,8 @@ static int easyNavigationButtonTag = 8000;
         [weakSelf updateInstanceState:WeexInstanceAppear];
         [weakSelf stopLoading];
         [weakSelf updateStatus:@"renderSuccess"];
-        [weakSelf liftCycleEvent:LifeCycleReady];
-        [weakSelf liftCycleEvent:LifeCycleResume];
+        [weakSelf lifeCycleEvent:LifeCycleReady];
+        [weakSelf lifeCycleEvent:LifeCycleResume];
     };
 
     _instance.updateFinish = ^(UIView *view) {
@@ -751,19 +757,19 @@ static int easyNavigationButtonTag = 8000;
 
 - (void)appDidEnterBackground:(NSNotification*)notification
 {
-    if ([self.liftCycleLastStatus isEqualToString:@"resume"]) {
+    if ([self.lifeCycleLastStatus isEqualToString:@"resume"]) {
         [self updateStatus:@"pause"];
-        [self liftCycleEvent:LifeCyclePause];
-        self.liftCycleLastStatusChild = @"pause";
+        [self lifeCycleEvent:LifeCyclePause];
+        self.lifeCycleLastStatusChild = @"pause";
     }
 }
 
 - (void)appWillEnterForeground:(NSNotification*)notification
 {
-    if ([self.liftCycleLastStatusChild isEqualToString:@"pause"]) {
+    if ([self.lifeCycleLastStatusChild isEqualToString:@"pause"]) {
         [self updateStatus:@"resume"];
-        [self liftCycleEvent:LifeCycleResume];
-        self.liftCycleLastStatusChild = @"resume";
+        [self lifeCycleEvent:LifeCycleResume];
+        self.lifeCycleLastStatusChild = @"resume";
     }
 }
 

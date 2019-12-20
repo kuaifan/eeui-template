@@ -11,6 +11,7 @@
 #define kStorageExpired @"storage_expired"
 #define kStorageCaches @"storage_caches"
 #define kStorageVariate @"storage_variate"
+#define kStorageScriptUrl @"storage_script_url"
 
 @implementation eeuiStorageManager
 
@@ -27,6 +28,7 @@
 {
     if (self = [super init]) {
         self.variateDic = [NSMutableDictionary dictionaryWithCapacity:5];
+        self.pageScriptUrlDic = [NSMutableDictionary dictionaryWithCapacity:5];
     }
 
     return self;
@@ -161,6 +163,33 @@
 - (void)clearAllVariate
 {
     [[eeuiStorageManager sharedIntstance].variateDic setObject:@{} forKey:kStorageVariate];
+}
+
+- (void)setPageScriptUrl:(NSString*)scriptURL url:(NSString*)url
+{
+    if (scriptURL && url) {
+        id data = [[eeuiStorageManager sharedIntstance].pageScriptUrlDic objectForKey:kStorageScriptUrl];
+        NSMutableDictionary *mDic;
+        if (!data) {
+            mDic = [NSMutableDictionary dictionaryWithCapacity:5];
+        } else {
+            mDic = [NSMutableDictionary dictionaryWithDictionary:data];
+        }
+        [mDic setObject:url forKey:scriptURL];
+        [[eeuiStorageManager sharedIntstance].pageScriptUrlDic setObject:mDic forKey:kStorageScriptUrl];
+    }
+}
+
+- (NSString *)getPageScriptUrl:(NSString*)scriptURL defaultVal:(NSString*)defaultVal
+{
+    id data = [[eeuiStorageManager sharedIntstance].pageScriptUrlDic objectForKey:kStorageScriptUrl];
+    if (data && [data isKindOfClass:[NSDictionary class]]) {
+        id value = [data objectForKey:scriptURL];
+        if (value) {
+            return value;
+        }
+    }
+    return defaultVal;
 }
 
 @end

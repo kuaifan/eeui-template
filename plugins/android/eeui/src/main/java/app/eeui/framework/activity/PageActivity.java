@@ -421,6 +421,16 @@ public class PageActivity extends AppCompatActivity {
         if (mWXSDKInstance != null) {
             mWXSDKInstance.onActivityPause();
         }
+        if (isFinishing()) {
+            if (mPageInfo != null) {
+                eeuiIhttp.cancel(mPageInfo.getPageName());
+                eeuiPage.removePageBean(mPageInfo.getPageName());
+                if (mPageInfo.isSwipeBack()) {
+                    KeyboardUtils.unregisterSoftInputChangedListener(this);
+                }
+            }
+            eeui.finishingNumber++;
+        }
         if (scan_containter != null) {
             if (scan_handler != null) {
                 scan_handler.quitSynchronously();
@@ -508,13 +518,6 @@ public class PageActivity extends AppCompatActivity {
         if (mWebView != null) {
             mWebView.onDestroy();
         }
-        if (mPageInfo != null) {
-            eeuiIhttp.cancel(mPageInfo.getPageName());
-            eeuiPage.removePageBean(mPageInfo.getPageName());
-            if (mPageInfo.isSwipeBack()) {
-                KeyboardUtils.unregisterSoftInputChangedListener(this);
-            }
-        }
         if (BuildConfig.DEBUG) {
             if (eeui.getActivityList().size() == 1) {
                 eeuiCommon.setVariate("__system:deBugSocket:Init", 0);
@@ -527,6 +530,9 @@ public class PageActivity extends AppCompatActivity {
         identify = "";
         invoke("destroy", null);
         super.onDestroy();
+        //
+        eeui.finishingNumber--;
+        Log.d("gggggggg", "onDestroy: " + (mPageInfo == null ? "" : mPageInfo.getPageName()));
     }
 
     @Override
@@ -1304,8 +1310,21 @@ public class PageActivity extends AppCompatActivity {
                     Map<String, Object> retData = new HashMap<>();
                     retData.put("status", status);
                     WXBridgeManager.getInstance().fireEventOnNode(mWXSDKInstance.getInstanceId(), mWXComponent.getRef(), eeuiConstants.Event.LIFECYCLE, retData, null);
-                    if (status.equals("ready")) {
-                        lifecycleListener("resume");
+                    //
+                    Map<String, Object> retAgain = new HashMap<>();
+                    switch (status) {
+                        case "ready": {
+                            retAgain.put("status", "resume");
+                            WXBridgeManager.getInstance().fireEventOnNode(mWXSDKInstance.getInstanceId(), mWXComponent.getRef(), eeuiConstants.Event.LIFECYCLE, retAgain, null);
+                            break;
+                        }
+                        case "pause": {
+                            if (isFinishing()) {
+                                retAgain.put("status", "destroy");
+                                WXBridgeManager.getInstance().fireEventOnNode(mWXSDKInstance.getInstanceId(), mWXComponent.getRef(), eeuiConstants.Event.LIFECYCLE, retAgain, null);
+                            }
+                            break;
+                        }
                     }
                 }
             }

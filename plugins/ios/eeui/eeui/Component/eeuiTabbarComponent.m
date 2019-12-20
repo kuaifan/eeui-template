@@ -253,6 +253,10 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 {
     for (id key in _lifeTabPages) {
         eeuiViewController *vc = [_lifeTabPages objectForKey:key];
+        if (vc) {
+            vc.isTabbarChildSelected = YES;
+            [vc lifeCycleEvent:LifeCycleDestroy];
+        }
         [vc removeFromParentViewController];
     }
     [self removeObserver];
@@ -948,7 +952,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         eeuiViewController *vc = _lifeTabPages[key];
         if (vc) {
             vc.isTabbarChildSelected = YES;
-            [vc liftCycleEvent:LifeCycleResume];
+            [vc lifeCycleEvent:LifeCycleResume];
         }
     }
 
@@ -958,7 +962,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         eeuiViewController *vc = _lifeTabPages[key];
         if (vc) {
             vc.isTabbarChildSelected = NO;
-            [vc liftCycleEvent:LifeCyclePause];
+            [vc lifeCycleEvent:LifeCyclePause];
         }
     }
 }
