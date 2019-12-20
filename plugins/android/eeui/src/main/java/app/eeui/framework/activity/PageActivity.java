@@ -729,6 +729,7 @@ public class PageActivity extends AppCompatActivity {
                     }
                 });
             } else {
+                isCancelColorForSwipeBack = true;
                 StatusBarUtil.setColor(this, Color.parseColor(mPageInfo.getStatusBarColor()), mPageInfo.getStatusBarAlpha());
             }
         }
