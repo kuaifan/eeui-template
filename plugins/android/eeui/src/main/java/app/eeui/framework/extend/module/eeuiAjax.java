@@ -1,6 +1,7 @@
 package app.eeui.framework.extend.module;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.bridge.JSCallback;
@@ -127,6 +128,12 @@ public class eeuiAjax {
             ret.put("header", new JSONObject());
             ret.put("result", null);
             callback.invokeAndKeepAlive(ret);
+        }
+        //
+        if (context instanceof PageActivity) {
+            if (TextUtils.isEmpty(((PageActivity) context).identify)) {
+                return;
+            }
         }
         //
         if (method.equals("post")) {
