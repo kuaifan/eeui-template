@@ -2,7 +2,7 @@
 
 ```js
 //顶部添加
-var eeuiNativeLog={app:null,create:function(e,type){try{if(this.app!=null){this.app.addLog(type.toLowerCase(),e)}}catch(e){}return e.concat(["__"+type])}};
+var eeuiNativeLog={app:null,create:function(e,type){if(e instanceof Array){var f=e[0]+"";if(f.indexOf("[JS Framework]")!==-1){return e.concat(["__"+type])}}try{if(this.app!=null){this.app.addLog(type.toLowerCase(),e)}}catch(e){}return e.concat(["__"+type])}};
 ```
 
 ## 二 
