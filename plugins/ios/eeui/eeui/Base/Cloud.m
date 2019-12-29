@@ -297,7 +297,6 @@ static NSMutableDictionary *checkUpdateVersion;
                 [alertController addAction:[UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                     if ([rebootInfo[@"confirm_reboot"] integerValue] == 1) {
                         [self reboot];
-                        [self appData:NO];
                     }
                 }]];
                 [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
@@ -319,6 +318,7 @@ static NSMutableDictionary *checkUpdateVersion;
 + (void) reboot
 {
     [Config clear];
+    [DeviceUtil clearAppboardContent];
     [[[DeviceUtil getTopviewControler] navigationController] popToRootViewControllerAnimated:NO];
     NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
     for (NSString *pageName in viewData) {

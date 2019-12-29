@@ -6,14 +6,19 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.WXSDKInstance;
+import com.taobao.weex.utils.WXFileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import app.eeui.framework.BuildConfig;
@@ -25,6 +30,7 @@ import app.eeui.framework.extend.bean.PageBean;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
 import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.tool.RxFileTool;
+import app.eeui.framework.ui.eeui;
 
 /**
  * Created by WDM on 2018/3/25.
@@ -282,6 +288,39 @@ public class eeuiPage {
      * @return
      */
     public static String getAppboardContent(Context context) {
+        loadAppboardContent(context);
+        loadAppboardUpdate(context);
+        //
+        StringBuilder appboard = new StringBuilder();
+        for (Map.Entry<String, String> entry : mAppboardWifi.entrySet()) {
+            if (!TextUtils.isEmpty(entry.getValue())) {
+                appboard.append(entry.getValue());
+                appboard.append(";");
+            }
+        }
+        for (Map.Entry<String, String> entry : mAppboardContent.entrySet()) {
+            if (!TextUtils.isEmpty(entry.getValue())) {
+                String temp = mAppboardWifi.get(entry.getKey());
+                if (temp == null) {
+                    appboard.append(entry.getValue());
+                    appboard.append(";");
+                }
+            }
+        }
+        if (TextUtils.isEmpty(appboard)) {
+            return "";
+        }
+        if (!appboard.toString().startsWith("// { \"framework\": \"Vue\"}")) {
+            appboard.insert(0, "// { \"framework\": \"Vue\"}\nif(typeof app==\"undefined\"){app=weex}\n");
+        }
+        return appboard.toString();
+    }
+
+    /**
+     * 加载assets下的appboard
+     * @param context
+     */
+    private static void loadAppboardContent(Context context) {
         try {
             String[] files = context.getAssets().list("eeui/appboard");
             if (files != null) {
@@ -302,26 +341,32 @@ public class eeuiPage {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        StringBuilder appboard = new StringBuilder();
-        for (Map.Entry<String, String> entry : mAppboardContent.entrySet()) {
-            if (!TextUtils.isEmpty(entry.getValue())) {
-                appboard.append(entry.getValue());
-                appboard.append(";");
+    }
+
+    /**
+     * 加载热更新下的appboard
+     * @param context
+     */
+    private static void loadAppboardUpdate(Context context) {
+        JSONArray tempArray = eeuiBase.config.verifyData();
+        for (int i = 0; i < tempArray.size(); i++) {
+            File tempPath = eeui.getApplication().getExternalFilesDir("update/" + tempArray.getString(i) + "/appboard");
+            if (tempPath != null) {
+                File[] files = tempPath.listFiles();
+                if (files != null) {
+                    for (File file1 : files) {
+                        if (file1.isFile() && eeuiCommon.rightExists(file1.getPath(), ".js")) {
+                            String key = "appboard/" + file1.getName();
+                            String temp = mAppboardContent.get(key);
+                            if (temp == null) {
+                                temp = WXFileUtils.loadFileOrAsset(file1.getPath(), context);
+                                mAppboardContent.put(key, temp);
+                            }
+                        }
+                    }
+                }
             }
         }
-        for (Map.Entry<String, String> entry : mAppboardWifi.entrySet()) {
-            if (!TextUtils.isEmpty(entry.getValue())) {
-                appboard.append(entry.getValue());
-                appboard.append(";");
-            }
-        }
-        if (TextUtils.isEmpty(appboard)) {
-            return "";
-        }
-        if (!appboard.toString().startsWith("// { \"framework\": \"Vue\"}")) {
-            appboard.insert(0, "// { \"framework\": \"Vue\"}\nif(typeof app==\"undefined\"){app=weex}\n");
-        }
-        return appboard.toString();
     }
 
     /**

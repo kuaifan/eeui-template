@@ -275,6 +275,36 @@
     if (mAppboardWifi == nil) {
         mAppboardWifi = [NSMutableDictionary dictionary];
     }
+    [self loadAppboardContent];
+    [self loadAppboardUpdate];
+    //
+    NSString *appboard = @"";
+    for (NSString *key in mAppboardWifi) {
+        NSString *value = mAppboardWifi[key];
+        if (value.length > 0) {
+            appboard = [NSString stringWithFormat:@"%@%@;", appboard, value];
+        }
+    }
+    for (NSString *key in mAppboardContent) {
+        NSString *temp = mAppboardWifi[key];
+        if (temp.length == 0) {
+            NSString *value = mAppboardContent[key];
+            if (value.length > 0) {
+                appboard = [NSString stringWithFormat:@"%@%@;", appboard, value];
+            }
+        }
+    }
+    if (appboard.length > 0) {
+        if (![appboard hasPrefix:@"// { \"framework\": \"Vue\"}"]) {
+            appboard = [NSString stringWithFormat:@"%@%@", @"// { \"framework\": \"Vue\"}\nif(typeof app==\"undefined\"){app=weex}\n", appboard];
+        }
+    }
+    return appboard;
+}
+
+//加载assets下的appboard
++ (void)loadAppboardContent
+{
     NSString *path = [Config getResourcePath:@"bundlejs/eeui/appboard"];
     NSFileManager * fileManger = [NSFileManager defaultManager];
     BOOL isDir = NO;
@@ -300,25 +330,39 @@
             }
         }
     }
-    NSString *appboard = @"";
-    for (NSString *key in mAppboardContent) {
-        NSString *value = mAppboardContent[key];
-        if (value.length > 0) {
-            appboard = [NSString stringWithFormat:@"%@%@;", appboard, value];
+}
+
+//加载热更新下的appboard
++ (void)loadAppboardUpdate
+{
+    NSString *path = [Config getSandPath:@"update"];
+    NSFileManager *myFileManager = [NSFileManager defaultManager];
+    BOOL isDir = NO;
+    BOOL isExist = NO;
+
+    NSMutableArray *tempArray = [Config verifyData];
+    for (NSString * dirName in tempArray) {
+        NSString *tempPath = [NSString stringWithFormat:@"%@/%@/appboard", path, dirName];
+        isExist = [myFileManager fileExistsAtPath:tempPath isDirectory:&isDir];
+        if (isExist && isDir) {
+            NSArray *tmpArray = [myFileManager contentsOfDirectoryAtPath:tempPath error:nil];
+            for (NSString * tmpName in tmpArray) {
+                if ([tmpName hasSuffix:@".js"]) {
+                    NSString *key = [NSString stringWithFormat:@"appboard/%@", tmpName];
+                    NSString *temp = [mAppboardContent objectForKey:key];
+                    if (temp.length == 0) {
+                        NSString *filePath = [NSString stringWithFormat:@"%@/%@", tempPath, tmpName];
+                        isExist = [myFileManager fileExistsAtPath:filePath isDirectory:&isDir];
+                        if (isExist && !isDir) {
+                            NSData *fileData = [[NSData alloc] initWithContentsOfFile:filePath];
+                            temp = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
+                            [mAppboardContent setValue:temp forKey:key];
+                        }
+                    }
+                }
+            }
         }
     }
-    for (NSString *key in mAppboardWifi) {
-        NSString *value = mAppboardWifi[key];
-        if (value.length > 0) {
-            appboard = [NSString stringWithFormat:@"%@%@;", appboard, value];
-        }
-    }
-    if (appboard.length > 0) {
-        if (![appboard hasPrefix:@"// { \"framework\": \"Vue\"}"]) {
-            appboard = [NSString stringWithFormat:@"%@%@", @"// { \"framework\": \"Vue\"}\nif(typeof app==\"undefined\"){app=weex}\n", appboard];
-        }
-    }
-    return appboard;
 }
 
 //设置Appboard内容

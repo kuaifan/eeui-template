@@ -719,6 +719,7 @@ public class eeuiBase {
                     JSONObject newJson = new JSONObject();
                     newJson.put("title", eeuiJson.getString(rebootInfo, "title"));
                     newJson.put("message", eeuiJson.getString(rebootInfo, "message"));
+                    newJson.put("cancelable", false);
                     eeuiAlertDialog.confirm(eeui.getActivityList().getLast(), newJson, new JSCallback() {
                         @Override
                         public void invoke(Object data) {
@@ -745,6 +746,7 @@ public class eeuiBase {
          * 重启
          */
         public static void reboot() {
+            eeuiPage.mAppboardContent = new HashMap<>();
             config.clear();
             eeui.reboot();
         }

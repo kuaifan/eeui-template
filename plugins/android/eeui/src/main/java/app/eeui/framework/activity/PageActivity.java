@@ -2123,7 +2123,7 @@ public class PageActivity extends AppCompatActivity {
                                         if (eeuiParse.parseStr(retData.get("status")).equals("click") && eeuiParse.parseStr(retData.get("title")).equals("确定")) {
                                             eeuiCommon.setVariate("__system:deBugSocket:Init", 0);
                                             eeuiCommon.setVariate("__system:deBugSocket:Status", 0);
-                                            eeuiPage.mAppboardContent = new HashMap<>();
+                                            eeuiBase.cloud.appData(false);
                                             eeuiBase.cloud.reboot();
                                         }
                                     }
