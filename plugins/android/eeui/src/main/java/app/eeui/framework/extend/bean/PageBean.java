@@ -89,7 +89,7 @@ public class PageBean {
     private boolean animated = true;
     private String animatedType = "";
     private boolean animatedClose = true;
-    private String statusBarType = "default";
+    private String statusBarType = "normal";
     private String statusBarColor = "";
     private int statusBarAlpha = 0;
     private Boolean statusBarStyle = null;
