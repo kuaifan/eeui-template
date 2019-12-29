@@ -223,6 +223,9 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
     //tab
     self.tabView = [[UIScrollView alloc] init];
+    self.tabView.showsVerticalScrollIndicator = FALSE;
+    self.tabView.showsHorizontalScrollIndicator = FALSE;
+
     [self.view addSubview:self.tabView];
 
     [self loadTabView];
