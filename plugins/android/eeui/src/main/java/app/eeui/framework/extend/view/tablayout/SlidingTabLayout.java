@@ -375,6 +375,7 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
                 if (mTextBold == TEXT_BOLD_WHEN_SELECT) {
                     tab_title.getPaint().setFakeBoldText(isSelect);
                 }
+                tab_title.invalidate();
             }
         }
     }
