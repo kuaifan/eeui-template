@@ -42,13 +42,6 @@
     windowView.tag = WindowViewTag;
     [self addSubview:windowView];
 
-    //存储通过dialogName删除
-    if (self.dialogName.length > 0) {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setObject:windowView forKey:[NSString stringWithFormat:@"%@_%@", kAdDialog, self.dialogName]];
-        [defaults synchronize];
-    }
-
     UIControl *bgView = [[UIControl alloc] initWithFrame:CGRectMake(0, windowView.bounds.size.height, windowView.bounds.size.width, windowView.bounds.size.height)];
     bgView.backgroundColor = [UIColor clearColor];
     [bgView addTarget:self action:@selector(controlClick) forControlEvents:UIControlEventTouchUpInside];
