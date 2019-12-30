@@ -25,6 +25,8 @@
 #define TabItemDotTag 3000
 #define TabBgScrollTag 4000
 
+#define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
+
 @interface eeuiTabbarComponent() <UIScrollViewDelegate>
 
 @property (nonatomic, strong) NSString *ktabType;
@@ -866,9 +868,8 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
         if (@available(iOS 11.0, *)) {
             safeArea = self.view.safeAreaInsets;
-        }else if (@available(iOS 9.0, *)) {
-            safeArea.top = 20;
         }
+        safeArea.top = iPhoneXSeries ? 44 : 20;
 
         if (statusBarColor) {
             frame = CGRectMake(0, safeArea.top, scoView.frame.size.width, scoView.frame.size.height - safeArea.top - safeArea.bottom);
@@ -1190,9 +1191,8 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
                 if (@available(iOS 11.0, *)) {
                     safeArea = self.view.safeAreaInsets;
-                }else if (@available(iOS 9.0, *)) {
-                    safeArea.top = 20;
                 }
+                safeArea.top = iPhoneXSeries ? 44 : 20;
 
                 if (statusBarColor) {
                     frame = CGRectMake(0, safeArea.top, scoView.frame.size.width, scoView.frame.size.height - safeArea.top - safeArea.bottom);
