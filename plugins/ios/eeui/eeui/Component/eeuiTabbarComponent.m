@@ -291,6 +291,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
     }
 
     [self loadTabView];
+    [self initIndicatorView];
 
     [self loadSelectedView];
 
@@ -304,6 +305,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
     }
 
     [self loadTabView];
+    [self initIndicatorView];
 
     [self loadSelectedView];
 
