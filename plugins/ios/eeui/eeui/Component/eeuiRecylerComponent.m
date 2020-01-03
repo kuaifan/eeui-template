@@ -344,13 +344,17 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
             index++;
         }
     }
-    NSDictionary *res = @{@"x":@(0), @"y":@(scrollView.contentOffset.y*ScreeScale), @"dx":@(0), @"dy":@(fabs(scrollView.contentOffset.y - _scrolledY)*ScreeScale)};
+    NSDictionary *res = @{@"x":@(0), @"y":@(scrollView.contentOffset.y*ScreeScale), @"dx":@(0), @"dy":@((scrollView.contentOffset.y - _scrolledY)*ScreeScale)};
     [self fireEvent:@"scrolled" params:res];
 }
 
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
-    [self fireEvent:@"scrollStateChanged" params:@{@"x":@(0), @"y":@(scrollView.contentOffset.y*ScreeScale), @"newState":@(0)}];
+    [super scrollViewDidEndScrollingAnimation:scrollView];
+
+    _scrolledY = scrollView.contentOffset.y;
+
+    [self fireEvent:@"scrollStateChanged" params:@{@"x":@(0), @"y":@(scrollView.contentOffset.y*ScreeScale), @"newState":@(1)}];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
@@ -466,6 +470,8 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
                 }
             }
             [scrollerComponent scrollToComponent:toComponent withOffset:0 animated:animated];
+
+            _scrolledY = scrollerComponent.contentOffset.y;
         }@catch (NSException *exception) {
             EELog(@"NSException = %@", exception);
         }
