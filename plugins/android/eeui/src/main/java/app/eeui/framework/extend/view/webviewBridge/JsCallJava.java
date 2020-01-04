@@ -174,6 +174,15 @@ public class JsCallJava {
                             k++;
                         }
                         break;
+                    }else if (key.contentEquals(methodName)) {
+                        sign = new StringBuilder(key);
+                        currMethod = mMethodsMap.get(sign.toString());
+                        if (currMethod == null) {
+                            continue;
+                        }
+                        values = new Object[1];
+                        values[0] = webView;
+                        break;
                     }
                 }
 
