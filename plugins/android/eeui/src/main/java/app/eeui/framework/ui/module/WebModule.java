@@ -3,6 +3,9 @@ package app.eeui.framework.ui.module;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import app.eeui.framework.extend.view.ExtendWebView;
 import app.eeui.framework.extend.view.webviewBridge.JsCallback;
 import app.eeui.framework.ui.eeui;
@@ -341,14 +344,40 @@ public class WebModule {
      * 获取手机的IMEI
      */
     public static String getImei(ExtendWebView webView) {
-        return myApp().getImei(webView.getContext());
+        return "";
     }
 
     /**
      * 获取手机的IFA
      */
     public static String getIfa(ExtendWebView webView) {
-        return myApp().getIfa(webView.getContext());
+        return getImei(webView);
+    }
+
+    /**
+     * 获取手机的IMEI（异步）
+     */
+    public static void getImeiAsync(ExtendWebView webView, JsCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        myApp().getImeiAsync(webView.getContext(), imei -> {
+            try {
+                Map<String, Object> data = new HashMap<>();
+                data.put("status", "success");
+                data.put("content", imei);
+                callback.apply(data);
+            } catch (JsCallback.JsCallbackException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * 获取手机的IFA（异步）
+     */
+    public static void getIfaAsync(ExtendWebView webView, JsCallback callback) {
+        getImeiAsync(webView, callback);
     }
 
     /**

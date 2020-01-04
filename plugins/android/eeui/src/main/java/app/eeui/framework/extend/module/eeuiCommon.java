@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.bridge.JSCallback;
+import com.taobao.weex.bridge.ResultCallback;
 import com.taobao.weex.ui.action.BasicComponentData;
 import com.taobao.weex.utils.WXFileUtils;
 
@@ -808,7 +809,26 @@ public class eeuiCommon {
     public static String getImei(Context ctx) {
         final String[] result = {null};
         final CountDownLatch latch = new CountDownLatch(1);
-        new Thread(() -> PermissionUtils.permission(Manifest.permission.READ_PHONE_STATE)
+        new Thread(() -> getImeiAsync(ctx, s -> {
+            result[0] = s;
+            latch.countDown();
+        })).start();
+        try {
+            latch.await();
+        } catch (InterruptedException ignored) {
+            //
+        }
+        return result[0];
+    }
+
+    /**
+     * 获取IMEI（异步）
+     * @param ctx
+     * @param mCallback
+     */
+    @SuppressLint({"MissingPermission", "NewApi", "HardwareIds", "WrongConstant"})
+    public static void getImeiAsync(Context ctx, ResultCallback<String> mCallback) {
+        PermissionUtils.permission(Manifest.permission.READ_PHONE_STATE)
                 .rationale(shouldRequest -> PermissionUtils.showRationaleDialog(ctx, shouldRequest, "电话"))
                 .callback(new PermissionUtils.FullCallback() {
                     @Override
@@ -826,8 +846,7 @@ public class eeuiCommon {
                                 }
                             } catch (Exception ignored) {  }
                         }
-                        result[0] = imei;
-                        latch.countDown();
+                        mCallback.onReceiveResult(imei);
                     }
 
                     @Override
@@ -835,16 +854,9 @@ public class eeuiCommon {
                         if (!permissionsDeniedForever.isEmpty()) {
                             PermissionUtils.showOpenAppSettingDialog(ctx, "电话");
                         }
-                        result[0] = "";
-                        latch.countDown();
+                        mCallback.onReceiveResult("");
                     }
-                }).request()).start();
-        try {
-            latch.await();
-        } catch (InterruptedException ignored) {
-            //
-        }
-        return result[0];
+                }).request();
     }
 
     /**

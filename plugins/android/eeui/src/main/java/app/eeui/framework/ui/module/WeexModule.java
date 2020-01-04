@@ -6,6 +6,9 @@ import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.common.WXModule;
 import com.taobao.weex.ui.component.WXComponent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import app.eeui.framework.ui.eeui;
 
 public class WeexModule extends WXModule {
@@ -387,7 +390,31 @@ public class WeexModule extends WXModule {
      */
     @JSMethod(uiThread = false)
     public String getIfa() {
-        return myApp().getIfa(mWXSDKInstance.getContext());
+        return getImei();
+    }
+
+    /**
+     * 获取手机的IMEI（异步）
+     */
+    @JSMethod
+    public void getImeiAsync(JSCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        myApp().getImeiAsync(mWXSDKInstance.getContext(), imei -> {
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "success");
+            data.put("content", imei);
+            callback.invoke(data);
+        });
+    }
+
+    /**
+     * 获取手机的IFA（异步）
+     */
+    @JSMethod
+    public void getIfaAsync(JSCallback callback) {
+        getImeiAsync(callback);
     }
 
     /**

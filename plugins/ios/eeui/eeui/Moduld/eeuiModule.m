@@ -545,10 +545,12 @@ WX_EXPORT_METHOD_SYNC(@selector(getLocalVersion))
 WX_EXPORT_METHOD_SYNC(@selector(getLocalVersionName))
 WX_EXPORT_METHOD_SYNC(@selector(compareVersion:secondVersion:))
 WX_EXPORT_METHOD_SYNC(@selector(getImei))
+WX_EXPORT_METHOD_SYNC(@selector(getIfa))
+WX_EXPORT_METHOD(@selector(getImeiAsync:))
+WX_EXPORT_METHOD(@selector(getIfaAsync:))
 WX_EXPORT_METHOD_SYNC(@selector(getSDKVersionCode))
 WX_EXPORT_METHOD_SYNC(@selector(getSDKVersionName))
 WX_EXPORT_METHOD_SYNC(@selector(isIPhoneXType))
-WX_EXPORT_METHOD_SYNC(@selector(getIfa))
 
 - (NSInteger)getStatusBarHeight
 {
@@ -623,7 +625,20 @@ WX_EXPORT_METHOD_SYNC(@selector(getIfa))
 
 - (NSString*)getIfa
 {
-    return (NSString*)[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    return [self getImei];
+}
+
+- (void)getImeiAsync:(WXModuleCallback)callback
+{
+    if (callback == nil) {
+        return;
+    }
+    callback(@{@"status":@"success", @"content":[self getImei]});
+}
+
+- (void)getIfaAsync:(WXModuleCallback)callback
+{
+    [self getImeiAsync:callback];
 }
 
 - (NSInteger)getSDKVersionCode

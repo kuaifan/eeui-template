@@ -486,7 +486,20 @@
 
 - (NSString*)getIfa
 {
-    return (NSString*)[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    return [self getImei];
+}
+
+- (void)getImeiAsync:(WXModuleCallback)callback
+{
+    if (callback == nil) {
+        return;
+    }
+    callback(@{@"status":@"success", @"content":[self getImei]});
+}
+
+- (void)getIfaAsync:(WXModuleCallback)callback
+{
+    [self getImeiAsync:callback];
 }
 
 - (NSInteger)getSDKVersionCode

@@ -21,6 +21,7 @@ import com.taobao.weex.InitConfig.Builder;
 import com.taobao.weex.WXSDKEngine;
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.bridge.JSCallback;
+import com.taobao.weex.bridge.ResultCallback;
 import com.taobao.weex.common.WXException;
 import com.taobao.weex.ui.SimpleComponentHolder;
 import com.taobao.weex.ui.component.WXBasicComponentType;
@@ -1084,10 +1085,10 @@ public class eeui {
     }
 
     /**
-     * 获取手机的IFA
+     * 获取手机的IMEI（异步）
      */
-    public String getIfa(Context context) {
-        return this.getImei(context);
+    public void getImeiAsync(Context context, ResultCallback<String> mCallback) {
+        eeuiCommon.getImeiAsync(context, mCallback);
     }
 
     /**
