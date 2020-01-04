@@ -80,6 +80,8 @@ public class Tabbar extends WXVContainer<ViewGroup> {
 
     private CommonTabLayout mTabLayoutBottom;
 
+    private boolean isPreload;
+
     private ResultCallback<String> resultCallback = result -> {
         for (Map.Entry<String, WXSDKBean> entry : mViewPager.WXSDKList.entrySet()) {
             if (entry.getValue().isLoaded()) {
@@ -424,6 +426,10 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                 mTabLayoutBottom.setTextAllCaps(eeuiParse.parseBool(val, false));
                 return true;
 
+            case "preload":
+                isPreload = eeuiParse.parseBool(val, false);
+                return true;
+
             case "@styleScope":
                 if (tabbarType == null) {
                     setTabType("bottom");
@@ -579,8 +585,12 @@ public class Tabbar extends WXVContainer<ViewGroup> {
         mTabPagerAdapter.notifyDataSetChanged();
         mTabLayoutSlidingTop.addNewTab(barBean.getTitle());
         //
-        if (mViewPager.WXSDKList.size() == 1) {
-            loadedView(0);
+        if (isPreload) {
+            loadedView(mViewPager.WXSDKList.size() - 1);
+        } else {
+            if (mViewPager.WXSDKList.size() == 1) {
+                loadedView(0);
+            }
         }
     }
 
@@ -667,8 +677,12 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                     data.put("url", url);
                     fireEvent(eeuiConstants.Event.VIEW_CREATED, data);
                 }
-                mViewPager.lifecycleListener(mViewPager.getCurrentItem(), "WXSDKViewCreated");
-                mViewPager.lifecycleListener(mViewPager.getCurrentItem(), "resume");
+                //
+                int position = getTabPosition(tabName);
+                mViewPager.lifecycleListener(position, "WXSDKViewCreated");
+                if (position == mViewPager.getCurrentItem()) {
+                    mViewPager.lifecycleListener(position, "resume");
+                }
             }
             @Override
             public void onRenderSuccess(WXSDKInstance instance, int width, int height) {

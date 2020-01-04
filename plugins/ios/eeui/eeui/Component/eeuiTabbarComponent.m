@@ -67,6 +67,7 @@
 @property (nonatomic, assign) BOOL indicatorBounceEnable;
 @property (nonatomic, assign) BOOL iconVisible;
 @property (nonatomic, assign) BOOL isExistIconVisible;//辅助初始化
+@property (nonatomic, assign) BOOL isPreload;//预先加载
 
 @property (nonatomic, strong) UIScrollView *tabView;
 @property (nonatomic, strong) FDFullscreenScrollView *bodyView;
@@ -155,6 +156,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         _tabSpaceEqual = YES;
         _indicatorAnimEnable = YES;
         _indicatorBounceEnable = YES;
+        _isPreload = NO;
 
         for (NSString *key in styles.allKeys) {
             [self dataKey:key value:styles[key] isUpdate:NO];
@@ -242,7 +244,13 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
     //添加子视图
     if (_tabPages.count > 0) {
-        [self loadTabPagesView];
+        if (_isPreload) {
+            for (int i = 0; i < _tabPages.count; i++) {
+                [self loadTabPagesView:i];
+            }
+        } else {
+            [self loadTabPagesView:_selectedIndex];
+        }
     }
 
     [self fireEvent:@"ready" params:nil];
@@ -317,15 +325,12 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
 - (void)insertSubview:(WXComponent *)subcomponent atIndex:(NSInteger)index
 {
-    //    [super insertSubview:subcomponent atIndex:index];
-
     if ([subcomponent isKindOfClass:[eeuiTabbarPageComponent class]]) {
-        if (self.subComps.count == 0) {
+        if (self.subComps.count == 0 || _isPreload) {
             [self.subComps addObject:subcomponent];
-            //            [self loadComponentView];
-            [self performSelector:@selector(loadComponentView) withObject:nil afterDelay:0.1];
+            [self performSelector:@selector(loadComponentID:) withObject:@(index) afterDelay:0.1];
         } else {
-            [self.subComps insertObject:subcomponent atIndex:index];
+            [self.subComps insertObject:subcomponent atIndex:(NSUInteger) index];
         }
     }
 
@@ -415,6 +420,8 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         if (!isUpdate) {
             _isExistIconVisible = YES;
         }
+    } else if ([key isEqualToString:@"preload"]) {
+        _isPreload = [WXConvert BOOL:value];
     }
 }
 
@@ -812,10 +819,10 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
     self.underLineView.backgroundColor = [WXConvert UIColor:_underlineColor];
 }
 
-- (void)loadTabPagesView
+- (void)loadTabPagesView:(NSInteger) index
 {
-    if (_selectedIndex < _tabPages.count) {
-        NSDictionary *dic = self.tabPages[_selectedIndex];
+    if (index < _tabPages.count) {
+        NSDictionary *dic = self.tabPages[index];
         NSString *tabName = dic[@"tabName"] ? [WXConvert NSString:dic[@"tabName"]] : [NSString stringWithFormat:@"TabPage-%d", (arc4random() % 100) + 1000];
         NSString *title = dic[@"title"] ? [WXConvert NSString:dic[@"title"]] : @"New Page";
         NSString *url = dic[@"url"] ? [WXConvert NSString:dic[@"url"]] : @"";
@@ -825,8 +832,8 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         id params = dic[@"params"];
 
         //添加滚动视图
-        UIScrollView *scoView = [[UIScrollView alloc] initWithFrame:CGRectMake(_selectedIndex * self.bodyView.frame.size.width, 0, self.bodyView.frame.size.width, self.bodyView.frame.size.height)];
-        scoView.tag = TabBgScrollTag + _selectedIndex;
+        UIScrollView *scoView = [[UIScrollView alloc] initWithFrame:CGRectMake(index * self.bodyView.frame.size.width, 0, self.bodyView.frame.size.width, self.bodyView.frame.size.height)];
+        scoView.tag = TabBgScrollTag + index;
         [self.bodyView addSubview:scoView];
 
         if (@available(iOS 11.0, *)) {
@@ -885,21 +892,21 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         //标记已加载过该视图
         [_childPageList addObject:dic];
 
-        vc.isTabbarChildSelected = YES;
+        vc.isTabbarChildSelected = index == _selectedIndex ? YES: NO;
         vc.isTabbarChildView = YES;
-        [_lifeTabPages setObject:vc forKey:[NSString stringWithFormat:@"%ld", (long)_selectedIndex]];
+        [_lifeTabPages setObject:vc forKey:[NSString stringWithFormat:@"%ld", (long)index]];
     }
 }
 
-- (void)loadComponentView
+- (void)loadComponentView:(NSInteger) index
 {
-    if (_selectedIndex - _tabPages.count < _subComps.count) {
+    if (index - _tabPages.count < _subComps.count) {
         //添加滚动视图
-        UIScrollView *scoView = [[UIScrollView alloc] initWithFrame:CGRectMake(_selectedIndex * self.bodyView.frame.size.width, 0, self.bodyView.frame.size.width, self.bodyView.frame.size.height)];
-        scoView.tag = TabBgScrollTag + _selectedIndex;
+        UIScrollView *scoView = [[UIScrollView alloc] initWithFrame:CGRectMake(index * self.bodyView.frame.size.width, 0, self.bodyView.frame.size.width, self.bodyView.frame.size.height)];
+        scoView.tag = TabBgScrollTag + index;
         [self.bodyView addSubview:scoView];
 
-        eeuiTabbarPageComponent *com = self.subComps[_selectedIndex - _tabPages.count];
+        eeuiTabbarPageComponent *com = self.subComps[index - _tabPages.count];
         UIView *view = com.view;
         CGRect frame = view.frame;
         frame.origin = CGPointMake(0, 0);
@@ -921,6 +928,11 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
     }
 }
 
+- (void)loadComponentID:(id) index
+{
+    [self loadComponentView:[WXConvert NSInteger:index]];
+}
+
 //处理滚动或点击到当前页面再加载
 - (void)loadSelectedView
 {
@@ -939,11 +951,11 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         id data = dataList[_selectedIndex];
         if ([data isKindOfClass:[eeuiTabbarPageComponent class]]) {
             if (![_childComponentList containsObject:data]) {
-                [self loadComponentView];
+                [self loadComponentView:_selectedIndex];
             }
         } else if ([data isKindOfClass:[NSDictionary class]]) {
             if (![_childPageList containsObject:data]) {
-                [self loadTabPagesView];
+                [self loadTabPagesView:_selectedIndex];
             }
         }
     }
@@ -1100,10 +1112,10 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
             if ([name isEqualToString:tabName]) {
                 if (i < _tabPages.count) {
                     [_tabPages removeObjectAtIndex:i];
-                    [self loadTabPagesView];
+                    [self loadTabPagesView:i];
                 } else if (i < _tabPages.count + _subComps.count ){
                     [_subComps removeObjectAtIndex:i - _tabPages.count];
-                    [self loadComponentView];
+                    [self loadComponentView:i];
                 }
                 [self loadTabView];
                 break;

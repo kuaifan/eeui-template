@@ -503,7 +503,9 @@ static int easyNavigationButtonTag = 8000;
         [weakSelf stopLoading];
         [weakSelf updateStatus:@"renderSuccess"];
         [weakSelf lifeCycleEvent:LifeCycleReady];
-        [weakSelf lifeCycleEvent:LifeCycleResume];
+        if (!_isTabbarChildView || _isTabbarChildSelected) {
+            [weakSelf lifeCycleEvent:LifeCycleResume];
+        }
     };
 
     _instance.updateFinish = ^(UIView *view) {
