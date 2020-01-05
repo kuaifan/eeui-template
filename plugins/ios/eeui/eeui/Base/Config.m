@@ -122,16 +122,30 @@ static NSMutableArray *verifyDir;
         return;
     }
     //
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:socketHome]];
-    [request setTimeoutInterval:1.0];
+    NSString *newUrlHome = [[NSString alloc] initWithFormat:@"%@%@%@", socketHome, [socketHome rangeOfString:@"?"].length > 0 ? @"&" : @"?", @"preload=preload"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:newUrlHome]];
+    [request setTimeoutInterval:2.0];
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *downloadTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (!error) {
             NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            NSRange range = [content rangeOfString:@"^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}" options:NSRegularExpressionSearch];
-            if (range.location != NSNotFound) {
-                callback(socketHome);
-                return;
+            NSDictionary *jsonData = [DeviceUtil dictionaryWithJsonString:content];
+            if (jsonData != nil) {
+                //
+                if ([jsonData[@"appboards"] isKindOfClass:[NSArray class]]) {
+                    NSArray *appboards = jsonData[@"appboards"];
+                    if ([appboards count] > 0) {
+                        for (NSDictionary *appboardItem in appboards) {
+                            [DeviceUtil setAppboardWifi:appboardItem[@"path"] content:appboardItem[@"content"]];
+                        }
+                    }
+                }
+                //
+                NSRange range = [jsonData[@"body"] rangeOfString:@"^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}" options:NSRegularExpressionSearch];
+                if (range.location != NSNotFound) {
+                    callback(socketHome);
+                    return;
+                }
             }
         }
         callback(homePage);

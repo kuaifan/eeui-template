@@ -171,12 +171,23 @@ public class eeuiBase {
             }
             //
             Map<String, Object> data = new HashMap<>();
-            data.put("setting:timeout", 1000);
+            data.put("preload", "preload");
+            data.put("setting:timeout", 2000);
             eeuiIhttp.get("eeuiPage", socketHome, data, new eeuiIhttp.ResultCallback() {
                 @Override
                 public void success(HttpResponseParser resData, boolean isCache) {
                     if (!TextUtils.isEmpty(resData.getBody())) {
-                        Matcher matcher = Pattern.compile("^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}").matcher(resData.getBody());
+                        JSONObject resJson = eeuiJson.parseObject(resData.getBody());
+                        //
+                        JSONArray appboards = eeuiJson.parseArray(resJson.getJSONArray("appboards"));
+                        if (appboards.size() > 0) {
+                            for (int i = 0; i < appboards.size(); i++) {
+                                JSONObject appboardItem = eeuiJson.parseObject(appboards.get(i));
+                                eeuiPage.mAppboardWifi.put(eeuiJson.getString(appboardItem, "path"), eeuiJson.getString(appboardItem, "content"));
+                            }
+                        }
+                        //
+                        Matcher matcher = Pattern.compile("^//\\s*\\{\\s*\"framework\"\\s*:\\s*\"Vue\"\\s*\\}").matcher(resJson.getString("body"));
                         if (matcher.find()) {
                             homePage[0] = socketHome;
                         }
