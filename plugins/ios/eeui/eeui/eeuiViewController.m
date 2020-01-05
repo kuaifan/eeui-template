@@ -618,7 +618,7 @@ static int easyNavigationButtonTag = 8000;
         }
     }else if (tapGesture.view.tag == 1002) {
         if (self.consoleView != nil) {
-            [Debug setDebugBtnStatus:NO];
+            [Debug setDebugBtnStatus:0];
             [self.consoleView removeFromSuperview];
             self.consoleView = nil;
         }

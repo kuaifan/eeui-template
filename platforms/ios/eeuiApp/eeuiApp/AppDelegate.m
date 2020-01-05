@@ -228,12 +228,22 @@ NSDictionary *mLaunchOptions;
     debugRView.layer.cornerRadius = 4;
     [debugBtn addSubview:debugRView];
     [Debug setDebugBtnCallback:^(id  _Nullable result, BOOL keepAlive) {
-        if ([WXConvert BOOL:result] == NO) {
+        NSInteger tag = [WXConvert NSInteger:result];
+        if (tag == 0) {
             debugRView.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0];
             debugRView.tag = 9000;
-        }else{
-            debugRView.backgroundColor = [UIColor redColor];
-            debugRView.tag = 9001;
+        } else {
+            if (tag <= debugRView.tag) {
+                return;
+            }
+            debugRView.tag = tag;
+            if (tag == 9009) {
+                debugRView.backgroundColor = [UIColor redColor];
+            } else if (tag == 9008) {
+                debugRView.backgroundColor = [UIColor orangeColor];
+            } else {
+                debugRView.backgroundColor = [WXConvert UIColor:@"#3EB4FF"];
+            }
         }
     }];
 }
@@ -267,7 +277,7 @@ NSDictionary *mLaunchOptions;
         [DeviceUtil clearAppboardContent];
         [self refresh];
     }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:debugRView.tag == 9001 ? @"Console[新]" : @"Console" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    [alertController addAction:[UIAlertAction actionWithTitle:debugRView.tag > 9000 ? @"Console[新]" : @"Console" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         debugRView.backgroundColor = [UIColor colorWithWhite:0.f alpha:0.0];
         debugRView.tag = 9000;
         [self console];

@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)addDebug:(NSString*)type log:(id)log pageUrl:(NSString*)pageUrl;
 
-+ (void)setDebugBtnStatus:(BOOL)status;
++ (void)setDebugBtnStatus:(NSInteger)status;
 
 + (void)setDebugBtnCallback:(WXModuleKeepAliveCallback __nullable)callback;
 + (WXModuleKeepAliveCallback)getDebugBtnCallback;

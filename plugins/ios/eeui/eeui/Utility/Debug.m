@@ -33,11 +33,17 @@
     [debugHistorys addObject:data];
     //
     if (debugBtnCallback != nil) {
-        debugBtnCallback(@(YES), YES);
+        if ([type containsString:@"error"]) {
+            debugBtnCallback(@(9009), YES);
+        } else if ([type containsString:@"warn"]) {
+            debugBtnCallback(@(9008), YES);
+        } else {
+            debugBtnCallback(@(9001), YES);
+        }
     }
 }
 
-+ (void)setDebugBtnStatus:(BOOL)status
++ (void)setDebugBtnStatus:(NSInteger)status
 {
     if (debugBtnCallback != nil) {
         debugBtnCallback(@(status), YES);

@@ -1829,11 +1829,7 @@ public class PageActivity extends AppCompatActivity {
         deBugButton.setTextColor(Color.WHITE);
         deBugButton.setTextSize(14);
         deBugButton.setGravity(Gravity.CENTER);
-        if (eeuiCommon.getVariateInt("__system:deBugSocket:Status") == 1) {
-            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_success_r : R.drawable.debug_button_success);
-        }else{
-            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_connect_r : R.drawable.debug_button_connect);
-        }
+        deBugButton.setBackgroundResource(eeuiDebug.getDebugButton(eeuiCommon.getVariateInt("__system:deBugSocket:Status")));
         if (PageActivity.hideDev) {
             deBugButton.setVisibility(View.GONE);
         }
@@ -1861,20 +1857,16 @@ public class PageActivity extends AppCompatActivity {
             return;
         }
         if (status == 1) {
-            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_success_r : R.drawable.debug_button_success);
+            deBugButton.setBackgroundResource(eeuiDebug.getDebugButton(1));
             eeuiCommon.setVariate("__system:deBugSocket:Status", 1);
         } else if (status == 2) {
-            deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_connect_r : R.drawable.debug_button_connect);
+            deBugButton.setBackgroundResource(eeuiDebug.getDebugButton(2));
             eeuiCommon.setVariate("__system:deBugSocket:Status", 2);
         } else if (status == 3) {
             deBugButton.setVisibility(View.GONE);
             return;
         } else {
-            if (eeuiCommon.getVariateInt("__system:deBugSocket:Status") == 1) {
-                deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_success_r : R.drawable.debug_button_success);
-            } else {
-                deBugButton.setBackgroundResource(eeuiDebug.isNewDebug() ? R.drawable.debug_button_connect_r : R.drawable.debug_button_connect);
-            }
+            deBugButton.setBackgroundResource(eeuiDebug.getDebugButton(eeuiCommon.getVariateInt("__system:deBugSocket:Status")));
         }
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(deBugButtonSize, deBugButtonSize);
         int left = eeuiParse.parseInt(eeuiCommon.getVariate("__system:pageActivity:FloatDrag:Left"), ScreenUtils.getScreenWidth() - deBugButtonSize);
