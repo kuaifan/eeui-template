@@ -2424,7 +2424,10 @@ public class PageActivity extends AppCompatActivity {
         } else {
             mPageLogView.setPadding(0, 0, 0, 0);
         }
-        mPageLogView.findViewById(R.id.v_space).setOnClickListener(v -> closeConsole());
+        mPageLogView.findViewById(R.id.v_space).setOnClickListener(v -> {
+            eeuiDebug.setNewDebug(false);
+            closeConsole();
+        });
         FrameLayout mLayout = mPageLogView.findViewById(R.id.v_view);
         WXSDKInstance mInstance = new WXSDKInstance(this);
         mInstance.registerRenderListener(new IWXRenderListener() {
