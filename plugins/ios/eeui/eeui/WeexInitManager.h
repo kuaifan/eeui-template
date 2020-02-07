@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void) willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler API_AVAILABLE(ios(10.0));
 + (void) didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0));
 + (void) openURL:(NSURL *)url options:(NSDictionary<NSString*, id> *)options;
++ (void) handleOpenURL:(NSURL *)url;
 + (void) setJSCallModule:(JSCallCommon *)callCommon webView:(WKWebView*)webView;
 
 @end

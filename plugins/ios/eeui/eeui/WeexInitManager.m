@@ -101,6 +101,18 @@
     });
 }
 
+//捕捉握手
++ (void) handleOpenURL:(NSURL *)url {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for (Class cls in init_lists) {
+            id car  = [[cls alloc] init];
+            if ([car respondsToSelector:@selector(handleOpenURL:)]) {
+                [car performSelector:(@selector(handleOpenURL:)) withObject:url];
+            }
+        }
+    });
+}
+
 //webView JS 接口
 + (void) setJSCallModule:(JSCallCommon *)callCommon webView:(WKWebView*)webView {
     dispatch_async(dispatch_get_main_queue(), ^{
