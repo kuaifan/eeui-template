@@ -45,4 +45,12 @@ module.exports = {
         }
     },
 
+    tencent: {
+        ios: {
+            appid: "1110227774",
+        },
+        android: {
+            appid: "1110117645",
+        }
+    }
 };

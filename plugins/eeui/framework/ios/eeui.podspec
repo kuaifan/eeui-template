@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
 
   s.homepage     = "https://eeui.app"
   s.license      = "MIT"
-  s.author             = { "veryitman" => "aipaw@live.cn" }
+  s.author             = { "kuaifan" => "aipaw@live.cn" }
   s.source =  { :path => '.' }
   s.source_files  = "eeui", "**/**/*.{h,m,mm,c}"
   s.exclude_files = "Source/Exclude"

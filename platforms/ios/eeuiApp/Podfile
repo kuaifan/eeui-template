@@ -2,8 +2,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '9.0'
 
 def common
-    pod 'WeexSDK', :path => '../../../plugins/ios/WeexSDK'
-    pod 'eeui', :path => '../../../plugins/ios/eeui'
+    pod 'WeexSDK', :path => '../../../plugins/eeui/WeexSDK/ios'
+    pod 'eeui', :path => '../../../plugins/eeui/framework/ios'
     pod 'SocketRocket', '0.5.1'
     pod 'BindingX', '~> 1.0.3'
 end
