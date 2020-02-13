@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
@@ -520,6 +521,20 @@ public class ExtendWebView extends WebView {
     public void setCustomUserAgent(String customUserAgent) {
         WebSettings webSettings = getSettings();
         webSettings.setUserAgentString(customUserAgent);
+    }
+
+    /**
+     * 设置透明背景
+     * @param transparency
+     */
+    public void setTransparency(boolean transparency) {
+        if (transparency) {
+            this.setBackgroundColor(Color.TRANSPARENT);
+            this.getBackground().setAlpha(0);
+        } else {
+            this.setBackgroundColor(Color.WHITE);
+            this.getBackground().setAlpha(1);
+        }
     }
 
     /**

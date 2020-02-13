@@ -212,6 +212,12 @@ public class WebView extends WXVContainer<ViewGroup> {
                 }
                 return true;
 
+            case "transparency":
+                if (v_webview != null) {
+                    v_webview.setTransparency(eeuiParse.parseBool(val, false));
+                }
+                return true;
+
             default:
                 return false;
         }

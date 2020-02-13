@@ -33,6 +33,7 @@
 @property (nonatomic, assign) BOOL isEnableApi;
 @property (nonatomic, assign) BOOL isHeightChanged;
 @property (nonatomic, assign) BOOL isReceiveMessage;
+@property (nonatomic, assign) BOOL isTransparency;
 @property (nonatomic, strong) JSCallCommon* JSCall;
 @property (strong, nonatomic) YHWebViewProgressView *progressView;
 
@@ -63,6 +64,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
         _isShowProgress = YES;
         _isScrollEnabled = YES;
         _isEnableApi = YES;
+        _isTransparency = NO;
         _isHeightChanged = [events containsObject:@"heightChanged"];
         _isReceiveMessage = [events containsObject:@"receiveMessage"];
 
@@ -113,6 +115,11 @@ WX_EXPORT_METHOD(@selector(goForward:))
     self.progressView.hidden = !_isShowProgress;
     [self.progressView useWkWebView:webView];
     [self.view addSubview:self.progressView];
+
+    if (_isTransparency) {
+        webView.opaque = NO;
+        webView.backgroundColor = [UIColor clearColor];
+    }
 
     ((UIScrollView *)[webView.subviews objectAtIndex:0]).scrollEnabled = _isScrollEnabled;
 
@@ -241,6 +248,11 @@ WX_EXPORT_METHOD(@selector(goForward:))
         _userAgent = [WXConvert NSString:value];
     } else if ([key isEqualToString:@"customUserAgent"]) {
         _customUserAgent = [WXConvert NSString:value];
+    } else if ([key isEqualToString:@"transparency"]) {
+        _isTransparency = [WXConvert BOOL:value];
+        if (isUpdate) {
+            [self setTransparency:_isTransparency];
+        }
     }
 }
 
@@ -370,6 +382,19 @@ WX_EXPORT_METHOD(@selector(goForward:))
         [self.progressView setProgress:1.0f];
     }
     self.progressView.hidden = !_isShowProgress;
+}
+
+//设置是否透明背景
+- (void)setTransparency:(BOOL)var
+{
+    eeuiWebView *webView = (eeuiWebView*)self.view;
+    if (var) {
+        webView.opaque = NO;
+        webView.backgroundColor = [UIColor clearColor];
+    }else{
+        webView.opaque = YES;
+        webView.backgroundColor = [UIColor whiteColor];
+    }
 }
 
 //设置是否允许滚动
