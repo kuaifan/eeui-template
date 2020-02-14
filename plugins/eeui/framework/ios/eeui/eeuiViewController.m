@@ -8,13 +8,14 @@
 
 #import "eeuiViewController.h"
 #import "WeexSDK.h"
-#import "WeexSDKManager.h"
 #import "eeuiStorageManager.h"
 #import "eeuiNewPageManager.h"
 #import "CustomWeexSDKManager.h"
 #import "DeviceUtil.h"
 #import "Config.h"
+#import "Cloud.h"
 #import "Debug.h"
+#import "AFNetworking.h"
 #import "SGEasyButton.h"
 #import "SDWebImageDownloader.h"
 #import "UINavigationController+FDFullscreenPopGesture.h"
@@ -80,6 +81,10 @@ static int easyNavigationButtonTag = 8000;
 
     _showNavigationBar = YES;
     _statusBarAlpha = 0;
+
+    _startLoadTime = 0;
+    _pauseTimeStart = 0;
+    _pauseTimeSecond = 0;
 
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
@@ -308,16 +313,30 @@ static int easyNavigationButtonTag = 8000;
     switch (type) {
         case LifeCycleReady:
             status = @"ready";
+            if (_startLoadTime == 0) {
+                _startLoadTime = (long) [[NSDate date] timeIntervalSince1970];
+            }
             break;
+
         case LifeCycleResume:
             status = @"resume";
+            if (_pauseTimeStart > 0) {
+                _pauseTimeSecond += MAX((long) [[NSDate date] timeIntervalSince1970] - _pauseTimeStart, 0);
+            }
             break;
+
         case LifeCyclePause:
             status = @"pause";
+            _pauseTimeStart = (long) [[NSDate date] timeIntervalSince1970];
             break;
+
         case LifeCycleDestroy:
             status = @"destroy";
+            if (!_isChildSubview) {
+                [self durationTime];
+            }
             break;
+
         default:
             return;
     }
@@ -344,6 +363,89 @@ static int easyNavigationButtonTag = 8000;
     }
 
     [[WXSDKManager bridgeMgr] fireEvent:_instance.instanceId ref:WX_SDK_ROOT_REF type:kLifeCycle params:@{@"status":status} domChanges:nil];
+}
+
+#pragma mark duration
+- (void)durationTime
+{
+    long timeStamp = (long) [[NSDate date] timeIntervalSince1970];
+    long duration = timeStamp - _startLoadTime - _pauseTimeSecond;
+    NSString *url = _url;
+    if ([url hasPrefix:@"file://"]) {
+        url = [Config getMiddle:url start:@"bundlejs/eeui" to:nil];
+    }
+    if (duration > 0) {
+        NSMutableDictionary *obj = [[NSMutableDictionary alloc] init];
+        obj[@"s"] = @(_startLoadTime);
+        obj[@"d"] = @(duration);
+        obj[@"p"] = @(_pauseTimeSecond);
+        obj[@"u"] = url;
+        //
+        eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
+        long submitTime = [[storage getCaches:@"__system:pageDurationSubmitTime" defaultVal:@(0)] longValue];
+        NSMutableArray *data = [[NSMutableArray alloc] init];
+        id tmp = [storage getCaches:@"__system:pageDurationData" defaultVal:@[]];
+        if ([tmp isKindOfClass:[NSArray class]]) {
+            data = [tmp mutableCopy];
+        }
+        [data addObject:[obj mutableCopy]];
+        //
+        if (timeStamp - submitTime >= 60 || data.count > 50 || _isFirstPage) {
+            [storage setCaches:@"__system:pageDurationSubmitTime" value:@(timeStamp) expired:60];
+            [self durationSubmit:data];
+            data = [[NSMutableArray alloc] init];
+        }
+        [storage setCaches:@"__system:pageDurationData" value:data expired:0];
+    }
+}
+
+- (void)durationSubmit:(NSArray *)array
+{
+    if (array.count == 0) {
+        return;
+    }
+    NSString *appkey = [Config getString:@"appKey" defaultVal:@""];
+    if (appkey.length == 0) {
+        return;
+    }
+    NSString *url = [Cloud getUrl:@"duration"];
+    NSString *package = [[NSBundle mainBundle]bundleIdentifier];
+    NSString *version = [NSString stringWithFormat:@"%ld", (long)[Config getLocalVersion]];
+    NSString *versionName = [Config getLocalVersionName];
+    NSString *screenWidth = [NSString stringWithFormat:@"%f", [UIScreen mainScreen].bounds.size.width];
+    NSString *screenHeight = [NSString stringWithFormat:@"%f", [UIScreen mainScreen].bounds.size.height];
+    NSString *debug = @"0";
+    #if DEBUG
+    debug = @"1";
+    #endif
+    NSDictionary *params = @{@"firstpage": @(_isFirstPage ? 1 : 0),
+            @"data": [DeviceUtil arrayToJson:array],
+            @"appkey": appkey,
+            @"package": package,
+            @"version": version,
+            @"versionName": versionName,
+            @"screenWidth": screenWidth,
+            @"screenHeight": screenHeight,
+            @"platform": @"ios",
+            @"debug": debug};
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager POST:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        @try {
+            if (responseObject) {
+                if ([[responseObject objectForKey:@"ret"] integerValue] == 1) {
+                    NSDictionary *data = responseObject[@"data"];
+                    NSMutableDictionary *jsonData = [NSMutableDictionary dictionaryWithDictionary:data];
+                    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                        //
+                        if ([[jsonData objectForKey:@"uplists"] isKindOfClass:[NSArray class]]) {
+                            [Cloud checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0];
+                        }
+                        [Cloud checkVersionUpdate:jsonData];
+                    });
+                }
+            }
+        }@catch (NSException *exception) { }
+    } failure:nil];
 }
 
 #pragma mark view
@@ -503,7 +605,7 @@ static int easyNavigationButtonTag = 8000;
         [weakSelf stopLoading];
         [weakSelf updateStatus:@"renderSuccess"];
         [weakSelf lifeCycleEvent:LifeCycleReady];
-        if (!_isTabbarChildView || _isTabbarChildSelected) {
+        if (!weakSelf.isTabbarChildView || weakSelf.isTabbarChildSelected) {
             [weakSelf lifeCycleEvent:LifeCycleResume];
         }
     };
@@ -811,7 +913,7 @@ static int easyNavigationButtonTag = 8000;
     }
     
     if ([status isEqualToString:@"viewCreated"]) {
-        _loadTime = [[NSDate date] timeIntervalSince1970];
+        _loadTime = (long) [[NSDate date] timeIntervalSince1970];
         [[eeuiNewPageManager sharedIntstance] setPageDataValue:self.pageName key:@"loadTime"
                                                          value:[DeviceUtil timesFromString:[NSString stringWithFormat:@"%ld", (long)_loadTime]]];
     }

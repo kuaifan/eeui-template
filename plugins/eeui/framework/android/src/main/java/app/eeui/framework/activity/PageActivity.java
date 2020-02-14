@@ -99,6 +99,7 @@ import app.eeui.framework.extend.module.eeuiMap;
 import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
+import app.eeui.framework.extend.module.eeuiVersionUpdate;
 import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CameraManager;
 import app.eeui.framework.extend.module.rxtools.module.scaner.CaptureActivityHandler;
@@ -133,6 +134,10 @@ public class PageActivity extends AppCompatActivity {
     private PageBean mPageInfo;
     private String lifecycleLastStatus;
     private boolean isCancelColorForSwipeBack = false;
+
+    private long startLoadTime = 0;
+    private long pauseTimeStart = 0;
+    private long pauseTimeSecond = 0;
 
     private Map<String, OnBackPressed> mOnBackPresseds = new HashMap<>();
     public interface OnBackPressed { boolean onBackPressed(); }
@@ -1294,10 +1299,21 @@ public class PageActivity extends AppCompatActivity {
             switch (status) {
                 case "viewCreated":
                     status = "ready";
+                    if (startLoadTime == 0) {
+                        startLoadTime = eeuiCommon.timeStamp();
+                    }
                     break;
 
                 case "resume":
                 case "pause":
+                    if (isFinishing()) {
+                        durationTime();
+                    }
+                    if ("pause".equals(status)) {
+                        pauseTimeStart = eeuiCommon.timeStamp();
+                    } else if (pauseTimeStart > 0) {
+                        pauseTimeSecond += Math.max(eeuiCommon.timeStamp() - pauseTimeStart, 0);
+                    }
                     break;
 
                 default:
@@ -1330,6 +1346,75 @@ public class PageActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void durationTime() {
+        long timeStamp = eeuiCommon.timeStamp();
+        long duration = timeStamp - startLoadTime - pauseTimeSecond;
+        String url = mPageInfo.getUrl();
+        if (url.startsWith("file://")) {
+            url = eeuiCommon.getMiddle(url, "eeui", null);
+        }
+        if (duration > 0) {
+            JSONObject obj = new JSONObject();
+            obj.put("s", startLoadTime);
+            obj.put("d", duration);
+            obj.put("p", pauseTimeSecond);
+            obj.put("u", url);
+            long submitTime = eeuiParse.parseLong(eeuiCommon.getCaches(this, "__system:pageDurationSubmitTime", 0));
+            JSONArray data = eeuiJson.parseArray(eeuiCommon.getCaches(this, "__system:pageDurationData", null));
+            data.add(obj);
+            //
+            if (timeStamp - submitTime >= 60 || data.size() > 50 || mPageInfo.isFirstPage()) {
+                eeuiCommon.setCaches(this, "__system:pageDurationSubmitTime", timeStamp, 60);
+                durationSubmit(data);
+                data = new JSONArray();
+            }
+            eeuiCommon.setCaches(this, "__system:pageDurationData", data, 0);
+        }
+    }
+
+    private void durationSubmit(JSONArray array) {
+        if (array.size() == 0) {
+            return;
+        }
+        String appkey = eeuiBase.config.getString("appKey", "");
+        if (appkey.length() == 0) {
+            return;
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("setting:timeout", 30000);
+        data.put("firstpage", mPageInfo.isFirstPage() ? 1 : 0);
+        data.put("data", array.toJSONString());
+        data.put("appkey", appkey);
+        data.put("package", eeui.getApplication().getPackageName());
+        data.put("version", eeuiCommon.getLocalVersion(eeui.getApplication()));
+        data.put("versionName", eeuiCommon.getLocalVersionName(eeui.getApplication()));
+        data.put("screenWidth", ScreenUtils.getScreenWidth());
+        data.put("screenHeight", ScreenUtils.getScreenHeight());
+        data.put("platform", "android");
+        data.put("debug", BuildConfig.DEBUG ? 1 : 0);
+        eeuiIhttp.post("duration", eeuiBase.cloud.getUrl("duration"), data, new eeuiIhttp.ResultCallback() {
+            @Override
+            public void success(HttpResponseParser resData, boolean isCache) {
+                JSONObject json = eeuiJson.parseObject(resData.getBody());
+                if (json.getIntValue("ret") == 1) {
+                    JSONObject retData = json.getJSONObject("data");
+                    eeuiBase.cloud.checkUpdateLists(retData.getJSONArray("uplists"), 0);
+                    eeuiVersionUpdate.checkUpdate(retData.getJSONObject("version_update"));
+                }
+            }
+
+            @Override
+            public void error(String error, int errCode) {
+
+            }
+
+            @Override
+            public void complete() {
+
+            }
+        });
     }
 
     /****************************************************************************************************/

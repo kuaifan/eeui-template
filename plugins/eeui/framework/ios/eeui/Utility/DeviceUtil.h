@@ -63,6 +63,8 @@ static NSMutableDictionary * mAppboardWifi;
 
 + (NSDictionary*) dictionaryWithJsonString:(NSString *)jsonString;
 
++ (NSString *)arrayToJson:(NSArray *)array;
+
 + (BOOL) isLightColor:(UIColor*)clr;
 
 + (NSString *) webCommonStyle;

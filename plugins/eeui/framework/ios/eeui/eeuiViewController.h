@@ -42,6 +42,10 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 @property (nonatomic, strong) NSString *animatedType;//页面动画效果类型
 @property (nonatomic, assign) long loadTime;//最后加载时间
 
+@property (nonatomic, assign) long startLoadTime;
+@property (nonatomic, assign) long pauseTimeStart;
+@property (nonatomic, assign) long pauseTimeSecond;
+
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, assign) NSInteger cache;//缓存时长，0则不缓存
 

@@ -431,6 +431,9 @@ public class eeuiBase {
                 case "app":
                     return apiUrl + "api/client/app?";
 
+                case "duration":
+                    return apiUrl + "api/client/duration?";
+
                 case "update-success":
                     return apiUrl + "api/client/update/success?";
 
@@ -585,7 +588,7 @@ public class eeuiBase {
          * @param lists
          * @param number
          */
-        private static void checkUpdateLists(JSONArray lists, int number) {
+        public static void checkUpdateLists(JSONArray lists, int number) {
             if (number >= lists.size()) {
                 return;
             }

@@ -37,6 +37,8 @@ static NSMutableDictionary *checkUpdateVersion;
     NSString* apiUrl = [Config getString:@"consoleUrl" defaultVal:@"https://console.eeui.app/"];
     if ([act isEqualToString:@"app"]) {
         return [NSString stringWithFormat:@"%@api/client/app?", apiUrl];
+    }else if ([act isEqualToString:@"duration"]) {
+        return [NSString stringWithFormat:@"%@api/client/duration?", apiUrl];
     }else if ([act isEqualToString:@"update-success"]) {
         return [NSString stringWithFormat:@"%@api/client/update/success?", apiUrl];
     }else if ([act isEqualToString:@"update-delete"]) {
@@ -150,23 +152,7 @@ static NSMutableDictionary *checkUpdateVersion;
                         if ([[jsonData objectForKey:@"uplists"] isKindOfClass:[NSArray class]]) {
                             [self checkUpdateLists:[jsonData objectForKey:@"uplists"] number:0];
                         }
-                        //
-                        if ([[jsonData objectForKey:@"version_update"] isKindOfClass:[NSDictionary class]]) {
-                            checkUpdateVersion = [jsonData objectForKey:@"version_update"];
-                            NSString *url = checkUpdateVersion[@"url"];
-                            if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) {
-                                NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
-                                for (NSString *pageName in viewData) {
-                                    id view = [viewData objectForKey:pageName];
-                                    if ([view isKindOfClass:[eeuiViewController class]]) {
-                                        eeuiViewController *vc = (eeuiViewController*)view;
-                                        dispatch_async(dispatch_get_main_queue(), ^{
-                                            [vc showFixedVersionUpdate: checkUpdateVersion[@"templateId"] ? [WXConvert NSString:checkUpdateVersion[@"templateId"]] : @"1"];
-                                        });                                        
-                                    }
-                                }
-                            }
-                        }
+                        [self checkVersionUpdate:jsonData];
                     });
                 }
             }
@@ -302,6 +288,26 @@ static NSMutableDictionary *checkUpdateVersion;
                 [[DeviceUtil getTopviewControler] presentViewController:alertController animated:YES completion:nil];
             }
         });
+    }
+}
+
++ (void) checkVersionUpdate:(NSMutableDictionary*)jsonData
+{
+    if ([[jsonData objectForKey:@"version_update"] isKindOfClass:[NSDictionary class]]) {
+        checkUpdateVersion = [jsonData objectForKey:@"version_update"];
+        NSString *url = checkUpdateVersion[@"url"];
+        if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) {
+            NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
+            for (NSString *pageName in viewData) {
+                id view = [viewData objectForKey:pageName];
+                if ([view isKindOfClass:[eeuiViewController class]]) {
+                    eeuiViewController *vc = (eeuiViewController*)view;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [vc showFixedVersionUpdate: checkUpdateVersion[@"templateId"] ? [WXConvert NSString:checkUpdateVersion[@"templateId"]] : @"1"];
+                    });
+                }
+            }
+        }
     }
 }
 

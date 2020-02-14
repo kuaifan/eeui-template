@@ -494,6 +494,14 @@
     return dic;
 }
 
+//数组转换成json串
++ (NSString *)arrayToJson:(NSArray *)array
+{
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:&error];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];;
+}
+
 //判断颜色是不是亮色
 +(BOOL) isLightColor:(UIColor*)clr {
     CGFloat components[3];
