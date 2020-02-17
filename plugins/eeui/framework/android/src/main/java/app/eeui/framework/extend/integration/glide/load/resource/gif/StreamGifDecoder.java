@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.resource.gif;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.load.ImageHeaderParser;
 import app.eeui.framework.extend.integration.glide.load.ImageHeaderParser.ImageType;

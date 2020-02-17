@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.Priority;
 import app.eeui.framework.extend.integration.glide.load.DataSource;
 import app.eeui.framework.extend.integration.glide.load.Options;

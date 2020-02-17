@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.module.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;

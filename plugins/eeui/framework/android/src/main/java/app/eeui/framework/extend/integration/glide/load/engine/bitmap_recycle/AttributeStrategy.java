@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.engine.bitmap_recycle;
 
 import android.graphics.Bitmap;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import app.eeui.framework.extend.integration.glide.util.Synthetic;
 import app.eeui.framework.extend.integration.glide.util.Util;
 

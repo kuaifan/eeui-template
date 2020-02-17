@@ -1,8 +1,8 @@
 package app.eeui.framework.extend.integration.glide.manager;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import app.eeui.framework.extend.integration.glide.request.Request;
 import app.eeui.framework.extend.integration.glide.util.Util;
 import java.util.ArrayList;

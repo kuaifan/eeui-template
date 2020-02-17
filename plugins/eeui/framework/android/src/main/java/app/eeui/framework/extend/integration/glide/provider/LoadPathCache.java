@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.provider;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import app.eeui.framework.extend.integration.glide.load.ResourceDecoder;
 import app.eeui.framework.extend.integration.glide.load.engine.DecodePath;
 import app.eeui.framework.extend.integration.glide.load.engine.LoadPath;

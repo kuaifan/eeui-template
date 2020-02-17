@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.engine.cache;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import java.io.File;
 
 /**

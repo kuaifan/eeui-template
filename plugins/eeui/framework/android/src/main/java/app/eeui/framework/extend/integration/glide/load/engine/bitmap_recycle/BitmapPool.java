@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.engine.bitmap_recycle;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * An interface for a pool that allows users to reuse {@link android.graphics.Bitmap} objects.

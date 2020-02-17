@@ -13,7 +13,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;

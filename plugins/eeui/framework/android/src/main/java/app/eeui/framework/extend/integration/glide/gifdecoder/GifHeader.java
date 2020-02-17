@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.gifdecoder;
 
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import java.util.ArrayList;
 import java.util.List;
 

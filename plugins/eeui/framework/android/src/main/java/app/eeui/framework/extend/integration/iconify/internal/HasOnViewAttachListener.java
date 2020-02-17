@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.iconify.internal;
 
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.widget.TextView;
 
 /**

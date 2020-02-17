@@ -7,7 +7,7 @@ package app.eeui.framework.extend.view;
 import android.content.Context;
 import android.util.AttributeSet;
 
-public class FocusedTextView extends android.support.v7.widget.AppCompatTextView {
+public class FocusedTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     public FocusedTextView(Context context) {
         super(context);

@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.engine.cache;
 
-import android.support.annotation.NonNull;
-import android.support.v4.util.Pools;
+import androidx.annotation.NonNull;
+import androidx.core.util.Pools;
 import app.eeui.framework.extend.integration.glide.load.Key;
 import app.eeui.framework.extend.integration.glide.util.LruCache;
 import app.eeui.framework.extend.integration.glide.util.Preconditions;

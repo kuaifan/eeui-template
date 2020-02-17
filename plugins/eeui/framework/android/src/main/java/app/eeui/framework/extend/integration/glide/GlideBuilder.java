@@ -2,9 +2,9 @@ package app.eeui.framework.extend.integration.glide;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.load.DecodeFormat;
 import app.eeui.framework.extend.integration.glide.load.engine.Engine;

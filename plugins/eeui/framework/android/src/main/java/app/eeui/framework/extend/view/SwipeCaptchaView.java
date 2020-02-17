@@ -18,7 +18,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
@@ -32,7 +32,7 @@ import app.eeui.framework.R;
  * 更新时间： 2017/08/24.
  */
 
-public class SwipeCaptchaView extends android.support.v7.widget.AppCompatImageView {
+public class SwipeCaptchaView extends androidx.appcompat.widget.AppCompatImageView {
     private final String TAG = "SwipeCaptchaView";
     //控件的宽高
     protected int mWidth;

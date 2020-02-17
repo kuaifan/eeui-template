@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.data;
 
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.Priority;
 import app.eeui.framework.extend.integration.glide.load.DataSource;

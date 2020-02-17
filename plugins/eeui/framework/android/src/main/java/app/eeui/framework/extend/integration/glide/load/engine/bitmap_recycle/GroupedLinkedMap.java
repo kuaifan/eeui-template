@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.engine.bitmap_recycle;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import app.eeui.framework.extend.integration.glide.util.Synthetic;
 import java.util.ArrayList;
 import java.util.HashMap;

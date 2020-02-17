@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 

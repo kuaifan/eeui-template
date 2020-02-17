@@ -1,7 +1,7 @@
 package app.eeui.framework.ui.component.navbar;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.common.Constants;

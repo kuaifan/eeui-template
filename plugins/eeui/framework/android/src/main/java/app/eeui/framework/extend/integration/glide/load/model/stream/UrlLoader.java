@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.model.stream;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import app.eeui.framework.extend.integration.glide.load.model.GlideUrl;
 import app.eeui.framework.extend.integration.glide.load.model.ModelLoader;

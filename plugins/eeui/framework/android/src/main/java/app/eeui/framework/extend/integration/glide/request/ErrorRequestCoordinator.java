@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.request;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Runs a single primary {@link Request} until it completes and then a fallback error request only

@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.manager;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * An interface for listening to Activity/Fragment lifecycle events.

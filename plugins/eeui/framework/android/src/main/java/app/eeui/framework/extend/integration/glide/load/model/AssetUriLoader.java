@@ -4,7 +4,7 @@ import android.content.ContentResolver;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import app.eeui.framework.extend.integration.glide.load.data.DataFetcher;
 import app.eeui.framework.extend.integration.glide.load.data.FileDescriptorAssetPathFetcher;

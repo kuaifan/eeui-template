@@ -1,8 +1,8 @@
 package app.eeui.framework.extend.integration.glide.load.resource.drawable;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import app.eeui.framework.extend.integration.glide.load.ResourceDecoder;
 import app.eeui.framework.extend.integration.glide.load.engine.Resource;

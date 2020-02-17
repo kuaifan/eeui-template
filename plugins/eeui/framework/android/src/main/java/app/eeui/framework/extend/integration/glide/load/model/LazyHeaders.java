@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.Collections;

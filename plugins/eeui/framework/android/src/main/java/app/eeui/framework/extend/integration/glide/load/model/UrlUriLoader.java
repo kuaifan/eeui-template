@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.model;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import java.io.InputStream;
 import java.util.Arrays;

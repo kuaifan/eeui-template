@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import java.io.IOException;
 
 /**

@@ -3,7 +3,7 @@ package app.eeui.framework.extend.integration.glide.load.engine.prefill;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import app.eeui.framework.extend.integration.glide.load.DecodeFormat;
 import app.eeui.framework.extend.integration.glide.load.engine.bitmap_recycle.BitmapPool;
 import app.eeui.framework.extend.integration.glide.load.engine.cache.MemoryCache;

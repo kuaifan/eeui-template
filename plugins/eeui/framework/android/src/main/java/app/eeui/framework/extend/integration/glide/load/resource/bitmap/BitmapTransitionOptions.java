@@ -2,7 +2,7 @@ package app.eeui.framework.extend.integration.glide.load.resource.bitmap;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.TransitionOptions;
 import app.eeui.framework.extend.integration.glide.request.transition.BitmapTransitionFactory;
 import app.eeui.framework.extend.integration.glide.request.transition.DrawableCrossFadeFactory;

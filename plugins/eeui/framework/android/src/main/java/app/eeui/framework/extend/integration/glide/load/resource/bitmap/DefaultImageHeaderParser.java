@@ -6,7 +6,7 @@ import static app.eeui.framework.extend.integration.glide.load.ImageHeaderParser
 import static app.eeui.framework.extend.integration.glide.load.ImageHeaderParser.ImageType.PNG_A;
 import static app.eeui.framework.extend.integration.glide.load.ImageHeaderParser.ImageType.UNKNOWN;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.load.ImageHeaderParser;
 import app.eeui.framework.extend.integration.glide.load.engine.bitmap_recycle.ArrayPool;

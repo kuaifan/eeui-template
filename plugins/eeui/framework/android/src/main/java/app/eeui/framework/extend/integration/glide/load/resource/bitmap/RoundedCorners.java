@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.resource.bitmap;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.engine.bitmap_recycle.BitmapPool;
 import app.eeui.framework.extend.integration.glide.util.Preconditions;
 import app.eeui.framework.extend.integration.glide.util.Util;

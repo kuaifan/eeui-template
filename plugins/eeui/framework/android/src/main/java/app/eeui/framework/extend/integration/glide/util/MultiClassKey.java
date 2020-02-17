@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.util;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * A key of two {@link Class}es to be used in hashed collections.

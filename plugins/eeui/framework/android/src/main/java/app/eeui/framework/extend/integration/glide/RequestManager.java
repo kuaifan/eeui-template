@@ -10,10 +10,14 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.View;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
 import app.eeui.framework.extend.integration.glide.load.engine.DiskCacheStrategy;
 import app.eeui.framework.extend.integration.glide.load.resource.gif.GifDrawable;
 import app.eeui.framework.extend.integration.glide.manager.ConnectivityMonitor;
@@ -40,9 +44,9 @@ import java.net.URL;
  * handling, use the static Glide.load methods with your Fragment or Activity.
  *
  * @see Glide#with(android.app.Activity)
- * @see Glide#with(android.support.v4.app.FragmentActivity)
+ * @see Glide#with(FragmentActivity)
  * @see Glide#with(android.app.Fragment)
- * @see Glide#with(android.support.v4.app.Fragment)
+ * @see Glide#with(Fragment)
  * @see Glide#with(Context)
  */
 public class RequestManager implements LifecycleListener,

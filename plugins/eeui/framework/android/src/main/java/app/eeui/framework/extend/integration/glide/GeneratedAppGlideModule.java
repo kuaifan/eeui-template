@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import app.eeui.framework.extend.integration.glide.manager.RequestManagerRetriever;
 import app.eeui.framework.extend.integration.glide.module.AppGlideModule;
 import java.util.Set;

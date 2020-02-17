@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.resource;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.Transformation;
 import app.eeui.framework.extend.integration.glide.load.engine.Resource;
 import java.security.MessageDigest;

@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.request.transition.TransitionFactory;
 import app.eeui.framework.extend.integration.glide.request.transition.ViewPropertyTransition;
 

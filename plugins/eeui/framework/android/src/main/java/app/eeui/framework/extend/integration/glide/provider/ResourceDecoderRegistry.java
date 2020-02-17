@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.provider;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.ResourceDecoder;
 import app.eeui.framework.extend.integration.glide.util.Synthetic;
 import java.util.ArrayList;

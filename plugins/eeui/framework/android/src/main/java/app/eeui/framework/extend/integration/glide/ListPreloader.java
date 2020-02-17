@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.widget.AbsListView;
 import app.eeui.framework.extend.integration.glide.request.target.BaseTarget;
 import app.eeui.framework.extend.integration.glide.request.target.SizeReadyCallback;

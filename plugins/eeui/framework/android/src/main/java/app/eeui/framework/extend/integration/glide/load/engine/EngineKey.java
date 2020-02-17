@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.engine;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.Key;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import app.eeui.framework.extend.integration.glide.load.Transformation;

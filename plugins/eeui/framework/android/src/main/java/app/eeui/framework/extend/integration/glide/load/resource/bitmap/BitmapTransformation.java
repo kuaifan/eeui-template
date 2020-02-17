@@ -2,7 +2,7 @@ package app.eeui.framework.extend.integration.glide.load.resource.bitmap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.Glide;
 import app.eeui.framework.extend.integration.glide.load.Transformation;
 import app.eeui.framework.extend.integration.glide.load.engine.Resource;

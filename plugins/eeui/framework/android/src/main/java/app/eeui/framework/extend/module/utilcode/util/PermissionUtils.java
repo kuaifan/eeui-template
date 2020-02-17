@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.extend.module.utilcode.constant.PermissionConstants;
@@ -325,7 +325,7 @@ public final class PermissionUtils {
         }
         isShowRationale = true;
         String descMsg = !"".equals(desc) ? "[" + desc + "]" : "相关";
-        new android.support.v7.app.AlertDialog.Builder(context)
+        new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setTitle("申请权限")
                 .setMessage("请允许" + descMsg + "权限后才能继续")
                 .setPositiveButton("确定", (dialog, which) -> {
@@ -350,7 +350,7 @@ public final class PermissionUtils {
         }
         isShowOpenAppSetting = true;
         String descMsg = !"".equals(desc) ? "[" + desc + "]" : "相关";
-        new android.support.v7.app.AlertDialog.Builder(context)
+        new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setTitle("需要权限")
                 .setMessage("我们需要" + descMsg + "权限，才能实现功能，点击前往，将转到应用的设置界面，请开启应用的" + descMsg + "权限。")
                 .setPositiveButton("前往", (dialog, which) -> {

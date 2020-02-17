@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.engine.bitmap_recycle;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.util.Preconditions;
 import app.eeui.framework.extend.integration.glide.util.Synthetic;

@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.resource.bytes;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.data.DataRewinder;
 import java.nio.ByteBuffer;
 

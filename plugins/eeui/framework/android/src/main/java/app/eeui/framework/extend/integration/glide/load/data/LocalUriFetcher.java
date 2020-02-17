@@ -2,7 +2,7 @@ package app.eeui.framework.extend.integration.glide.load.data;
 
 import android.content.ContentResolver;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.Priority;
 import app.eeui.framework.extend.integration.glide.load.DataSource;

@@ -1,9 +1,9 @@
 package app.eeui.framework.extend.integration.glide.load.resource.bitmap;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.os.TraceCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.os.TraceCompat;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.load.EncodeStrategy;
 import app.eeui.framework.extend.integration.glide.load.Option;

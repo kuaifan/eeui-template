@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.resource.file;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import app.eeui.framework.extend.integration.glide.load.ResourceDecoder;
 import app.eeui.framework.extend.integration.glide.load.engine.Resource;

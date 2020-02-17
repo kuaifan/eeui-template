@@ -17,7 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 
 
-public class AutoScrollTextView extends android.support.v7.widget.AppCompatTextView implements OnClickListener {
+public class AutoScrollTextView extends androidx.appcompat.widget.AppCompatTextView implements OnClickListener {
 
     public final static String TAG = "AutoScrollTextView";
 

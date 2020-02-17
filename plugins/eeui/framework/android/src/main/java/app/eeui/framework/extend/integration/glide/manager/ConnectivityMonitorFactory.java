@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.manager;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * A factory class that produces a functional

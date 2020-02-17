@@ -1,10 +1,11 @@
 package app.eeui.framework.extend.integration.glide.recyclerview;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import app.eeui.framework.extend.integration.glide.Glide;
 import app.eeui.framework.extend.integration.glide.ListPreloader;
 import app.eeui.framework.extend.integration.glide.ListPreloader.PreloadModelProvider;
@@ -22,8 +23,8 @@ import app.eeui.framework.extend.integration.glide.RequestManager;
  * corresponding methods called from another
  * {@link RecyclerView.OnScrollListener} to function. </p>
  *
- * <p> This class only works with {@link android.support.v7.widget.LinearLayoutManager} and
- * subclasses of {@link android.support.v7.widget.LinearLayoutManager}. </p>
+ * <p> This class only works with {@link LinearLayoutManager} and
+ * subclasses of {@link LinearLayoutManager}. </p>
  *
  * @param <T> The type of the model being displayed in the {@link RecyclerView}.
  */

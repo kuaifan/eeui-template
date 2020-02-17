@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.model;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * An optional interface that models can implement to enhance control over Glide behaviors.

@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.load.engine;
 
-import android.support.annotation.NonNull;
-import android.support.v4.util.Pools.Pool;
+import androidx.annotation.NonNull;
+import androidx.core.util.Pools.Pool;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import app.eeui.framework.extend.integration.glide.load.data.DataRewinder;
 import app.eeui.framework.extend.integration.glide.util.Preconditions;

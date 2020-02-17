@@ -1,8 +1,8 @@
 package app.eeui.framework.extend.integration.glide.request.target;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import app.eeui.framework.extend.integration.glide.manager.LifecycleListener;
 import app.eeui.framework.extend.integration.glide.request.Request;
 import app.eeui.framework.extend.integration.glide.request.transition.Transition;

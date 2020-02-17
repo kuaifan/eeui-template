@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.resource.gif;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.engine.Initializable;
 import app.eeui.framework.extend.integration.glide.load.resource.drawable.DrawableResource;
 

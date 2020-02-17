@@ -2,8 +2,8 @@ package app.eeui.framework.extend.integration.glide.load.engine.executor;
 
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.util.Synthetic;
 import java.util.Collection;

@@ -41,8 +41,8 @@ public final class ViewInjectorImpl implements ViewInjector {
         IGNORED.add(Activity.class);
         IGNORED.add(android.app.Fragment.class);
         try {
-            IGNORED.add(Class.forName("android.support.v4.app.Fragment"));
-            IGNORED.add(Class.forName("android.support.v4.app.FragmentActivity"));
+            IGNORED.add(Class.forName("androidx.fragment.app.Fragment"));
+            IGNORED.add(Class.forName("androidx.fragment.app.FragmentActivity"));
         } catch (Throwable ignored) {
         }
     }

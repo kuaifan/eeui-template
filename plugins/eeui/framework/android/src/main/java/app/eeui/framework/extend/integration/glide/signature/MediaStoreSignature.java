@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.signature;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import app.eeui.framework.extend.integration.glide.load.Key;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;

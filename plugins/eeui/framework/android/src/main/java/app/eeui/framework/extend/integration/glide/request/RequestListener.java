@@ -1,7 +1,7 @@
 package app.eeui.framework.extend.integration.glide.request;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import app.eeui.framework.extend.integration.glide.RequestBuilder;
 import app.eeui.framework.extend.integration.glide.load.DataSource;
 import app.eeui.framework.extend.integration.glide.load.engine.GlideException;

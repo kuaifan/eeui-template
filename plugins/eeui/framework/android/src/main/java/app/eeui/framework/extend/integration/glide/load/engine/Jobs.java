@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.engine;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import app.eeui.framework.extend.integration.glide.load.Key;
 import java.util.Collections;
 import java.util.HashMap;

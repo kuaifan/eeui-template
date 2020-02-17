@@ -1,9 +1,9 @@
 package app.eeui.framework.extend.integration.glide.load.engine;
 
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.os.TraceCompat;
-import android.support.v4.util.Pools;
+import androidx.annotation.NonNull;
+import androidx.core.os.TraceCompat;
+import androidx.core.util.Pools;
 import android.util.Log;
 import app.eeui.framework.extend.integration.glide.GlideContext;
 import app.eeui.framework.extend.integration.glide.Priority;

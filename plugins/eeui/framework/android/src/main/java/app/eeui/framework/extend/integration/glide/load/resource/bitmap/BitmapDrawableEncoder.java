@@ -2,7 +2,7 @@ package app.eeui.framework.extend.integration.glide.load.resource.bitmap;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.load.EncodeStrategy;
 import app.eeui.framework.extend.integration.glide.load.Options;
 import app.eeui.framework.extend.integration.glide.load.ResourceEncoder;

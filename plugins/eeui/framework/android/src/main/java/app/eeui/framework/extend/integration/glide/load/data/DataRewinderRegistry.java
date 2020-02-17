@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.load.data;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.util.Preconditions;
 import java.util.HashMap;
 import java.util.Map;

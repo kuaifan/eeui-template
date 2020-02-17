@@ -4,8 +4,8 @@ import static app.eeui.framework.extend.integration.glide.gifdecoder.GifDecoder.
 import static app.eeui.framework.extend.integration.glide.gifdecoder.GifFrame.DISPOSAL_NONE;
 import static app.eeui.framework.extend.integration.glide.gifdecoder.GifFrame.DISPOSAL_UNSPECIFIED;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;

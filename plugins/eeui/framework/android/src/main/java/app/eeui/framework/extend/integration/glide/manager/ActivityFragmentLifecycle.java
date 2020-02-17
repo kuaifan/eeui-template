@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.integration.glide.manager;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import app.eeui.framework.extend.integration.glide.util.Util;
 import java.util.Collections;
 import java.util.Set;

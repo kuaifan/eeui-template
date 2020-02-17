@@ -1,6 +1,6 @@
 package app.eeui.framework.extend.view.tablayout.listener;
 
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 
 public interface CustomTabEntity {
 
