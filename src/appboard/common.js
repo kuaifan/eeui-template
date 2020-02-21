@@ -15,7 +15,7 @@ Vue.mixin({
         },
 
         likeArray(obj) {
-            return this.isNullOrUndefined(obj) ? false : typeof obj.length === 'number';
+            return this.isObject(obj) && typeof obj.length === 'number';
         },
 
         isJson(obj) {

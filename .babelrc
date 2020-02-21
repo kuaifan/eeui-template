@@ -1,14 +1,21 @@
 {
     "presets": [
-        "es2015",
-        "stage-0"
+        "@babel/react",
+        "@babel/env"
     ],
     "plugins": [
         [
-            "transform-runtime",
+            "@babel/transform-runtime",
             {
-                "polyfill": false,
                 "helpers": false
+            }
+        ],
+        [
+            "component",
+            {
+                "libraryName": "weex-ui",
+                "libDir": "packages",
+                "style": false
             }
         ]
     ]
