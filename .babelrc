@@ -16,7 +16,8 @@
                 "libraryName": "weex-ui",
                 "libDir": "packages",
                 "style": false
-            }
+            },
+            "weex-ui"
         ],
         [
             "component",
@@ -24,7 +25,8 @@
                 "libraryName": "eeui-design",
                 "libDir": "packages",
                 "style": false
-            }
+            },
+            "eeui-design"
         ]
     ]
 }
