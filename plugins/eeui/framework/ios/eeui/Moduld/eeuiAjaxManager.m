@@ -58,7 +58,7 @@
             @"url":url,
             @"cache":@(NO),
             @"code":@(0),
-            @"header":@{},
+            @"headers":@{},
             @"result":@{}
         };
         callback(result, YES);
@@ -76,7 +76,7 @@
             @"url":url,
             @"cache":@(YES),
             @"code":@(200),
-            @"header":@{},
+            @"headers":@{},
             @"result":cacheResult
         };
         callback(res, YES);
@@ -107,7 +107,7 @@
 #pragma mark GET
     if ([method compare:@"get"
                 options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        NSURLSessionDataTask *dataTask = [manager GET_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader) {
+        NSURLSessionDataTask *dataTask = [manager GET_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
             //EELog(@"%@\n%@", url, responseObject);
             if (resCode == 200 && cache > 0) {
                 [ws saveFile:responseObject key:url cache:cache];
@@ -123,7 +123,7 @@
                 @"url":url,
                 @"cache":@(NO),
                 @"code":@(resCode),
-                @"header":resHeader,
+                @"headers":resHeaders,
                 @"result":responseObject
             };
             callback(res, beforeAfter ? YES : NO);
@@ -135,7 +135,7 @@
                     @"url":url,
                     @"cache":@(NO),
                     @"code":@(0),
-                    @"header":@{},
+                    @"headers":@{},
                     @"result":responseObject
                 };
                 callback(result2, NO);
@@ -152,7 +152,7 @@
                 @"url":url,
                 @"cache":@(NO),
                 @"code":errorData==nil?@(0):@([errorData statusCode]),
-                @"header":errorData==nil?@{}:[errorData allHeaderFields],
+                @"headers":errorData==nil?@{}:[errorData allHeaderFields],
                 @"result":result
             };
             callback(res, beforeAfter ? YES : NO);
@@ -164,7 +164,7 @@
                     @"url":url,
                     @"cache":@(NO),
                     @"code":@(0),
-                    @"header":@{},
+                    @"headers":@{},
                     @"result":result
                 };
                 callback(result2, NO);
@@ -177,7 +177,7 @@
 #pragma mark POST
     else if ([method compare:@"post"
                      options:NSCaseInsensitiveSearch] == NSOrderedSame && files.count == 0) {
-        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader) {
+        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
             //EELog(@"%@\n%@", url, responseObject);
             if (resCode == 200 && cache > 0) {
                 [ws saveFile:responseObject key:url cache:cache];
@@ -194,7 +194,7 @@
                 @"url":url,
                 @"cache":@(NO),
                 @"code":@(resCode),
-                @"header":resHeader,
+                @"headers":resHeaders,
                 @"result":responseObject
             };
             callback(res, beforeAfter ? YES : NO);
@@ -206,7 +206,7 @@
                     @"url":url,
                     @"cache":@(NO),
                     @"code":@(0),
-                    @"header":@{},
+                    @"headers":@{},
                     @"result":responseObject
                 };
                 callback(result2, NO);
@@ -222,7 +222,7 @@
                 @"url":url,
                 @"cache":@(NO),
                 @"code":errorData==nil?@(0):@([errorData statusCode]),
-                @"header":errorData==nil?@{}:[errorData allHeaderFields],
+                @"headers":errorData==nil?@{}:[errorData allHeaderFields],
                 @"result":result
             };
             callback(res, beforeAfter ? YES : NO);
@@ -234,7 +234,7 @@
                     @"url":url,
                     @"cache":@(NO),
                     @"code":@(0),
-                    @"header":@{},
+                    @"headers":@{},
                     @"result":result
                 };
                 callback(result2, NO);
@@ -280,7 +280,7 @@
                     }
                 }
             }
-        } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeader) {
+        } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
             //EELog(@"%@", responseObject);
             NSDictionary *res = @{
                 @"status":@"success",
@@ -288,7 +288,7 @@
                 @"url":url,
                 @"cache":@(NO),
                 @"code":@(resCode),
-                @"header":resHeader,
+                @"headers":resHeaders,
                 @"result":responseObject
             };
             callback(res, beforeAfter ? YES : NO);
@@ -300,7 +300,7 @@
                     @"url":url,
                     @"cache":@(NO),
                     @"code":@(0),
-                    @"header":@{},
+                    @"headers":@{},
                     @"result":@{}
                 };
                 callback(result2, NO);
@@ -316,7 +316,7 @@
                 @"url":url,
                 @"cache":@(NO),
                 @"code":errorData==nil?@(0):@([errorData statusCode]),
-                @"header":errorData==nil?@{}:[errorData allHeaderFields],
+                @"headers":errorData==nil?@{}:[errorData allHeaderFields],
                 @"result":result
             };
             callback(res, beforeAfter ? YES : NO);
@@ -328,7 +328,7 @@
                     @"url":url,
                     @"cache":@(NO),
                     @"code":@(0),
-                    @"header":@{},
+                    @"headers":@{},
                     @"result":result
                 };
                 callback(result2, NO);
