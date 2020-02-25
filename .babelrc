@@ -17,6 +17,14 @@
                 "libDir": "packages",
                 "style": false
             }
+        ],
+        [
+            "component",
+            {
+                "libraryName": "eeui-design",
+                "libDir": "packages",
+                "style": false
+            }
         ]
     ]
 }
