@@ -205,7 +205,7 @@ static NSMutableArray *verifyDir;
     NSString *newUrl = @"";
     NSMutableArray *tempArray = [self verifyData];
     for (NSString * dirName in tempArray) {
-        NSString *tempPath = [NSString stringWithFormat:@"%@/%@/%@", path, dirName, originalPath];
+        NSString *tempPath = [NSString stringWithFormat:@"%@/%@/%@", path, dirName, [self getPathname:originalPath]];
         isExist = [myFileManager fileExistsAtPath:tempPath isDirectory:&isDir];
         if (isExist && !isDir) {
             newUrl = [NSString stringWithFormat:@"%@%@", isFilePre ? @"file://" : @"", tempPath];;
@@ -217,6 +217,18 @@ static NSMutableArray *verifyDir;
         return originalUrl;
     }
     return newUrl;
+}
+
++ (NSString*) getPathname:(NSString*)url
+{
+    if (url.length > 0) {
+        NSRange range;
+        range = [url rangeOfString:@"?"];
+        if (range.location != NSNotFound) {
+            url = [url substringToIndex:range.location];
+        }
+    }
+    return url;
 }
 
 + (NSMutableArray*) verifyData

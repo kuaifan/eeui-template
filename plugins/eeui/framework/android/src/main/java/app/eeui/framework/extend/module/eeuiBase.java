@@ -269,7 +269,7 @@ public class eeuiBase {
             for (int i = 0; i < tempArray.size(); i++) {
                 File tempPath = eeui.getApplication().getExternalFilesDir("update/" + tempArray.getString(i));
                 if (tempPath != null) {
-                    tempPath = new File(tempPath.getPath() + "/" + originalPath);
+                    tempPath = new File(tempPath.getPath() + "/" + getPathname(originalPath));
                     if (isFile(tempPath)) {
                         newUrl = "file://" + tempPath.getPath();
                         break;
@@ -278,6 +278,13 @@ public class eeuiBase {
             }
 
             return newUrl.length() > 0 ? newUrl : originalUrl;
+        }
+
+        private static String getPathname(String path) {
+            if (!TextUtils.isEmpty(path) && path.contains("?")) {
+                path = path.substring(0, path.indexOf("?"));
+            }
+            return path;
         }
 
         /**
