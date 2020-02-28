@@ -308,8 +308,8 @@
     <declare-styleable name="SkipView">
         <attr name="circleSolidColor" format="color"/>
         <attr name="circleFrameColor" format="color"/>
-        <attr name="progressColor"/>
-        <attr name="textColor" />
+        <attr name="progressColor" format="color"/>
+        <attr name="textColor" format="color"/>
         <attr name="progressWidth" format="integer"/>
         <attr name="textSize" format="integer"/>
         <attr name="textPadding" format="integer"/>
