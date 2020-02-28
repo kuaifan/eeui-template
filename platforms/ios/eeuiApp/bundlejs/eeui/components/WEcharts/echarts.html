@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+    <style type="text/css">
+        *, html, body {
+            margin: 0;
+            padding: 0;
+        }
+        #loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 14px;
+            color: #999;
+        }
+        html, body, #container {
+            height: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="https://cdn.bootcss.com/echarts/4.6.0/echarts.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/echarts/4.6.0/extension/bmap.min.js"></script>
+</head>
+<body>
+<div id="loading">Loading...</div>
+<div id="container"></div>
+<script type="text/javascript">
+    let eeui = null;
+    let myChart = null;
+
+    function loadOption() {
+        let hash = window.location.hash;
+        if (hash.substring(0,1) === "#") {
+            hash = hash.substring(1);
+        }
+        let option = null;
+        try{
+            option = JSON.parse(eeui.getVariate("components::echarts::option:" + hash));
+        }catch (e) {
+            option = {};
+        }
+        if (option && typeof option === "object") {
+            myChart.setOption(option, true);
+        }
+    }
+
+    function loadJs(d, a) {
+        var c = document.getElementsByTagName("head")[0] || document.head || document.documentElement;
+        var b = document.createElement("script");
+        b.setAttribute("type", "text/javascript");
+        b.setAttribute("charset", "UTF-8");
+        b.setAttribute("src", d);
+        if (typeof a === "function") {
+            if (window.attachEvent) {
+                b.onreadystatechange = function () {
+                    var e = b.readyState;
+                    if (e === "loaded" || e === "complete") {
+                        b.onreadystatechange = null;
+                        a()
+                    }
+                }
+            } else {
+                b.onload = a
+            }
+        }
+        c.appendChild(b)
+    }
+
+    function $ready() {
+        eeui = requireModuleJs("eeui");
+        myChart = echarts.init(document.getElementById("container"));
+        loadJs("https://api.map.baidu.com/api?v=2.0&ak=" + eeui.getVariate("components::echarts::baidukey"), function () {
+            loadOption();
+            window.onresize = function(){
+                myChart.resize();
+            }
+        });
+        //
+        var timeout = setTimeout(function() {
+            document.getElementById("loading").style.display = "block";
+        }, 300);
+        myChart.on('rendered', function () {
+            clearInterval(timeout);
+            document.getElementById("loading").style.display = "none";
+        });
+    }
+</script>
+</body>
+</html>

@@ -477,7 +477,7 @@
         array = [NSMutableArray arrayWithArray:[[DeviceUtil getTopviewControler] navigationController].viewControllers];
         isDeviceUtil = YES;
     }
-    for (int i = 0; i < array.count; i++) {
+    for (NSUInteger i = 0; i < array.count; i++) {
         if (array[i] == vc) {
             [self removePageData:[(eeuiViewController*)array[i] pageName]];
             if (i + 1 == array.count) {
@@ -535,11 +535,11 @@
 
     BOOL isClose = NO;
     BOOL isRemove = NO;
-    for (int i = 0; i < array.count; i++) {
+    NSMutableArray *newArray = @[].mutableCopy;
+    for (NSUInteger i = 0; i < array.count; i++) {
         if (isClose == YES) {
             if (i + 1 != array.count) {
                 [self removePageData:[(eeuiViewController*)array[i] pageName]];
-                [array removeObjectAtIndex:i];
                 isRemove = YES;
             }
         }else{
@@ -547,13 +547,16 @@
                 isClose = YES;
             }
         }
+        if (!isRemove) {
+            [newArray addObject:array[i]];
+        }
     }
 
     if (isRemove) {
         if (isDeviceUtil) {
-            [[DeviceUtil getTopviewControler] navigationController].viewControllers = array;
+            [[DeviceUtil getTopviewControler] navigationController].viewControllers = newArray;
         } else {
-            weexInstance.viewController.navigationController.viewControllers = array;
+            weexInstance.viewController.navigationController.viewControllers = newArray;
         }
     }
 

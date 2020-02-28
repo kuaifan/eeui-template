@@ -10,7 +10,6 @@ import com.taobao.weex.WXEnvironment;
 import com.taobao.weex.WXSDKEngine;
 import com.taobao.weex.common.WXException;
 
-import app.eeui.framework.BuildConfig;
 import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeui;
 

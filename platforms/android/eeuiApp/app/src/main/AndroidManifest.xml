@@ -36,7 +36,7 @@
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
     <application
-        android:name="app.eeui.playground.MyApplication"
+        android:name=".MyApplication"
         android:allowBackup="false"
         android:exported="true"
         android:icon="@mipmap/ic_launcher"
@@ -48,10 +48,11 @@
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <activity
-            android:name="app.eeui.playground.WelcomeActivity"
+            android:name=".WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/WelcomeStyle">
+            android:theme="@style/WelcomeStyle"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
