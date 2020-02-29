@@ -93,7 +93,7 @@ public class eeuiCommon {
     public static void setCaches(Context context, String key, Object data, long expired) {
         JSONObject json = new JSONObject();
         json.put(key, data);
-        json.put("expired", expired > 0 ? (expired + timeStamp()) : expired);
+        json.put("expired", expired == 0 ? 0 : (expired + timeStamp()));
         //
         JSONObject cachesJson = getCachesJson(context, "eeuiCaches", "eeuiCaches");
         cachesJson.put(key, json);
