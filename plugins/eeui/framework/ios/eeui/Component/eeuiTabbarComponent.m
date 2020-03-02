@@ -1147,84 +1147,30 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 
 - (void)goUrl:(NSString*)tabName url:(NSString*)url
 {
-    for (int i = 0; i < _tabNameList.count; i++) {
-        NSDictionary *dic = self.tabNameList[i];
-        if (dic) {
-            NSString *name = dic[@"tabName"];
-            if ([name isEqualToString:tabName]) {
-                UIScrollView *scoView = (UIScrollView*)[self.bodyView viewWithTag:TabBgScrollTag + i];
-
-                NSDictionary *dic = nil;
-                for (int j = 0; j < self.tabPages.count; j++) {
-                    NSDictionary *data = self.tabPages[j];
-                    NSString *tname = data[@"tabName"] ? [WXConvert NSString:data[@"tabName"]] : @"";
-                    if ([tabName isEqualToString:tname]) {
-                        dic = data;
-                        break;
-                    }
-                }
-
-                NSString *title = dic[@"title"] ? [WXConvert NSString:dic[@"title"]] : @"New Page";
-                NSInteger cache = dic[@"cache"] ? [WXConvert NSInteger:dic[@"cache"]] : 0;
-                BOOL loading = dic[@"loading"] ? [WXConvert BOOL:dic[@"loading"]] : YES;
-                NSString *statusBarColor = dic[@"statusBarColor"];
-                id params = dic[@"params"];
-
-                eeuiViewController *vc = [[eeuiViewController alloc] init];
-                vc.url = [DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url] mInstance:_tabInstance];
-                vc.cache = cache;
-                vc.params = params;
-                vc.loading = loading;
-                vc.isChildSubview = YES;
-                vc.parentFrameCGRect = scoView.frame;
-                vc.pageName = [NSString stringWithFormat:@"TabPage-%d", (arc4random() % 100) + 1000];
-                vc.title = title;
-
-#if DEBUG
-                vc.statusBlock = ^(NSString *status) {
-                    if ([status isEqualToString:@"destroy"]) {
-                        [eeuiNewPageManager removeTabViewDebug:tabName];
-                    }
-                };
-
-                [eeuiNewPageManager setTabViewDebug:tabName callback:^(id result, BOOL keepAlive) {
-                    NSString *url = [WXConvert NSString:result];
-                    if ([[vc url] hasPrefix:url]) {
-                        [vc refreshPage];
-                    }
-                }];
-#endif
-
-                [_tabInstance.viewController addChildViewController:vc];
-                [scoView addSubview:vc.view];
-
-                CGRect frame = vc.view.frame;
-                UIEdgeInsets safeArea = UIEdgeInsetsZero;
-
-                if (@available(iOS 11.0, *)) {
-                    safeArea = self.view.safeAreaInsets;
-                }
-                safeArea.top = iPhoneXSeries ? 44 : 20;
-
-                if (statusBarColor) {
-                    frame = CGRectMake(0, safeArea.top, scoView.frame.size.width, scoView.frame.size.height - safeArea.top - safeArea.bottom);
-
-                    UIView *statusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, scoView.frame.size.width, safeArea.top)];
-                    statusView.backgroundColor = [WXConvert UIColor:statusBarColor];
-                    [scoView addSubview:statusView];
-                } else {
-                    frame = CGRectMake(0, 0, scoView.frame.size.width, scoView.frame.size.height - safeArea.bottom);
-                }
-                vc.view.frame = frame;
-            }
-            break;
+    for (id key in _lifeTabPages) {
+        eeuiViewController *vc = [_lifeTabPages objectForKey:key];
+        if (vc && [vc.pageName isEqualToString:tabName]) {
+            [vc setHomeUrl:[DeviceUtil rewriteUrl:[DeviceUtil suffixUrl:@"app" url:url] mInstance:_tabInstance] refresh:NO];
+            [vc refreshPage];
+        }
+    }
+    for (NSUInteger i = 0; i < _tabPages.count; i++) {
+        NSMutableDictionary *data = ((NSDictionary *) _tabPages[i]).mutableCopy;
+        if (data != nil && [data[@"tabName"] isEqualToString:tabName]) {
+            data[@"url"] = url;
+            _tabPages[i] = data;
         }
     }
 }
 
 - (void)reload:(NSString*)tabName
 {
-
+    for (id key in _lifeTabPages) {
+        eeuiViewController *vc = [_lifeTabPages objectForKey:key];
+        if (vc && [vc.pageName isEqualToString:tabName]) {
+            [vc refreshPage];
+        }
+    }
 }
 
 - (void)setTabType:(NSString*)tabType

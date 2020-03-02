@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.taobao.weex.WXEnvironment;
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.WXSDKManager;
 import com.taobao.weex.adapter.IWXImgLoaderAdapter;
@@ -89,6 +91,14 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
         String tempUrl = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, handCachePageUrl(view.getContext(), url)));
         Log.d(TAG, "loadImage: " + tempUrl);
         //
+        if (!TextUtils.isEmpty(strategy.placeHolder)) {
+            String placeHolder = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, handCachePageUrl(view.getContext(), strategy.placeHolder)));
+            Picasso.Builder builder = new Picasso.Builder(WXEnvironment.getApplication());
+            Picasso picasso = builder.build();
+            picasso.load(Uri.parse(placeHolder)).into(view);
+            view.setTag(strategy.placeHolder.hashCode(), picasso);
+        }
+        //
         try {
             if (imageEngine.equals("picasso") && !tempUrl.startsWith("data:image/")) {
                 if (tempUrl.startsWith("file://assets/")) {
@@ -141,6 +151,10 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
                             strategy.getImageListener().onImageFinish(url, view, true, null);
                         }
                         recordImgLoadResult(strategy.instanceId, true, null);
+
+                        if (!TextUtils.isEmpty(strategy.placeHolder)) {
+                            ((Picasso) view.getTag(strategy.placeHolder.hashCode())).cancelRequest(view);
+                        }
                         return false;
                     }
                 }).into(view);

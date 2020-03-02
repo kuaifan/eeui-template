@@ -442,7 +442,7 @@ public class eeui {
             context = ((WXSDKInstance) context).getContext();
         }else if (context instanceof View) {
             context = ((View) context).getContext();
-        }else{
+        }else if (!(context instanceof Activity)) {
             return;
         }
         //网址
