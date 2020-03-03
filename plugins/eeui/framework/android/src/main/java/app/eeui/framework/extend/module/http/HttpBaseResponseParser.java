@@ -16,7 +16,7 @@ public class HttpBaseResponseParser implements ResponseParser<String> {
 
     private int resCode = 0;
 
-    private Map<String, String> resHeader = new HashMap<>();
+    private Map<String, String> resHeaders = new HashMap<>();
 
     @Override
     public void beforeRequest(UriRequest request) throws Throwable {
@@ -26,7 +26,7 @@ public class HttpBaseResponseParser implements ResponseParser<String> {
     @Override
     public void afterRequest(UriRequest request) throws Throwable {
         resCode = request.getResponseCode();
-        resHeader = new HashMap<>();
+        resHeaders = new HashMap<>();
         for (Map.Entry<String, List<String>> entry : request.getResponseHeaders().entrySet()) {
             if (!TextUtils.isEmpty(entry.getKey())) {
                 StringBuilder value = new StringBuilder();
@@ -36,7 +36,7 @@ public class HttpBaseResponseParser implements ResponseParser<String> {
                     }
                     value.append(tmp);
                 }
-                resHeader.put(entry.getKey(), value.toString());
+                resHeaders.put(entry.getKey(), value.toString());
             }
         }
         //LogUtil.d("response resCode:" + request.getResponseCode());
@@ -57,14 +57,14 @@ public class HttpBaseResponseParser implements ResponseParser<String> {
             HttpResponseParser baiduResponse = new HttpResponseParser();
             baiduResponse.setBody(result);
             baiduResponse.setCode(resCode);
-            baiduResponse.setHeader(resHeader);
+            baiduResponse.setHeaders(resHeaders);
             lists.add(baiduResponse);
             return lists;
         } else {
             HttpResponseParser baiduResponse = new HttpResponseParser();
             baiduResponse.setBody(result);
             baiduResponse.setCode(resCode);
-            baiduResponse.setHeader(resHeader);
+            baiduResponse.setHeaders(resHeaders);
             return baiduResponse;
         }
     }

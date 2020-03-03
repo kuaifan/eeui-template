@@ -81,7 +81,7 @@ public class eeuiAjax {
                     ret.put("url", url);
                     ret.put("cache", isCache);
                     ret.put("code", data.getCode());
-                    ret.put("header", data.getHeader());
+                    ret.put("headers", data.getHeaders());
                     ret.put("result", dataType.equals("json") ? eeuiJson.parseObject(data.getBody()) : data.getBody());
                     callback.invokeAndKeepAlive(ret);
                 }
@@ -96,7 +96,7 @@ public class eeuiAjax {
                     ret.put("url", url);
                     ret.put("cache", false);
                     ret.put("code", errCode);
-                    ret.put("header", new JSONObject());
+                    ret.put("headers", new JSONObject());
                     ret.put("result", error);
                     callback.invokeAndKeepAlive(ret);
                 }
@@ -111,7 +111,7 @@ public class eeuiAjax {
                     ret.put("url", url);
                     ret.put("cache", false);
                     ret.put("code", 0);
-                    ret.put("header", new JSONObject());
+                    ret.put("headers", new JSONObject());
                     ret.put("result", null);
                     callback.invoke(ret);
                 }
@@ -125,7 +125,7 @@ public class eeuiAjax {
             ret.put("url", url);
             ret.put("cache", false);
             ret.put("code", 0);
-            ret.put("header", new JSONObject());
+            ret.put("headers", new JSONObject());
             ret.put("result", null);
             callback.invokeAndKeepAlive(ret);
         }
