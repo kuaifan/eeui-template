@@ -10,8 +10,9 @@
 
 @interface scanViewController : UIViewController
 
+@property (nonatomic, strong) NSString *headTitle;
 @property (nonatomic, strong) NSString *desc;
-@property (nonatomic, assign) BOOL successClose;
+@property (nonatomic, assign) BOOL continuous;
 
 @property (nonatomic, copy) void (^scanerBlock)(NSDictionary*);
 

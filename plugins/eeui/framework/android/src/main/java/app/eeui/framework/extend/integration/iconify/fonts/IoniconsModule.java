@@ -12,6 +12,6 @@ public class IoniconsModule implements IconFontDescriptor {
 
     @Override
     public Icon[] characters() {
-        return app.eeui.framework.extend.integration.iconify.fonts.IoniconsIcons.values();
+        return IoniconsIcons.values();
     }
 }

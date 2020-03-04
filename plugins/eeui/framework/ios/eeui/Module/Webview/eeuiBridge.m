@@ -340,27 +340,34 @@
 
 - (void)openScaner:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
+    if (callback == nil) {
+        return;
+    }
+    NSString *title = @"";
     NSString *desc = @"";
-    BOOL successClose = YES;
+    BOOL continuous = NO;
     if ([params isKindOfClass:[NSDictionary class]]) {
+        title = params[@"title"] ? [WXConvert NSString:params[@"title"]] : @"";
         desc = params[@"desc"] ? [WXConvert NSString:params[@"desc"]] : @"";
-        successClose = params[@"successClose"] ? [WXConvert BOOL:params[@"successClose"]] : YES;
+        continuous = params[@"continuous"] ? [WXConvert BOOL:params[@"continuous"]] : NO;
     } else if ([params isKindOfClass:[NSString class]]){
         desc = (NSString*)params;
     }
 
-
     scanViewController *scan = [[scanViewController alloc]init];
+    scan.headTitle = title;
     scan.desc = desc;
-    scan.successClose = successClose;
+    scan.continuous = continuous;
 
-    int tag =(arc4random() % 100) + 1000;//返回随机数
-    NSString *pageName = [NSString stringWithFormat:@"scaner-%d", tag];
+    callback(@{
+            @"pageName": @"scanPage",
+            @"status": @"create"
+    }, YES);
 
     scan.scanerBlock = ^(NSDictionary *dic) {
-        NSDictionary *result = @{@"status":dic[@"status"], @"pageName":pageName, @"source":dic[@"source"], @"result":@"", @"format":@"", @"text":dic[@"url"]};
-        WXModuleKeepAliveCallback callback_ = callback;
-        callback_(result, NO);
+        NSMutableDictionary *result = dic.mutableCopy;
+        result[@"pageName"] = @"scanPage";
+        callback(result, ![result[@"status"] isEqualToString:@"destroy"]);
     };
     [[[DeviceUtil getTopviewControler] navigationController] pushViewController:scan animated:YES];
 }

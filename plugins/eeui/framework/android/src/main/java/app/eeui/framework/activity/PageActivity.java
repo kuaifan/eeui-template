@@ -2,19 +2,15 @@ package app.eeui.framework.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -24,8 +20,6 @@ import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -34,7 +28,6 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +48,6 @@ import com.taobao.weex.common.WXRenderStrategy;
 import com.taobao.weex.dom.WXEvent;
 import com.taobao.weex.ui.component.WXComponent;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -67,7 +59,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import app.eeui.framework.BuildConfig;
 import app.eeui.framework.R;
@@ -87,7 +78,6 @@ import app.eeui.framework.extend.integration.iconify.widget.IconTextView;
 import app.eeui.framework.extend.integration.statusbarutil.StatusBarUtil;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
 import app.eeui.framework.extend.integration.swipebacklayout.BGASwipeBackHelper;
-import app.eeui.framework.extend.integration.zxing.Result;
 import app.eeui.framework.extend.module.eeuiAlertDialog;
 import app.eeui.framework.extend.module.eeuiBase;
 import app.eeui.framework.extend.module.eeuiCommon;
@@ -101,14 +91,6 @@ import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
 import app.eeui.framework.extend.module.eeuiVersionUpdate;
 import app.eeui.framework.extend.module.http.HttpResponseParser;
-import app.eeui.framework.extend.module.rxtools.module.scaner.CameraManager;
-import app.eeui.framework.extend.module.rxtools.module.scaner.CaptureActivityHandler;
-import app.eeui.framework.extend.module.rxtools.module.scaner.decoding.InactivityTimer;
-import app.eeui.framework.extend.module.rxtools.tool.RxAnimationTool;
-import app.eeui.framework.extend.module.rxtools.tool.RxBeepTool;
-import app.eeui.framework.extend.module.rxtools.tool.RxPhotoTool;
-import app.eeui.framework.extend.module.rxtools.tool.RxQrBarTool;
-import app.eeui.framework.extend.module.utilcode.constant.PermissionConstants;
 import app.eeui.framework.extend.module.utilcode.util.KeyboardUtils;
 import app.eeui.framework.extend.module.utilcode.util.PermissionUtils;
 import app.eeui.framework.extend.module.utilcode.util.ScreenUtils;
@@ -128,6 +110,7 @@ public class PageActivity extends AppCompatActivity {
 
     private static boolean hideDev = false;
 
+    private eeui eeuiObj;
     private Handler mHandler = new Handler();
 
     public String identify;
@@ -171,16 +154,6 @@ public class PageActivity extends AppCompatActivity {
     private SeekBar v_swipeDragBar;
     private int v_swipeNum;
 
-    //二维码与条形码部分
-    private RelativeLayout scan_containter, scan_main;
-    private InactivityTimer scan_inactivityTimer;
-    private CaptureActivityHandler scan_handler;
-    private boolean scan_hasSurface;
-    private int scan_cropWidth = 0;
-    private int scan_cropHeight = 0;
-    private boolean scan_flashing = true;
-    private boolean scan_vibrate = true;
-
     //标题栏部分
     private LinearLayout titleBar, titleBarLeft, titleBarMiddle, titleBarRight;
     private TextView titleBarTitle, titleBarSubtitle;
@@ -215,42 +188,6 @@ public class PageActivity extends AppCompatActivity {
         mBean.setTranslucent(true);
         mBean.setCallback(callback);
         eeuiPage.openWin(context, mBean);
-    }
-
-    /**
-     * 扫描二维码与条形码专用
-     * @param context
-     * @param obj
-     * @param callback
-     */
-    public static void startScanerCode(Context context, String obj, JSCallback callback) {
-        JSONObject json = eeuiJson.parseObject(obj);
-        if (json.size() == 0 && obj != null && obj.equals("null")) {
-            json.put("desc", String.valueOf(obj));
-        }
-        json.put("successClose", eeuiJson.getBoolean(json, "successClose", true));
-        //
-        PermissionUtils.permission(PermissionConstants.CAMERA)
-                .rationale(shouldRequest -> PermissionUtils.showRationaleDialog(context, shouldRequest, "相机"))
-                .callback(new PermissionUtils.FullCallback() {
-                    @Override
-                    public void onGranted(List<String> permissionsGranted) {
-                        PageBean mBean = new PageBean();
-                        mBean.setUrl(eeuiJson.getString(json, "desc", "将二维码图片对准扫描框即可自动扫描"));
-                        mBean.setPageType("scanerCode");
-                        mBean.setTranslucent(true);
-                        mBean.setCallback(callback);
-                        mBean.setOtherObject(json);
-                        eeuiPage.openWin(context, mBean);
-                    }
-
-                    @Override
-                    public void onDenied(List<String> permissionsDeniedForever, List<String> permissionsDenied) {
-                        if (!permissionsDeniedForever.isEmpty()) {
-                            PermissionUtils.showOpenAppSettingDialog(context, "相机");
-                        }
-                    }
-                }).request();
     }
 
     /**
@@ -330,12 +267,6 @@ public class PageActivity extends AppCompatActivity {
                 ImmersionBar.with(this).init();
                 break;
 
-            case "scanerCode":
-                setContentView(R.layout.activity_page_scaner_code);
-                initScanerCodePageView();
-                ImmersionBar.with(this).init();
-                break;
-
             case "transparentPage":
                 setContentView(R.layout.activity_page_transparent);
                 ImmersionBar.with(this).init();
@@ -383,35 +314,6 @@ public class PageActivity extends AppCompatActivity {
         if (mWXSDKInstance != null) {
             mWXSDKInstance.onActivityResume();
         }
-        if (scan_containter != null) {
-            SurfaceView surfaceView = findViewById(R.id.scan_preview);
-            SurfaceHolder surfaceHolder = surfaceView.getHolder();
-            if (scan_hasSurface) {
-                //Camera初始化
-                initScanerCodeCamera(surfaceHolder);
-            } else {
-                surfaceHolder.addCallback(new SurfaceHolder.Callback() {
-                    @Override
-                    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-                    }
-
-                    @Override
-                    public void surfaceCreated(SurfaceHolder holder) {
-                        if (!scan_hasSurface) {
-                            scan_hasSurface = true;
-                            initScanerCodeCamera(holder);
-                        }
-                    }
-
-                    @Override
-                    public void surfaceDestroyed(SurfaceHolder holder) {
-                        scan_hasSurface = false;
-                    }
-                });
-                surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-            }
-        }
         if (!"".equals(mPageInfo.getResumeUrl())) {
             mPageInfo.setUrl(mPageInfo.getResumeUrl());
             mPageInfo.setResumeUrl("");
@@ -435,13 +337,6 @@ public class PageActivity extends AppCompatActivity {
                 }
             }
             eeui.finishingNumber++;
-        }
-        if (scan_containter != null) {
-            if (scan_handler != null) {
-                scan_handler.quitSynchronously();
-                scan_handler = null;
-            }
-            CameraManager.get().closeDriver();
         }
         invokeAndKeepAlive("pause", null);
     }
@@ -479,29 +374,6 @@ public class PageActivity extends AppCompatActivity {
         if (mWXSDKInstance != null) {
             mWXSDKInstance.onActivityResult(requestCode, resultCode, data);
         }
-        if (scan_containter != null && resultCode == Activity.RESULT_OK) {
-            ContentResolver resolver = getContentResolver();
-            Uri originalUri = data.getData();
-            try {
-                Bitmap photo = MediaStore.Images.Media.getBitmap(resolver, originalUri);
-                Result result = RxQrBarTool.decodeFromPhoto(photo);
-                if (result != null) {
-                    RxBeepTool.playBeep(this, scan_vibrate);
-                    Map<String, Object> retData = new HashMap<>();
-                    retData.put("source", "photo");
-                    retData.put("result", result);
-                    retData.put("format", result.getBarcodeFormat());
-                    retData.put("text", result.getText());
-                    invokeAndKeepAlive("success", retData);
-                } else {
-                    Map<String, Object> retData = new HashMap<>();
-                    retData.put("source", "photo");
-                    invokeAndKeepAlive("error", retData);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         //
         Map<String, Object> retData = new HashMap<>();
         retData.put("requestCode", requestCode);
@@ -514,9 +386,6 @@ public class PageActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        if (scan_containter != null) {
-            scan_inactivityTimer.shutdown();
-        }
         if (mWXSDKInstance != null) {
             mWXSDKInstance.onActivityDestroy();
         }
@@ -644,25 +513,6 @@ public class PageActivity extends AppCompatActivity {
                         v_swipeCaptchaView.createCaptcha();
                     }
                 });
-    }
-
-    /**
-     * 初始化二维码与条形码视图
-     */
-    private void initScanerCodePageView() {
-        scan_containter = findViewById(R.id.scan_containter);
-        scan_main = findViewById(R.id.scan_main);
-        //
-        ImageView mQrLineView = findViewById(R.id.capture_scan_line);
-        RxAnimationTool.ScaleUpDowm(mQrLineView);
-        //
-        CameraManager.init(this);
-        scan_hasSurface = false;
-        scan_inactivityTimer = new InactivityTimer(this);
-        //
-        if (mPageInfo.getUrl() != null) {
-            ((TextView) findViewById(R.id.scan_desc)).setText(getPageInfo().getUrl());
-        }
     }
 
     /**
@@ -945,141 +795,6 @@ public class PageActivity extends AppCompatActivity {
                 }
             }
         };
-    }
-
-    /****************************************************************************************************/
-    /****************************************************************************************************/
-    /****************************************************************************************************/
-
-
-    /**
-     * Scaner
-     * 初始化二维码与条形码相机
-     */
-    private void initScanerCodeCamera(SurfaceHolder surfaceHolder) {
-        try {
-            CameraManager.get().openDriver(surfaceHolder);
-            Point point = CameraManager.get().getCameraResolution();
-            AtomicInteger width = new AtomicInteger(point.y);
-            AtomicInteger height = new AtomicInteger(point.x);
-            int cropWidth = scan_main.getWidth() * width.get() / scan_containter.getWidth();
-            int cropHeight = scan_main.getHeight() * height.get() / scan_containter.getHeight();
-            setScanCropWidth(cropWidth);
-            setScanCropHeight(cropHeight);
-
-            SurfaceView surfaceView = findViewById(R.id.scan_preview);
-            ViewGroup.LayoutParams params = surfaceView.getLayoutParams();
-            float screenRatio = ((float) scan_containter.getWidth()) / scan_containter.getHeight();
-            float cameraRatio = ((float) width.get()) / height.get();
-            if (cameraRatio > screenRatio) {
-                params.width = (int) (((float) scan_containter.getHeight()) / height.get() * width.get());
-                params.height = scan_containter.getHeight();
-            }else{
-                params.width = scan_containter.getWidth();
-                params.height = (int) (((float) scan_containter.getWidth()) / width.get() * height.get());
-            }
-            surfaceView.setLayoutParams(params);
-        } catch (IOException | RuntimeException ioe) {
-            return;
-        }
-        if (scan_handler == null) {
-            scan_handler = new CaptureActivityHandler(PageActivity.this);
-        }
-    }
-
-    /**
-     * Scaner
-     * @param view
-     */
-    public void scanClick(View view) {
-        int viewId = view.getId();
-        if (viewId == R.id.scan_light) {
-            scanLight();
-        } else if (viewId == R.id.scan_back) {
-            finish();
-        } else if (viewId == R.id.scan_picture) {
-            RxPhotoTool.openLocalImage(this);
-        } else if (viewId == R.id.scan_image_qr) {
-            eeuiCommon.setViewWidthHeight(scan_main, SizeUtils.dp2px(240), SizeUtils.dp2px(240));
-            invokeAndKeepAlive("changeQr", null);
-        } else if (viewId == R.id.scan_image_bar) {
-            eeuiCommon.setViewWidthHeight(scan_main, SizeUtils.dp2px(300), SizeUtils.dp2px(120));
-            invokeAndKeepAlive("changeBar", null);
-        }
-    }
-
-    /**
-     * Scaner
-     */
-    private void scanLight() {
-        if (scan_flashing) {    // 开闪光灯
-            scan_flashing = false;
-            CameraManager.get().openLight();
-            invokeAndKeepAlive("openLight", null);
-        } else {            // 关闪光灯
-            scan_flashing = true;
-            CameraManager.get().offLight();
-            invokeAndKeepAlive("offLight", null);
-        }
-    }
-
-    /**
-     * Scaner
-     * @return
-     */
-    public int getScanCropWidth() {
-        return scan_cropWidth;
-    }
-
-    /**
-     * Scaner
-     * @param cropWidth
-     */
-    public void setScanCropWidth(int cropWidth) {
-        scan_cropWidth = cropWidth;
-        CameraManager.FRAME_WIDTH = scan_cropWidth;
-
-    }
-
-    /**
-     * Scaner
-     * @return
-     */
-    public int getScanCropHeight() {
-        return scan_cropHeight;
-    }
-
-    /**
-     * Scaner
-     * @param cropHeight
-     */
-    public void setScanCropHeight(int cropHeight) {
-        this.scan_cropHeight = cropHeight;
-        CameraManager.FRAME_HEIGHT = scan_cropHeight;
-    }
-
-    /**
-     * Scaner
-     * @param result
-     */
-    public void handleScanDecode(Result result) {
-        scan_inactivityTimer.onActivity();
-        RxBeepTool.playBeep(this, scan_vibrate);
-        //
-        Map<String, Object> retData = new HashMap<>();
-        retData.put("source", "camera");
-        retData.put("result", result);
-        retData.put("format", result.getBarcodeFormat());
-        retData.put("text", result.getText());
-        invokeAndKeepAlive("success", retData);
-    }
-
-    /**
-     * Scaner
-     * @return
-     */
-    public Handler getScanHandler() {
-        return scan_handler;
     }
 
     /****************************************************************************************************/
@@ -2106,7 +1821,10 @@ public class PageActivity extends AppCompatActivity {
                                 break;
                             }
                             case 3: {
-                                PageActivity.startScanerCode(PageActivity.this, "{}", new JSCallback() {
+                                if (eeuiObj == null) {
+                                    eeuiObj = new eeui();
+                                }
+                                eeuiObj.openScaner(PageActivity.this, "{title:'二维码/条码'}", new JSCallback() {
                                     @Override
                                     public void invoke(Object data) {
                                         //

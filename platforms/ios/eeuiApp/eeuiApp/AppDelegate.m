@@ -371,8 +371,7 @@ NSDictionary *mLaunchOptions;
 //打开扫一扫
 - (void) openScan {
     scanViewController *scan = [[scanViewController alloc]init];
-    scan.desc = nil;
-    scan.successClose = YES;
+    scan.headTitle = @"二维码/条码";
     scan.scanerBlock = ^(NSDictionary *dic) {
         if ([dic[@"status"] isEqualToString:@"success"]) {
             NSString *text = dic[@"url"];

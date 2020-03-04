@@ -793,7 +793,7 @@ public class WebModule {
      * @return
      */
     public static void keyboardHide(ExtendWebView webView) {
-        myApp().keyboardUtils(webView.getContext(), "hideSoftInput");
+        myApp().keyboardHide(webView.getContext());
     }
 
     /**
@@ -801,6 +801,6 @@ public class WebModule {
      * @return
      */
     public static Boolean keyboardStatus(ExtendWebView webView) {
-        return (Boolean) myApp().keyboardUtils(webView.getContext(), "isSoftInputVisible");
+        return (Boolean) myApp().keyboardStatus(webView.getContext());
     }
 }

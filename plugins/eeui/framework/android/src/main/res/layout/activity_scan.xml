@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <app.eeui.zxing.ViewfinderView
+        android:id="@+id/viewfinderView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:gridHeight="0dp"
+        app:labelTextLocation="bottom"
+        app:laserStyle="grid" />
+
+    <LinearLayout
+        android:id="@+id/llTop"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <app.eeui.framework.extend.integration.iconify.widget.IconTextView
+            android:id="@+id/iconBack"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:gravity="center"
+            android:text="{tb-back-android}"
+            android:textColor="@color/eeui_white"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/eeui_white"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="52dp"
+            android:layout_height="52dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="@dimen/torchMarginTop"
+        android:orientation="horizontal"
+        android:paddingLeft="68dp"
+        android:paddingRight="68dp">
+
+        <app.eeui.framework.extend.integration.iconify.widget.IconTextView
+            android:id="@+id/iconFlash"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:gravity="center"
+            android:text="{tb-flashlight-close}"
+            android:textColor="@color/eeui_white"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <app.eeui.framework.extend.integration.iconify.widget.IconTextView
+            android:id="@+id/iconPic"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:gravity="center"
+            android:text="{tb-pic}"
+            android:textColor="@color/eeui_white"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+</FrameLayout>

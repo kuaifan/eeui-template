@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -23,8 +25,6 @@ import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.bridge.ResultCallback;
 import com.taobao.weex.common.WXException;
-import com.taobao.weex.ui.SimpleComponentHolder;
-import com.taobao.weex.ui.component.WXBasicComponentType;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -39,6 +39,7 @@ import java.util.Map;
 
 import app.eeui.framework.BuildConfig;
 import app.eeui.framework.activity.PageActivity;
+import app.eeui.framework.activity.ScanActivity;
 import app.eeui.framework.extend.adapter.DrawableLoader;
 import app.eeui.framework.extend.adapter.ImageAdapter;
 import app.eeui.framework.extend.annotation.ModuleEntry;
@@ -50,7 +51,6 @@ import app.eeui.framework.extend.integration.glide.request.target.SimpleTarget;
 import app.eeui.framework.extend.integration.glide.request.transition.Transition;
 import app.eeui.framework.extend.integration.iconify.Iconify;
 import app.eeui.framework.extend.integration.iconify.fonts.IoniconsModule;
-import app.eeui.framework.extend.integration.screenshot.ScreenshotModule;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
 import app.eeui.framework.extend.integration.swipebacklayout.BGASwipeBackHelper;
 import app.eeui.framework.extend.module.eeuiAdDialog;
@@ -66,9 +66,10 @@ import app.eeui.framework.extend.module.eeuiPage;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.extend.module.eeuiScreenUtils;
 import app.eeui.framework.extend.module.eeuiShareUtils;
-import app.eeui.framework.extend.module.rxtools.rxtoolsModule;
+import app.eeui.framework.extend.module.utilcode.constant.PermissionConstants;
 import app.eeui.framework.extend.module.utilcode.util.DeviceUtils;
 import app.eeui.framework.extend.module.utilcode.util.FileUtils;
+import app.eeui.framework.extend.module.utilcode.util.PermissionUtils;
 import app.eeui.framework.extend.module.utilcode.utilcodeModule;
 import app.eeui.framework.extend.view.loading.LoadingDialog;
 import app.eeui.framework.extend.view.webviewBridge.JsCallback;
@@ -81,7 +82,6 @@ import app.eeui.framework.ui.component.marquee.Marquee;
 import app.eeui.framework.ui.component.navbar.Navbar;
 import app.eeui.framework.ui.component.navbar.NavbarItem;
 import app.eeui.framework.ui.component.recyler.Recyler;
-import app.eeui.framework.ui.component.richtext.WXRichText;
 import app.eeui.framework.ui.component.ripple.Ripple;
 import app.eeui.framework.ui.component.scrollHeader.ScrollHeader;
 import app.eeui.framework.ui.component.scrollText.ScrollText;
@@ -197,7 +197,6 @@ public class eeui {
             WXSDKEngine.registerComponent("tabbar", Tabbar.class);
             WXSDKEngine.registerComponent("tabbar-page", TabbarPage.class);
             WXSDKEngine.registerComponent("web-view", WebView.class);
-            WXSDKEngine.registerComponent(new SimpleComponentHolder(WXRichText.class, new WXRichText.Creator()), false, WXBasicComponentType.RICHTEXT);
         } catch (WXException e) {
             e.printStackTrace();
         }
@@ -1402,7 +1401,30 @@ public class eeui {
      * @param callback
      */
     public void openScaner(Context context, String object, JSCallback callback) {
-        PageActivity.startScanerCode(context, object, callback);
+        JSONObject json = eeuiJson.parseObject(object);
+        if (json.size() == 0 && object != null && object.equals("null")) {
+            json.put("desc", object);
+        }
+        PermissionUtils.permission(PermissionConstants.CAMERA)
+                .rationale(shouldRequest -> PermissionUtils.showRationaleDialog(context, shouldRequest, "相机"))
+                .callback(new PermissionUtils.FullCallback() {
+                    @Override
+                    public void onGranted(List<String> permissionsGranted) {
+                        ScanActivity.mJSCallback = callback;
+                        Intent intent = new Intent(context, ScanActivity.class);
+                        intent.putExtra("title", json.getString("title"));
+                        intent.putExtra("desc", json.getString("desc"));
+                        intent.putExtra("continuous", json.getBooleanValue("continuous"));
+                        ActivityCompat.startActivityForResult((Activity) context, intent, 0, null);
+                    }
+
+                    @Override
+                    public void onDenied(List<String> permissionsDeniedForever, List<String> permissionsDenied) {
+                        if (!permissionsDeniedForever.isEmpty()) {
+                            PermissionUtils.showOpenAppSettingDialog(context, "相机");
+                        }
+                    }
+                }).request();
     }
 
     /****************************************************************************************/
@@ -1634,124 +1656,5 @@ public class eeui {
      */
     public Boolean keyboardStatus(Context context) {
         return (Boolean) utilcodeModule.KeyboardUtils((Activity) context, "isSoftInputVisible");
-    }
-
-    /***************************************************************************************************/
-    /***************************************************************************************************/
-    /***************************************************************************************************/
-
-    /**
-     * App 相关
-     * @param method
-     * @return
-     */
-    public Object appUtils(Context context, String method, Object var0, Object var1) {
-        return utilcodeModule.AppUtils(method, eeui.objectGroup(var0, var1));
-    }
-
-    /**
-     * 设备相关
-     * @param method
-     * @return
-     */
-    public Object deviceUtils(Context context, String method) {
-        return utilcodeModule.DeviceUtils(method);
-    }
-
-    /**
-     * 键盘相关
-     * @param method
-     * @return
-     */
-    public Object keyboardUtils(Context context, String method) {
-        return utilcodeModule.KeyboardUtils((Activity) context, method);
-    }
-
-    /**
-     * 网络相关
-     * @param method
-     * @return
-     */
-    public Object networkUtils(Context context, String method, Object var0, Object var1) {
-        return utilcodeModule.NetworkUtils(method, eeui.objectGroup(var0, var1));
-    }
-
-    /**
-     * 权限相关
-     * @param method
-     * @return
-     */
-    public Object permissionUtils(Context context, String method, Object var0, Object var1) {
-        return utilcodeModule.PermissionUtils(method, eeui.objectGroup(var0, var1));
-    }
-
-    /**
-     * 手机相关
-     * @param method
-     * @return
-     */
-    public Object phoneUtils(Context context, String method, Object var0, Object var1, Object var2) {
-        return utilcodeModule.PhoneUtils(method, eeui.objectGroup(var0, var1, var2));
-    }
-
-    /**
-     * 进程相关
-     * @param method
-     * @return
-     */
-    public Object processUtils(Context context, String method, Object var0, Object var1) {
-        return utilcodeModule.ProcessUtils(method, eeui.objectGroup(var0, var1));
-    }
-
-    /**
-     * 屏幕相关
-     * @param method
-     * @return
-     */
-    public Object screenUtils(Context context, String method, Object var0, Object var1) {
-        return utilcodeModule.ScreenUtils((Activity) context, method, eeui.objectGroup(var0, var1));
-    }
-
-    /**
-     * 时间相关
-     * @param method
-     * @return
-     */
-    public Object timeUtils(Context context, String method, Object var0, Object var1, Object var2) {
-        return utilcodeModule.TimeUtils(method, eeui.objectGroup(var0, var1, var2));
-    }
-
-    /**
-     * 摄像机相关
-     * @param method
-     */
-    public void cameraTool(Context context, String method) {
-        rxtoolsModule.RxCameraTool(method);
-    }
-
-    /**
-     * 定位相关
-     * @param method
-     * @return
-     */
-    public Object locationTool(Context context, String method, Object var0, Object var1, Object var2) {
-        return rxtoolsModule.RxLocationTool(context, method, eeui.objectGroup(var0, var1, var2));
-    }
-
-    /**
-     * 震动相关
-     * @param method
-     */
-    public void vibrateTool(Context context, String method, Object var0, Object var1) {
-        rxtoolsModule.RxVibrateTool(context, method, eeui.objectGroup(var0, var1));
-    }
-
-    /**
-     * 组件截图
-     * @param view
-     * @param callback
-     */
-    public void screenshots(View view, JSCallback callback) {
-        ScreenshotModule.shots(view, callback);
     }
 }

@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.annotation.JSMethod;
 import com.taobao.weex.bridge.JSCallback;
 import com.taobao.weex.common.WXModule;
-import com.taobao.weex.ui.component.WXComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -875,7 +874,7 @@ public class WeexModule extends WXModule {
      */
     @JSMethod
     public void keyboardHide() {
-        myApp().keyboardUtils(mWXSDKInstance.getContext(), "hideSoftInput");
+        myApp().keyboardHide(mWXSDKInstance.getContext());
     }
 
     /**
@@ -884,139 +883,6 @@ public class WeexModule extends WXModule {
      */
     @JSMethod(uiThread = false)
     public Boolean keyboardStatus() {
-        return (Boolean) myApp().keyboardUtils(mWXSDKInstance.getContext(), "isSoftInputVisible");
-    }
-
-    /***************************************************************************************************/
-    /***************************************************************************************************/
-    /***************************************************************************************************/
-
-    /**
-     * App 相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object appUtils(String method, Object var0, Object var1) {
-        return myApp().appUtils(mWXSDKInstance.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 设备相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object deviceUtils(String method) {
-        return myApp().deviceUtils(mWXSDKInstance.getContext(), method);
-    }
-
-    /**
-     * 键盘相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object keyboardUtils(String method) {
-        return myApp().keyboardUtils(mWXSDKInstance.getContext(), method);
-    }
-
-    /**
-     * 网络相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object networkUtils(String method, Object var0, Object var1) {
-        return myApp().networkUtils(mWXSDKInstance.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 权限相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object permissionUtils(String method, Object var0, Object var1) {
-        return myApp().permissionUtils(mWXSDKInstance.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 手机相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object phoneUtils(String method, Object var0, Object var1, Object var2) {
-        return myApp().phoneUtils(mWXSDKInstance.getContext(), method, var0, var1, var2);
-    }
-
-    /**
-     * 进程相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object processUtils(String method, Object var0, Object var1) {
-        return myApp().processUtils(mWXSDKInstance.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 屏幕相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object screenUtils(String method, Object var0, Object var1) {
-        return myApp().screenUtils(mWXSDKInstance.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 时间相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object timeUtils(String method, Object var0, Object var1, Object var2) {
-        return myApp().timeUtils(mWXSDKInstance.getContext(), method, var0, var1, var2);
-    }
-
-    /**
-     * 摄像机相关
-     * @param method
-     */
-    @JSMethod
-    public void cameraTool(String method) {
-        myApp().cameraTool(mWXSDKInstance.getContext(), method);
-    }
-
-    /**
-     * 定位相关
-     * @param method
-     * @return
-     */
-    @JSMethod(uiThread = false)
-    public Object locationTool(String method, Object var0, Object var1, Object var2) {
-        return myApp().locationTool(mWXSDKInstance.getContext(), method, var0, var1, var2);
-    }
-
-    /**
-     * 震动相关
-     * @param method
-     */
-    @JSMethod
-    public void vibrateTool(String method, Object var0, Object var1) {
-        myApp().vibrateTool(mWXSDKInstance.getContext(), method, var0, var1);
-    }
-
-    /**
-     * 组件截图
-     * @param id
-     * @param callback
-     */
-    @JSMethod
-    public void screenshots(String id, JSCallback callback) {
-        WXComponent com = findComponent(id);
-        myApp().screenshots(com == null ? null : com.getHostView(), callback);
+        return (Boolean) myApp().keyboardStatus(mWXSDKInstance.getContext());
     }
 }

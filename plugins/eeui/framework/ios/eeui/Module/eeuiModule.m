@@ -27,7 +27,6 @@
 #import "UIImage+itdCategory.h"
 #import "UIView+eeuiScreenshots.h"
 #import "UIImage+eeuiScreenshots.h"
-#import <UIKit/UIKit.h>
 #import <AdSupport/AdSupport.h>
 
 #define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
@@ -416,26 +415,34 @@ WX_EXPORT_METHOD(@selector(openScaner:callback:))
 
 - (void)openScaner:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
+    if (callback == nil) {
+        return;
+    }
+    NSString *title = @"";
     NSString *desc = @"";
-    BOOL successClose = YES;
+    BOOL continuous = NO;
     if ([params isKindOfClass:[NSDictionary class]]) {
+        title = params[@"title"] ? [WXConvert NSString:params[@"title"]] : @"";
         desc = params[@"desc"] ? [WXConvert NSString:params[@"desc"]] : @"";
-        successClose = params[@"successClose"] ? [WXConvert BOOL:params[@"successClose"]] : YES;
+        continuous = params[@"continuous"] ? [WXConvert BOOL:params[@"continuous"]] : NO;
     } else if ([params isKindOfClass:[NSString class]]){
         desc = (NSString*)params;
     }
 
-
     scanViewController *scan = [[scanViewController alloc]init];
+    scan.headTitle = title;
     scan.desc = desc;
-    scan.successClose = successClose;
+    scan.continuous = continuous;
 
-    int tag =(arc4random() % 100) + 1000;//返回随机数
-    NSString *pageName = [NSString stringWithFormat:@"scaner-%d", tag];
+    callback(@{
+            @"pageName": @"scanPage",
+            @"status": @"create"
+    }, YES);
 
     scan.scanerBlock = ^(NSDictionary *dic) {
-        NSDictionary *result = @{@"status":dic[@"status"], @"pageName":pageName, @"source":dic[@"source"], @"result":@"", @"format":@"", @"text":dic[@"url"]};
-        callback(result, NO);
+        NSMutableDictionary *result = dic.mutableCopy;
+        result[@"pageName"] = @"scanPage";
+        callback(result, ![result[@"status"] isEqualToString:@"destroy"]);
     };
     [[[DeviceUtil getTopviewControler] navigationController] pushViewController:scan animated:YES];
 }

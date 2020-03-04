@@ -49,7 +49,7 @@
     
     UIBarButtonItem *navRightButton = [[UIBarButtonItem alloc]initWithTitle:@"相册" style:UIBarButtonItemStylePlain target:self action:@selector(choicePhoto)];
     self.navigationItem.rightBarButtonItems = [UINavigationConfig itemSpace:navRightButton];
-    self.navigationItem.title = @"二维码/条码";
+    self.navigationItem.title = _headTitle.length > 0 ? _headTitle : @"";
     self.navigationController.navigationBar.barTintColor = [WXConvert UIColor:@"#93c0ff"];
     
     [self.view setBackgroundColor:[UIColor blackColor]];
@@ -83,8 +83,6 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear: animated];
     
-    //[self.navigationController setNavigationBarHidden:NO animated:YES];
-
     if (_session != nil) {
         [self.session startRunning];
     }
@@ -102,8 +100,6 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear: animated];
     
-    //[self.navigationController setNavigationBarHidden:YES animated:YES];
-
     [self.session stopRunning];
     [self.scanView stopScanAnimation];
 }
@@ -161,8 +157,16 @@
     
     if (_isOpenFlash) {
         [_btnFlash setImage:[UIImage imageNamed:@"CodeScan.bundle/qrcode_scan_btn_flash_nor"] forState:UIControlStateNormal];
+        self.scanerBlock(@{
+                @"pageName": @"scanPage",
+                @"status": @"offLight"
+        });
     } else {
         [_btnFlash setImage:[UIImage imageNamed:@"CodeScan.bundle/qrcode_scan_btn_flash_down"] forState:UIControlStateNormal];
+        self.scanerBlock(@{
+                @"pageName": @"scanPage",
+                @"status": @"openLight"
+        });
     }
     self.isOpenFlash = !_isOpenFlash;
 }
@@ -220,27 +224,58 @@
 //扫码回调
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection {
     if (!_isScanSuccess){
-        NSString *content = @"";
         AVMetadataMachineReadableCodeObject *metadataObject = metadataObjects.firstObject;
+        NSString *type;
+        NSString *content;
+
+        type = metadataObject.type;
         content = metadataObject.stringValue;
-        
-        if (![content isEqualToString:@""]) {
+
+        NSRange range = [type rangeOfString:@"." options:NSBackwardsSearch];
+        if (range.location != NSNotFound) {
+            type = [type substringFromIndex:range.location + 1];
+        }
+
+        if (content.length > 0) {
             //震动
             [self playBeep];
             _isScanSuccess = YES;
 
-            NSDictionary *dic = @{@"status":@"success", @"url":content, @"source":@"photo"};
-            self.scanerBlock(dic);
-            
-            if (self.successClose) {
+            self.scanerBlock(@{
+                    @"status": @"success",
+                    @"result": @{@"text": content, @"format": type},
+                    @"format": type,
+                    @"text": content,
+                    @"source": @"camera"
+            });
+
+            if (!self.continuous) {
                 [self.navigationController popViewControllerAnimated:YES];
+            } else {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    _isScanSuccess = NO;
+                });
             }
-        }else{
+        } else {
             EELog(@"没内容");
-            NSDictionary *dic = @{@"status":@"error", @"url":@"", @"source":@"photo"};
-            self.scanerBlock(dic);
+            self.scanerBlock(@{
+                    @"status": @"success",
+                    @"result": @{},
+                    @"format": @"",
+                    @"text": @"",
+                    @"source": @"camera"
+            });
         }
     }
+}
+
+- (void)dealloc
+{
+    self.scanerBlock(@{
+            @"pageName": @"scanPage",
+            @"status": @"destroy"
+    });
+    EELog(@"gggggggg::dealloc:%@", @"scanPage");
 }
 
 #pragma mark - 从相册识别二维码
@@ -263,6 +298,7 @@
 -(void)imagePickerController:(UIImagePickerController*)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     NSString *content = @"" ;
+    NSString *type = @"" ;
     //取出选中的图片
     UIImage *pickImage = info[UIImagePickerControllerOriginalImage];
     NSData *imageData = UIImagePNGRepresentation(pickImage);
@@ -273,24 +309,36 @@
     NSArray *feature = [detector featuresInImage:ciImage];
     
     //取出探测到的数据
+
     for (CIQRCodeFeature *result in feature) {
         content = result.messageString;
+        type = result.type;
     }
     __weak typeof(self) weakSelf = self;
     //选中图片后先返回扫描页面，然后跳转到新页面进行展示
     [picker dismissViewControllerAnimated:NO completion:^{
-        if (![content isEqualToString:@""]) {
+        if (content.length > 0) {
             //震动
             [weakSelf playBeep];
-            NSDictionary *dic = @{@"status":@"success", @"url":content, @"source":@"camera"};
-            self.scanerBlock(dic);
-            if (self.successClose) {
+            self.scanerBlock(@{
+                    @"status": @"success",
+                    @"result": @{@"text": content, @"format": type},
+                    @"format": type,
+                    @"text": content,
+                    @"source": @"photo"
+            });
+            if (!self.continuous) {
                 [self.navigationController popViewControllerAnimated:YES];
             }
-        }else{
+        } else {
             EELog(@"没扫到东西");
-            NSDictionary *dic = @{@"status":@"success", @"url":@"", @"source":@"camera"};
-            self.scanerBlock(dic);
+            self.scanerBlock(@{
+                    @"status": @"success",
+                    @"result": @{},
+                    @"format": @"",
+                    @"text": @"",
+                    @"source": @"photo"
+            });
         }
     }];
 }
@@ -306,20 +354,20 @@
 
 - (NSArray *)defaultMetaDataObjectTypes {
     NSMutableArray *types = [@[AVMetadataObjectTypeQRCode,
-                               AVMetadataObjectTypeUPCECode,
-                               AVMetadataObjectTypeCode39Code,
-                               AVMetadataObjectTypeCode39Mod43Code,
-                               AVMetadataObjectTypeEAN13Code,
-                               AVMetadataObjectTypeEAN8Code,
-                               AVMetadataObjectTypeCode93Code,
-                               AVMetadataObjectTypeCode128Code,
-                               AVMetadataObjectTypePDF417Code,
-                               AVMetadataObjectTypeAztecCode] mutableCopy];
+            AVMetadataObjectTypeUPCECode,
+            AVMetadataObjectTypeCode39Code,
+            AVMetadataObjectTypeCode39Mod43Code,
+            AVMetadataObjectTypeEAN13Code,
+            AVMetadataObjectTypeEAN8Code,
+            AVMetadataObjectTypeCode93Code,
+            AVMetadataObjectTypeCode128Code,
+            AVMetadataObjectTypePDF417Code,
+            AVMetadataObjectTypeAztecCode] mutableCopy];
     if (@available(iOS 8.0, *)) {
         [types addObjectsFromArray:@[AVMetadataObjectTypeInterleaved2of5Code,
-                                     AVMetadataObjectTypeITF14Code,
-                                     AVMetadataObjectTypeDataMatrixCode
-                                     ]];
+                AVMetadataObjectTypeITF14Code,
+                AVMetadataObjectTypeDataMatrixCode
+        ]];
     }
     return types;
 }
