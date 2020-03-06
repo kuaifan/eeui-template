@@ -109,11 +109,12 @@ public class eeuiCommon {
      */
     public static Object getCaches(Context context, String key, Object defaultVal) {
         JSONObject cachesJson = getCachesJson(context, "eeuiCaches", "eeuiCaches");
-        JSONObject data  = cachesJson.getJSONObject(key);
-        if (data == null) {
+        Object t = cachesJson.get(key);
+        if (t == null) {
             return defaultVal;
         }
-        long expired = data.getLongValue("expired");
+        JSONObject data  = eeuiJson.parseObject(t);
+        long expired = eeuiJson.getLong(data, "expired");
         if (expired > 0 && expired < timeStamp()) {
             return defaultVal;
         }
@@ -154,7 +155,7 @@ public class eeuiCommon {
             String key = entry.getKey();
             if (entry.getValue() instanceof JSONObject && !key.startsWith("__system:")) {
                 JSONObject obj = (JSONObject) entry.getValue();
-                long expired = obj.getLongValue("expired");
+                long expired = eeuiJson.getLong(obj, "expired");
                 if (expired == 0 || expired > timeStamp()) {
                     json.put(key, obj.get(key));
                 }
@@ -174,7 +175,7 @@ public class eeuiCommon {
             String key = entry.getKey();
             if (entry.getValue() instanceof JSONObject && key.startsWith("__system:")) {
                 JSONObject obj = (JSONObject) entry.getValue();
-                long expired = obj.getLongValue("expired");
+                long expired = eeuiJson.getLong(obj, "expired");
                 if (expired == 0 || expired > timeStamp()) {
                     json.put(key, obj.get(key));
                 }
@@ -267,7 +268,7 @@ public class eeuiCommon {
             format = "yyyy-MM-dd HH:mm:ss";
         }
         SimpleDateFormat sdf = new SimpleDateFormat(format);
-        return sdf.format(new Date(Long.valueOf(seconds + "000")));
+        return sdf.format(new Date(Long.parseLong(seconds + "000")));
     }
 
     /**

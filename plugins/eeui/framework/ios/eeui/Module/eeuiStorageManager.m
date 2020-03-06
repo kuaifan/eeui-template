@@ -7,6 +7,7 @@
 //
 
 #import "eeuiStorageManager.h"
+#import "DeviceUtil.h"
 
 #define kStorageExpired @"storage_expired"
 #define kStorageCaches @"storage_caches"
@@ -38,7 +39,7 @@
 {
     if (key && value) {
         NSInteger time = expired == 0 ? 0 : [[NSDate date] timeIntervalSince1970] + expired;
-        NSDictionary *saveDic = @{kStorageExpired:@(time), key:value};
+        NSDictionary *saveDic = @{kStorageExpired:@(time), key:[DeviceUtil dictionaryToJson:@{@"value":value}], @"version":@(2)};
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
         id data = [userDefaults objectForKey:kStorageCaches];
         NSMutableDictionary *mDic;
@@ -64,6 +65,10 @@
             if ([date compare:[NSDate date]] == NSOrderedDescending || time == 0) {
                 //有效时间内或没有限时
                 id value = [dic objectForKey:key];
+                if ([WXConvert NSInteger:dic[@"version"]] == 2) {
+                    NSDictionary* obj = [DeviceUtil dictionaryWithJsonString:value];
+                    value = obj[@"value"];
+                }
                 if (value) {
                     return value;
                 }
