@@ -34,6 +34,9 @@ allprojects {
         maven() {
             url 'http://oss.jfrog.org/oss-snapshot-local/'
         }
+        maven() {
+            url 'https://dl.bintray.com/kuaifan/maven/'
+        }
     }
 }
 
