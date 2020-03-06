@@ -82,7 +82,7 @@ public class eeuiAjax {
                     ret.put("cache", isCache);
                     ret.put("code", data.getCode());
                     ret.put("headers", data.getHeaders());
-                    ret.put("result", dataType.equals("json") ? eeuiJson.parseObject(data.getBody()) : data.getBody());
+                    ret.put("result", dataType.equals("json") ? eeuiJson.parseAjax(data.getBody()) : data.getBody());
                     callback.invokeAndKeepAlive(ret);
                 }
             }

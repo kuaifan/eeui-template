@@ -114,6 +114,8 @@
             }
             if (responseObject && [responseObject isKindOfClass:[NSDictionary class]]) {
                 //
+            } else if (responseObject && [responseObject isKindOfClass:[NSArray class]]) {
+                //
             } else {
                 responseObject = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
             }
@@ -183,6 +185,8 @@
                 [ws saveFile:responseObject key:url cache:cache];
             }
             if (responseObject && [responseObject isKindOfClass:[NSDictionary class]]) {
+                //
+            } else if (responseObject && [responseObject isKindOfClass:[NSArray class]]) {
                 //
             } else {
                 responseObject = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];

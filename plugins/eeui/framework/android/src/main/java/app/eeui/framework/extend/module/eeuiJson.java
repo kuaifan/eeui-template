@@ -8,6 +8,15 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class eeuiJson {
 
+    public static Object parseAjax(String string) {
+        String content = (string + "").trim();
+        if (content.startsWith("[")) {
+            return parseArray(content);
+        } else {
+            return parseObject(content);
+        }
+    }
+
     public static JSONObject parseObject(Object string) {
         if (string == null) {
             return new JSONObject();
