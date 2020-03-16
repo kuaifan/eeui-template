@@ -236,6 +236,10 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
                 itemDefaultAnimator(eeuiParse.parseBool(val, false));
                 return true;
 
+            case "scrollBarEnabled":
+                scrollBarEnabled(eeuiParse.parseBool(val, false));
+                return true;
+
             default:
                 return false;
         }
@@ -265,6 +269,7 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
         v_recyler.setAdapter(mAdapter);
         v_recyler.setItemAnimator(new DefaultItemAnimator());
         itemDefaultAnimator(false);
+        scrollBarEnabled(false);
         v_recyler.addOnScrollListener(new RecylerOnBottomScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -605,6 +610,17 @@ public class Recyler extends WXVContainer<ViewGroup> implements SwipeRefreshLayo
                 m.setRemoveDuration(0);
                 ((SimpleItemAnimator) m).setSupportsChangeAnimations(false);
             }
+        }
+    }
+
+    /**
+     * 显隐滚动条
+     * @param enabled
+     */
+    @JSMethod
+    public void scrollBarEnabled(boolean enabled) {
+        if (v_recyler != null) {
+            v_recyler.setVerticalScrollBarEnabled(enabled);
         }
     }
 

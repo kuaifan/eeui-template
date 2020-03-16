@@ -28,6 +28,7 @@ static NSString * const cellID = @"cellID";
 @property (nonatomic, assign) BOOL refreshAuto;
 @property (nonatomic, assign) BOOL pullTips;
 @property (nonatomic, assign) BOOL itemDefaultAnimator;
+@property (nonatomic, assign) BOOL scrollBarEnabled;
 @property (nonatomic, assign) BOOL scrollEnabled;
 
 @property (nonatomic, strong) NSMutableArray *subViews;
@@ -57,6 +58,7 @@ WX_EXPORT_METHOD(@selector(refreshEnabled:))
 WX_EXPORT_METHOD(@selector(setHasMore:))
 WX_EXPORT_METHOD(@selector(pullloaded))
 WX_EXPORT_METHOD(@selector(itemDefaultAnimator:))
+WX_EXPORT_METHOD(@selector(scrollBarEnabled:))
 WX_EXPORT_METHOD(@selector(scrollToPosition:))
 WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
 
@@ -71,6 +73,7 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
         _refreshAuto = NO;
         _pullTips = YES;
         _itemDefaultAnimator = NO;
+        _scrollBarEnabled = NO;
         _scrollEnabled = YES;
         _row = 1;
 
@@ -114,6 +117,7 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
     [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:cellID];
     //collectionView.bounces = NO;
     _collectionView.scrollEnabled = _scrollEnabled;
+    _collectionView.showsVerticalScrollIndicator = _scrollBarEnabled;
 
     #ifdef __IPHONE_11_0
     if (@available(iOS 11.0, *)) {
@@ -230,6 +234,14 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
         }
     }  else if ([key isEqualToString:@"itemDefaultAnimator"]) {
         _itemDefaultAnimator = [WXConvert BOOL:value];
+        if (isUpdate) {
+            [self itemDefaultAnimator:_itemDefaultAnimator];
+        }
+    }  else if ([key isEqualToString:@"scrollBarEnabled"]) {
+        _scrollBarEnabled = [WXConvert BOOL:value];
+        if (isUpdate) {
+            [self scrollBarEnabled:_scrollBarEnabled];
+        }
     } else if ([key isEqualToString:@"pullTips"]) {
         _pullTips = [WXConvert BOOL:value];
         if (isUpdate) {
@@ -416,9 +428,15 @@ WX_EXPORT_METHOD(@selector(smoothScrollToPosition:))
 }
 
 // eeui ios 无
-- (void)itemDefaultAnimator:(id)animator
+- (void)itemDefaultAnimator:(bool)animator
 {
+    _itemDefaultAnimator = animator;
+}
 
+- (void)scrollBarEnabled:(bool)enabled
+{
+    _scrollBarEnabled = enabled;
+    _collectionView.showsVerticalScrollIndicator = _scrollBarEnabled;
 }
 
 - (void)scrollToPosition:(NSInteger)position
