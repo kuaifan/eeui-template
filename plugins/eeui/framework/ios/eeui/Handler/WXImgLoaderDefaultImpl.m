@@ -38,6 +38,16 @@
 #define WXDispatchQueueSetterSementics assign
 #endif
 
+@interface EeuiAssetsLoaderOperation : NSObject<WXImageOperationProtocol>
+
+@end
+
+@implementation EeuiAssetsLoaderOperation
+
+- (void)cancel {}
+
+@end
+
 @interface WXImgLoaderDefaultImpl()
 
 @property (WXDispatchQueueSetterSementics, nonatomic) dispatch_queue_t ioQueue;
@@ -48,6 +58,13 @@
 
 - (id<WXImageOperationProtocol>)downloadImageWithURL:(NSString *)url imageFrame:(CGRect)imageFrame userInfo:(NSDictionary *)userInfo completed:(void(^)(UIImage *image,  NSError *error, BOOL finished))completedBlock
 {
+    if ([url hasPrefix: @"local:///"]) {
+        UIImage *img = [UIImage imageNamed: [url substringFromIndex: @"local:///".length]];
+        completedBlock(img, nil, YES);
+        
+        return [EeuiAssetsLoaderOperation new];
+    }
+
     WXSDKInstance *instance = [WXSDKManager instanceForID:userInfo[@"instanceId"]];
     url = [Config verifyFile:[DeviceUtil rewriteUrl:[self handCachePageUr:url] mInstance:instance]];
     url = [DeviceUtil urlEncoder:url];
