@@ -581,7 +581,7 @@ WX_EXPORT_METHOD(@selector(save:))
     
     NSString * newURL = imageSrc;
     if (![imageSrc hasPrefix: @"local:///"]) {
-        NSString * newURL = [imageSrc copy];
+        newURL = [imageSrc copy];
         WX_REWRITE_URL(imageSrc, WXResourceTypeImage, self.weexInstance)
     }
     __weak typeof(self) weakSelf = self;
