@@ -305,6 +305,15 @@ static int easyNavigationButtonTag = 8000;
     [CustomWeexSDKManager setKeyBoardlsVisible:_keyBoardlsVisible];
 }
 
+// iOS 13
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    if ([_statusBarStyleCustom isEqualToString:@"1"]) {
+        return UIStatusBarStyleLightContent;
+    }else{
+        return UIStatusBarStyleDefault;
+    }
+}
+
 #pragma mark 生命周期
 - (void)lifeCycleEvent:(LifeCycleType)type
 {
