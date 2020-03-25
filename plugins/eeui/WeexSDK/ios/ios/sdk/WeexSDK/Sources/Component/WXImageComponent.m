@@ -578,8 +578,12 @@ WX_EXPORT_METHOD(@selector(save:))
     
     WXLogDebug(@"Updating image:%@, component:%@", self.imageSrc, self.ref);
     NSDictionary *userInfo = @{@"imageQuality":@(self.imageQuality), @"imageSharp":@(self.imageSharp), @"blurRadius":@(self.blurRadius), @"instanceId":[self _safeInstanceId], @"pageURL": self.weexInstance.scriptURL ?: @""};
-    NSString * newURL = [imageSrc copy];
-    WX_REWRITE_URL(imageSrc, WXResourceTypeImage, self.weexInstance)
+    
+    NSString * newURL = imageSrc;
+    if (![imageSrc hasPrefix: @"local:///"]) {
+        newURL = [imageSrc copy];
+        WX_REWRITE_URL(imageSrc, WXResourceTypeImage, self.weexInstance)
+    }
     __weak typeof(self) weakSelf = self;
     //eeui dev
     dispatch_async(dispatch_get_main_queue(), ^{
