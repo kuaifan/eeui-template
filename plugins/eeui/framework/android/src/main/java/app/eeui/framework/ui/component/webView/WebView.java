@@ -3,6 +3,7 @@ package app.eeui.framework.ui.component.webView;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,8 +16,6 @@ import com.taobao.weex.ui.component.WXVContainer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import app.eeui.framework.R;
 import app.eeui.framework.extend.module.eeuiConstants;
@@ -35,12 +34,6 @@ public class WebView extends WXVContainer<ViewGroup> {
     private View mView;
 
     private ExtendWebView v_webview;
-
-    private Timer webTimer;
-
-    private TimerTask webTask;
-
-    private float webHeight = -1f;
 
     public WebView(WXSDKInstance instance, WXVContainer parent, BasicComponentData basicComponentData) {
         super(instance, parent, basicComponentData);
@@ -103,43 +96,12 @@ public class WebView extends WXVContainer<ViewGroup> {
             });
         }
         if (getEvents().contains(eeuiConstants.Event.HEIGHT_CHANGED)) {
-            if (webTimer != null) {
-                webTimer.cancel();
-                webTimer = null;
-                webTask = null;
-                webHeight = -1f;
-            }
-            webTimer = new Timer();
-            webTask = new TimerTask() {
-                @Override
-                public void run() {
-                    v_webview.post(() -> {
-                        float tempHeight = v_webview.getContentHeight() * v_webview.getScale();
-                        if (tempHeight != webHeight) {
-                            webHeight = tempHeight;
-                            Map<String, Object> retData = new HashMap<>();
-                            retData.put("height", eeuiScreenUtils.weexDp2px(getInstance(), webHeight));
-                            fireEvent(eeuiConstants.Event.HEIGHT_CHANGED, retData);
-                        }
-                    });
-                }
-            };
-            webTimer.schedule(webTask, 1000, 1000);
-            //
-            v_webview.setInvalidateListener(() -> {
-                if (webTimer != null) {
-                    webTimer.cancel();
-                    webTimer = null;
-                    webTask = null;
-                    webHeight = -1f;
-                }
-                float tempHeight = v_webview.getContentHeight() * v_webview.getScale();
-                if (tempHeight != webHeight) {
-                    webHeight = tempHeight;
+            v_webview.setHeightChanged(value -> {
+                v_webview.post(()->{
                     Map<String, Object> retData = new HashMap<>();
-                    retData.put("height", eeuiScreenUtils.weexDp2px(getInstance(), webHeight));
+                    retData.put("height", eeuiScreenUtils.weexDp2px(getInstance(), eeuiParse.parseFloat(value) * v_webview.getScale()));
                     fireEvent(eeuiConstants.Event.HEIGHT_CHANGED, retData);
-                }
+                });
             });
         }
         if (getEvents().contains(eeuiConstants.Event.RECEIVE_MESSAGE)) {
@@ -158,12 +120,6 @@ public class WebView extends WXVContainer<ViewGroup> {
 
     @Override
     public void destroy() {
-        if (webTimer != null) {
-            webTimer.cancel();
-            webTimer = null;
-            webTask = null;
-            webHeight = -1f;
-        }
         super.destroy();
     }
 

@@ -461,6 +461,16 @@ public class ExtendWebView extends WebView {
     }
 
     /**
+     * 监听网页高度变化
+     * @param mHeightChanged
+     */
+    public void setHeightChanged(ValueCallback<Integer> mHeightChanged) {
+        if (mWebChromeClient != null) {
+            mWebChromeClient.setHeightChanged(mHeightChanged);
+        }
+    }
+
+    /**
      * 监听网页向组件发送参数
      * @param mSendMessage
      */

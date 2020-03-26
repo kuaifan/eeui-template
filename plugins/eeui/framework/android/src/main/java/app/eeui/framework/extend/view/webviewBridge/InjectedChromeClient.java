@@ -1,6 +1,7 @@
 package app.eeui.framework.extend.view.webviewBridge;
 
 import android.webkit.JsPromptResult;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
@@ -16,6 +17,7 @@ public class InjectedChromeClient extends WebChromeClient {
     private boolean mIsInjectedJS;
     private boolean mAgainInjectedJS;
     private boolean enableApi = true;
+    private ValueCallback<Integer> mHeightChanged;
 
     public InjectedChromeClient(Map<String, Class> data) {
         if (data != null) {
@@ -31,6 +33,10 @@ public class InjectedChromeClient extends WebChromeClient {
 
     public void setEnableApi(boolean enableApi) {
         this.enableApi = enableApi;
+    }
+
+    public void setHeightChanged(ValueCallback<Integer> mHeightChanged) {
+        this.mHeightChanged = mHeightChanged;
     }
 
     @Override
@@ -62,6 +68,9 @@ public class InjectedChromeClient extends WebChromeClient {
                 }
             }
             view.loadUrl("javascript:(function(b){console.log('requireModuleJs initialization begin');if(b.__requireModuleJs===true){return}b.__requireModuleJs=true;var a=function(name){if(['websocket','screenshots','citypicker','picture','rongim','umeng','pay','audio','deviceInfo','communication','geolocation','recorder','accelerometer','compass','amap','seekbar','network',].indexOf(name)!==-1){name='eeui/'+name}if(name==='networkTransfer'){name='eeui/network'}if(name==='videoView'){name='eeui/video'}name=name.replace(/\\/+(\\w)/g,function($1){return $1.toLocaleUpperCase()}).replace(/\\//g,'');var moduleName='__eeui_js_'+name;if(typeof b[moduleName]==='object'&&b[moduleName]!==null){return b[moduleName]}};b.requireModuleJs=a;var apiNum=0;var apiInter=setInterval(function(){if(typeof b.$ready==='function'){b.$ready();apiNum=300}else if(typeof $ready==='function'){$ready();apiNum=300}if(apiNum>=300){clearInterval(apiInter)}apiNum++},100);console.log('requireModuleJs initialization end')})(window);");
+            if (mHeightChanged != null) {
+                view.loadUrl("javascript:(function(b){console.log('eeuiHeightGetterJs initialization begin');if(b.__eeuiHeightGetterJs===true){return}b.__eeuiHeightGetterJs=true;var scrollHeight=0;var refreshHeight=function(){var tempHeight=document.body.scrollHeight||document.documentElement.scrollHeight;if(tempHeight!==scrollHeight){scrollHeight=tempHeight;console.log('eeuiHeightGetterJs height === '+scrollHeight);prompt(JSON.stringify({__identify:\"__eeui_heightGetterJs\",scrollHeight:scrollHeight}))}};refreshHeight();setInterval(refreshHeight,500);console.log('eeuiHeightGetterJs initialization end')})(window);");
+            }
             mAgainInjectedJS = true;
         }
         //JS注入结束
@@ -71,6 +80,13 @@ public class InjectedChromeClient extends WebChromeClient {
     @Override
     public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
         String identify = eeuiJson.getString(message, "__identify");
+        if ("__eeui_heightGetterJs".equals(identify)) {
+            if (mHeightChanged != null) {
+                mHeightChanged.onReceiveValue(eeuiJson.getInt(message, "scrollHeight"));
+            }
+            result.confirm(null);
+            return true;
+        }
         if (enableApi && !"".equals(identify) && view instanceof ExtendWebView) {
             JsCallJava JSCJ = mJsCallJava.get(identify);
             if (JSCJ != null) {
