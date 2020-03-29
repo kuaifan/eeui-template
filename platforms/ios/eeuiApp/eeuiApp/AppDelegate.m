@@ -632,4 +632,9 @@ NSDictionary *mLaunchOptions;
     }
 }
 
+//配置屏幕可旋转方向
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+    return UIInterfaceOrientationMaskAll;
+}
+
 @end
