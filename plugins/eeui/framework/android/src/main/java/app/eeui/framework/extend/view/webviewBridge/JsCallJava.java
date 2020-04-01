@@ -111,7 +111,7 @@ public class JsCallJava {
                 Object[] values = new Object[0];
 
                 for (String key : mMethodsMap.keySet()) {
-                    if (key.startsWith(methodName + "_")) {
+                    if (key.startsWith(methodName + "_") || (len==0 && key.equals(methodName))) {
 
                         sign = new StringBuilder(key);
                         currMethod = mMethodsMap.get(sign.toString());
