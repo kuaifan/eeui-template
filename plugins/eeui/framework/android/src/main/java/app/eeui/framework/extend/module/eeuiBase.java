@@ -175,6 +175,11 @@ public class eeuiBase {
             data.put("setting:timeout", 2000);
             eeuiIhttp.get("eeuiPage", socketHome, data, new eeuiIhttp.ResultCallback() {
                 @Override
+                public void progress(long total, long current, boolean isDownloading) {
+
+                }
+
+                @Override
                 public void success(HttpResponseParser resData, boolean isCache) {
                     if (!TextUtils.isEmpty(resData.getBody())) {
                         JSONObject resJson = eeuiJson.parseObject(resData.getBody());
@@ -543,6 +548,11 @@ public class eeuiBase {
             data.put("debug", BuildConfig.DEBUG ? 1 : 0);
             data.put("__", eeuiCommon.timeStamp());
             eeuiIhttp.get("main", getUrl("app"), data, new eeuiIhttp.ResultCallback() {
+                @Override
+                public void progress(long total, long current, boolean isDownloading) {
+
+                }
+
                 @Override
                 public void success(HttpResponseParser resData, boolean isCache) {
                     JSONObject json = eeuiJson.parseObject(resData.getBody());

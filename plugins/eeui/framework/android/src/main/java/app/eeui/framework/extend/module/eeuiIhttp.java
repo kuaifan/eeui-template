@@ -280,7 +280,7 @@ public class eeuiIhttp {
             @Override
             public void onLoading(long total, long current, boolean isDownloading) {
                 if (requestList.get(key) != null && callBack != null) {
-                    callBack.loading(total, current, isDownloading);
+                    callBack.progress(total, current, isDownloading);
                 }
             }
 
@@ -326,7 +326,7 @@ public class eeuiIhttp {
      * 返回
      */
     public interface ResultCallback {
-        void loading(long total, long current, boolean isDownloading);
+        void progress(long total, long current, boolean isDownloading);
 
         void success(HttpResponseParser resData, boolean isCache);
 

@@ -413,6 +413,11 @@ public class eeuiPage {
                 data.put("setting:cacheLabel", "page");
                 eeuiIhttp.get("eeuiPage", url, data, new eeuiIhttp.ResultCallback() {
                     @Override
+                    public void progress(long total, long current, boolean isDownloading) {
+
+                    }
+
+                    @Override
                     public void success(HttpResponseParser resData, boolean isCache) {
                         if (TextUtils.isEmpty(resData.getBody())) {
                             Log.d(TAG, "cachePage assetsError: " + url);

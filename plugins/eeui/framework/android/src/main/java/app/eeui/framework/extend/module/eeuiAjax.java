@@ -31,13 +31,14 @@ public class eeuiAjax {
         String dataType = eeuiJson.getString(json, "dataType", "json").toLowerCase();
         int timeout = eeuiJson.getInt(json, "timeout", 15000);
         long cache = eeuiJson.getLong(json, "cache", 0);
-        boolean beforeAfter = eeuiJson.getBoolean(json, "beforeAfter", false);
-        boolean progressCall = eeuiJson.getBoolean(json, "progressCall", false);
         //
         JSONObject headers = eeuiJson.parseObject(json.getString("headers"));
         JSONObject data = eeuiJson.parseObject(json.getString("data"));
         JSONObject files = eeuiJson.parseObject(json.getString("files"));
         boolean isJson = false;
+        //
+        boolean beforeAfter = eeuiJson.getBoolean(json, "beforeAfter", false);
+        boolean progressCall = eeuiJson.getBoolean(json, "progressCall", false) && files.size() > 0;
         //
         if (name.isEmpty()) {
             if (context instanceof PageActivity) {
@@ -72,30 +73,50 @@ public class eeuiAjax {
         }
         //
         String finalName = name;
+        final long[] progressTotal = {0};
         eeuiIhttp.ResultCallback mResultCall = new eeuiIhttp.ResultCallback() {
             @Override
-            public void loading(long total, long current, boolean isDownloading) {
+            public void progress(long total, long current, boolean isDownloading) {
                 if (callback != null && progressCall) {
+                    JSONObject progress = new JSONObject();
+                    progress.put("fraction", (double) current / total);
+                    progress.put("current", current);
+                    progress.put("total", total);
                     Map<String, Object> ret = new HashMap<>();
-                    ret.put("status", "complete");
+                    ret.put("status", "progress");
                     ret.put("name", finalName);
                     ret.put("url", url);
                     ret.put("cache", false);
                     ret.put("code", 0);
                     ret.put("headers", new JSONObject());
-                    ret.put("result", null);
-                    JSONObject progress = new JSONObject();
-                    progress.put("current", current);
-                    progress.put("total", total);
                     ret.put("progress", progress);
+                    ret.put("result", null);
                     callback.invokeAndKeepAlive(ret);
+                    progressTotal[0] = total;
                 }
             }
 
             @Override
             public void success(HttpResponseParser data, boolean isCache) {
                 if (callback != null) {
-                    Map<String, Object> ret = new HashMap<>();
+                    Map<String, Object> ret;
+                    if (progressCall) {
+                        JSONObject progress = new JSONObject();
+                        progress.put("fraction", 1);
+                        progress.put("current", progressTotal[0]);
+                        progress.put("total", progressTotal[0]);
+                        ret = new HashMap<>();
+                        ret.put("status", "progress");
+                        ret.put("name", finalName);
+                        ret.put("url", url);
+                        ret.put("cache", false);
+                        ret.put("code", 0);
+                        ret.put("headers", new JSONObject());
+                        ret.put("progress", progress);
+                        ret.put("result", null);
+                        callback.invokeAndKeepAlive(ret);
+                    }
+                    ret = new HashMap<>();
                     ret.put("status", "success");
                     ret.put("name", finalName);
                     ret.put("url", url);

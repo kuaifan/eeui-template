@@ -692,6 +692,11 @@ public class PageActivity extends AppCompatActivity {
                 mAuto.setVisibility(View.VISIBLE);
                 eeuiIhttp.get("pageAuto", mPageInfo.getUrl(), null, new eeuiIhttp.ResultCallback() {
                     @Override
+                    public void progress(long total, long current, boolean isDownloading) {
+
+                    }
+
+                    @Override
                     public void success(HttpResponseParser resData, boolean isCache) {
                         String html = "";
                         if (!TextUtils.isEmpty(resData.getBody())) {
@@ -1110,6 +1115,11 @@ public class PageActivity extends AppCompatActivity {
         data.put("platform", "android");
         data.put("debug", BuildConfig.DEBUG ? 1 : 0);
         eeuiIhttp.post("duration", eeuiBase.cloud.getUrl("duration"), data, new eeuiIhttp.ResultCallback() {
+            @Override
+            public void progress(long total, long current, boolean isDownloading) {
+
+            }
+
             @Override
             public void success(HttpResponseParser resData, boolean isCache) {
                 JSONObject json = eeuiJson.parseObject(resData.getBody());
