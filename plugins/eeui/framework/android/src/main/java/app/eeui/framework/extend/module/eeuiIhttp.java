@@ -13,7 +13,7 @@ import com.taobao.weex.bridge.JSCallback;
 import app.eeui.framework.extend.integration.xutils.cache.LruDiskCache;
 import app.eeui.framework.extend.integration.xutils.common.Callback.Cancelable;
 import app.eeui.framework.extend.integration.xutils.common.Callback.CacheCallback;
-import app.eeui.framework.extend.integration.xutils.common.Callback.CommonCallback;
+import app.eeui.framework.extend.integration.xutils.common.Callback.ProgressCallback;
 import app.eeui.framework.extend.integration.xutils.ex.HttpException;
 import app.eeui.framework.extend.integration.xutils.http.RequestParams;
 import app.eeui.framework.extend.integration.xutils.x;
@@ -123,6 +123,10 @@ public class eeuiIhttp {
                 }
             }
             params.setMultipart(isMultipart);
+            //
+            if (isMultipart && params.getCacheMaxAge() > 0) {
+                params.setCacheMaxAge(0);
+            }
         }
         return params;
     }
@@ -188,11 +192,11 @@ public class eeuiIhttp {
             //正常方案
             switch (type) {
                 case "get":
-                    requestList.put(key, x.http().get(params, commonCallback(key, url, callBack)));
+                    requestList.put(key, x.http().get(params, progressCallback(key, url, callBack)));
                     break;
 
                 case "post":
-                    requestList.put(key, x.http().post(params, commonCallback(key, url, callBack)));
+                    requestList.put(key, x.http().post(params, progressCallback(key, url, callBack)));
                     break;
             }
         }
@@ -261,8 +265,25 @@ public class eeuiIhttp {
      * @param callBack
      * @return
      */
-    private static CommonCallback<List<HttpResponseParser>> commonCallback(String key, String url, ResultCallback callBack) {
-        return new CommonCallback<List<HttpResponseParser>>() {
+    private static ProgressCallback<List<HttpResponseParser>> progressCallback(String key, String url, ResultCallback callBack) {
+        return new ProgressCallback<List<HttpResponseParser>>() {
+            @Override
+            public void onWaiting() {
+
+            }
+
+            @Override
+            public void onStarted() {
+
+            }
+
+            @Override
+            public void onLoading(long total, long current, boolean isDownloading) {
+                if (requestList.get(key) != null && callBack != null) {
+                    callBack.loading(total, current, isDownloading);
+                }
+            }
+
             @Override
             public void onSuccess(List<HttpResponseParser> result) {
                 if (requestList.get(key) != null && callBack != null) {
@@ -305,6 +326,8 @@ public class eeuiIhttp {
      * 返回
      */
     public interface ResultCallback {
+        void loading(long total, long current, boolean isDownloading);
+
         void success(HttpResponseParser resData, boolean isCache);
 
         void error(String error, int errCode);

@@ -32,6 +32,7 @@ public class eeuiAjax {
         int timeout = eeuiJson.getInt(json, "timeout", 15000);
         long cache = eeuiJson.getLong(json, "cache", 0);
         boolean beforeAfter = eeuiJson.getBoolean(json, "beforeAfter", false);
+        boolean progressCall = eeuiJson.getBoolean(json, "progressCall", false);
         //
         JSONObject headers = eeuiJson.parseObject(json.getString("headers"));
         JSONObject data = eeuiJson.parseObject(json.getString("data"));
@@ -72,6 +73,25 @@ public class eeuiAjax {
         //
         String finalName = name;
         eeuiIhttp.ResultCallback mResultCall = new eeuiIhttp.ResultCallback() {
+            @Override
+            public void loading(long total, long current, boolean isDownloading) {
+                if (callback != null && progressCall) {
+                    Map<String, Object> ret = new HashMap<>();
+                    ret.put("status", "complete");
+                    ret.put("name", finalName);
+                    ret.put("url", url);
+                    ret.put("cache", false);
+                    ret.put("code", 0);
+                    ret.put("headers", new JSONObject());
+                    ret.put("result", null);
+                    JSONObject progress = new JSONObject();
+                    progress.put("current", current);
+                    progress.put("total", total);
+                    ret.put("progress", progress);
+                    callback.invokeAndKeepAlive(ret);
+                }
+            }
+
             @Override
             public void success(HttpResponseParser data, boolean isCache) {
                 if (callback != null) {
