@@ -41,11 +41,7 @@ public class eeuiAjax {
         boolean progressCall = eeuiJson.getBoolean(json, "progressCall", false) && files.size() > 0;
         //
         if (name.isEmpty()) {
-            if (context instanceof PageActivity) {
-                name = ((PageActivity) context).getPageInfo().getPageName();
-            }else{
-                name = eeuiCommon.randomString(8);
-            }
+            name = "ajax-" + eeuiCommon.randomString(8);
         }
         //
         Map<String, Object> mData = new HashMap<>();

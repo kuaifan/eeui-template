@@ -330,7 +330,6 @@ public class PageActivity extends AppCompatActivity {
         }
         if (isFinishing()) {
             if (mPageInfo != null) {
-                eeuiIhttp.cancel(mPageInfo.getPageName());
                 eeuiPage.removePageBean(mPageInfo.getPageName());
                 if (mPageInfo.isSwipeBack()) {
                     KeyboardUtils.unregisterSoftInputChangedListener(this);

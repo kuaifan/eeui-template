@@ -49,6 +49,10 @@
     NSMutableDictionary *data = [NSMutableDictionary dictionaryWithDictionary:params[@"data"] ? params[@"data"] : @{}];
     NSDictionary *files = params[@"files"] ? params[@"files"] : @{};
 
+    if (name.length == 0) {
+        name = [NSString stringWithFormat:@"ajax-%d", (arc4random() % 100) + 1000];
+    }
+
     if (callback == nil) {
         callback = ^(id result, BOOL keepAlive) { };
     }
