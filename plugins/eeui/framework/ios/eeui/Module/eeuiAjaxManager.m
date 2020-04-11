@@ -6,6 +6,7 @@
 //  Copyright © 2018年 TomQin. All rights reserved.
 //
 
+#import <CoreServices/CoreServices.h>
 #import "eeuiAjaxManager.h"
 #import "AFNetworking.h"
 #import "SDImageCache.h"
@@ -43,6 +44,7 @@
     NSInteger timeout = params[@"timeout"] ? [WXConvert NSInteger:params[@"timeout"]] : 15000;
     NSInteger cache = params[@"cache"] ? [WXConvert NSInteger:params[@"cache"]] : 0;
     BOOL beforeAfter = params[@"beforeAfter"] ? [WXConvert BOOL:params[@"beforeAfter"]] : NO;
+    BOOL progressCall = params[@"progressCall"] ? [WXConvert BOOL:params[@"progressCall"]] : NO;
     NSDictionary *headers = params[@"headers"] ? params[@"headers"] : @{};
     NSMutableDictionary *data = [NSMutableDictionary dictionaryWithDictionary:params[@"data"] ? params[@"data"] : @{}];
     NSDictionary *files = params[@"files"] ? params[@"files"] : @{};
@@ -105,9 +107,8 @@
     __weak typeof(self) ws = self;
 
 #pragma mark GET
-    if ([method compare:@"get"
-                options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        NSURLSessionDataTask *dataTask = [manager GET_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
+    if ([method compare:@"get" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        NSURLSessionDataTask *dataTask = [manager GET_EEUI:url parameters:data headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
             //EELog(@"%@\n%@", url, responseObject);
             if (resCode == 200 && cache > 0) {
                 [ws saveFile:responseObject key:url cache:cache];
@@ -126,7 +127,7 @@
                 @"cache":@(NO),
                 @"code":@(resCode),
                 @"headers":resHeaders,
-                @"result":responseObject
+                @"result":responseObject==nil?@{}:responseObject
             };
             callback(res, beforeAfter ? YES : NO);
             
@@ -138,7 +139,7 @@
                     @"cache":@(NO),
                     @"code":@(0),
                     @"headers":@{},
-                    @"result":responseObject
+                    @"result":responseObject==nil?@{}:responseObject
                 };
                 callback(result2, NO);
             }
@@ -155,7 +156,7 @@
                 @"cache":@(NO),
                 @"code":errorData==nil?@(0):@([errorData statusCode]),
                 @"headers":errorData==nil?@{}:[errorData allHeaderFields],
-                @"result":result
+                @"result":result==nil?@{}:result
             };
             callback(res, beforeAfter ? YES : NO);
 
@@ -167,19 +168,16 @@
                     @"cache":@(NO),
                     @"code":@(0),
                     @"headers":@{},
-                    @"result":result
+                    @"result":result==nil?@{}:result
                 };
                 callback(result2, NO);
             }
         }];
-
         [self.taskDic setObject:dataTask forKey:name];
-
     }
 #pragma mark POST
-    else if ([method compare:@"post"
-                     options:NSCaseInsensitiveSearch] == NSOrderedSame && files.count == 0) {
-        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
+    else if ([method compare:@"post" options:NSCaseInsensitiveSearch] == NSOrderedSame && files.count == 0) {
+        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
             //EELog(@"%@\n%@", url, responseObject);
             if (resCode == 200 && cache > 0) {
                 [ws saveFile:responseObject key:url cache:cache];
@@ -199,7 +197,7 @@
                 @"cache":@(NO),
                 @"code":@(resCode),
                 @"headers":resHeaders,
-                @"result":responseObject
+                @"result":responseObject==nil?@{}:responseObject
             };
             callback(res, beforeAfter ? YES : NO);
 
@@ -211,7 +209,7 @@
                     @"cache":@(NO),
                     @"code":@(0),
                     @"headers":@{},
-                    @"result":responseObject
+                    @"result":responseObject==nil?@{}:responseObject
                 };
                 callback(result2, NO);
             }
@@ -227,7 +225,7 @@
                 @"cache":@(NO),
                 @"code":errorData==nil?@(0):@([errorData statusCode]),
                 @"headers":errorData==nil?@{}:[errorData allHeaderFields],
-                @"result":result
+                @"result":result==nil?@{}:result
             };
             callback(res, beforeAfter ? YES : NO);
 
@@ -239,52 +237,87 @@
                     @"cache":@(NO),
                     @"code":@(0),
                     @"headers":@{},
-                    @"result":result
+                    @"result":result==nil?@{}:result
                 };
                 callback(result2, NO);
             }
         }];
-
         [self.taskDic setObject:dataTask forKey:name];
     }
-
 #pragma mark Upload
     else if (files.count > 0) {
-        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        NSURLSessionDataTask *dataTask = [manager POST_EEUI:url parameters:data headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
             for (NSString *key in files.allKeys) {
                 id obj = files[key];
                 if ([obj isKindOfClass:[NSString class]]) {
+                    NSString *mimeType = [self mimeTypeForFileAtPath:obj];
                     NSString *fileName = files[key];
-                    UIImage *image = [UIImage imageWithContentsOfFile:fileName];
-                    if (!image) {
-                        //缓存
-                        NSString *newUrl = [key stringByReplacingOccurrencesOfString:@"file://" withString:@""];
-                        image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:newUrl];
-                    }
-                    NSData *data = UIImagePNGRepresentation(image);
-                    [formData appendPartWithFileData:data
-                                                name:key
-                                            fileName:fileName
-                                            mimeType:@"image/png"];
-                } else if ([obj isKindOfClass:[NSArray class]]) {
-                    for (NSInteger i = 0; i < [obj count]; i++) {
-                        NSString *fileName = obj[i];
+                    if ([mimeType hasPrefix:@"image"]) {
                         UIImage *image = [UIImage imageWithContentsOfFile:fileName];
                         if (!image) {
                             //缓存
-                            NSString *newUrl = [fileName stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+                            NSString *newUrl = [key stringByReplacingOccurrencesOfString:@"file://" withString:@""];
                             image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:newUrl];
                         }
-                        NSString *name = [NSString stringWithFormat:@"%@[%ld]", key, i];
-                        NSData *data = UIImagePNGRepresentation(image);
-                        [formData appendPartWithFileData:data
-                                                    name:name
+                        [formData appendPartWithFileData:UIImagePNGRepresentation(image)
+                                                    name:key
                                                 fileName:fileName
-                                                mimeType:@"image/jpeg"];
+                                                mimeType:mimeType];
+                    } else {
+                        NSURL *objUrl = [NSURL fileURLWithPath:obj];
+                        NSError *error = nil;
+                        NSData *fileData = [NSData dataWithContentsOfURL:objUrl options:NSDataReadingMappedIfSafe error:&error];
+                        [formData appendPartWithFileData:fileData name:key fileName:[objUrl lastPathComponent] mimeType:mimeType];
+                    }
+                } else if ([obj isKindOfClass:[NSArray class]]) {
+                    for (NSUInteger i = 0; i < [obj count]; i++) {
+                        id obj_item = obj[i];
+                        NSString *tempName = [NSString stringWithFormat:@"%@[%ld]", key, (long) i];
+                        if ([obj_item isKindOfClass:[NSString class]]) {
+                            NSString *mimeType = [self mimeTypeForFileAtPath:obj];
+                            NSString *fileName = files[key];
+                            if ([mimeType hasPrefix:@"image"]) {
+                                UIImage *image = [UIImage imageWithContentsOfFile:fileName];
+                                if (!image) {
+                                    //缓存
+                                    NSString *newUrl = [key stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+                                    image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:newUrl];
+                                }
+                                [formData appendPartWithFileData:UIImagePNGRepresentation(image)
+                                                            name:tempName
+                                                        fileName:fileName
+                                                        mimeType:mimeType];
+                            } else {
+                                NSURL *objUrl = [NSURL fileURLWithPath:obj];
+                                NSError *error = nil;
+                                NSData *fileData = [NSData dataWithContentsOfURL:objUrl options:NSDataReadingMappedIfSafe error:&error];
+                                [formData appendPartWithFileData:fileData name:tempName fileName:[objUrl lastPathComponent] mimeType:mimeType];
+                            }
+                        }
                     }
                 }
             }
-        } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
+        } progress:^(NSProgress * _Nonnull uploadProgress) {
+            //EELog(@"%@", uploadProgress);
+            if (progressCall) {
+                NSDictionary *progress = @{
+                        @"fraction":@(uploadProgress.fractionCompleted),
+                        @"current":@(uploadProgress.completedUnitCount),
+                        @"total":@(uploadProgress.totalUnitCount)
+                };
+                NSDictionary *res = @{
+                        @"status":@"progress",
+                        @"name":name,
+                        @"url":url,
+                        @"cache":@(NO),
+                        @"code":@(0),
+                        @"headers":@{},
+                        @"progress":progress,
+                        @"result":@{}
+                };
+                callback(res, YES);
+            }
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject, NSInteger resCode, NSDictionary *resHeaders) {
             //EELog(@"%@", responseObject);
             NSDictionary *res = @{
                 @"status":@"success",
@@ -293,7 +326,7 @@
                 @"cache":@(NO),
                 @"code":@(resCode),
                 @"headers":resHeaders,
-                @"result":responseObject
+                @"result":responseObject==nil?@{}:responseObject
             };
             callback(res, beforeAfter ? YES : NO);
 
@@ -321,7 +354,7 @@
                 @"cache":@(NO),
                 @"code":errorData==nil?@(0):@([errorData statusCode]),
                 @"headers":errorData==nil?@{}:[errorData allHeaderFields],
-                @"result":result
+                @"result":result==nil?@{}:result
             };
             callback(res, beforeAfter ? YES : NO);
 
@@ -333,7 +366,7 @@
                     @"cache":@(NO),
                     @"code":@(0),
                     @"headers":@{},
-                    @"result":result
+                    @"result":result==nil?@{}:result
                 };
                 callback(result2, NO);
             }
@@ -415,5 +448,21 @@
     return nil;
 }
 
+
+//path为要获取MIMEType的文件路径
+- (NSString *)mimeTypeForFileAtPath:(NSString *)path
+{
+    if (![[[NSFileManager alloc] init] fileExistsAtPath:path]) {
+        return nil;
+    }
+    
+    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
+    CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+    CFRelease(UTI);
+    if (!MIMEType) {
+        return @"application/octet-stream";
+    }
+    return (__bridge NSString *)(MIMEType);
+}
 
 @end

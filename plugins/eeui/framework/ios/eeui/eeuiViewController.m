@@ -438,7 +438,7 @@ static int easyNavigationButtonTag = 8000;
             @"platform": @"ios",
             @"debug": debug};
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    [manager POST:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager POST:url parameters:params headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         @try {
             if (responseObject) {
                 if ([[responseObject objectForKey:@"ret"] integerValue] == 1) {

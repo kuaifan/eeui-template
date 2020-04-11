@@ -139,7 +139,7 @@ static NSMutableDictionary *checkUpdateVersion;
                              @"debug": debug,
                              @"__": @([[NSDate date] timeIntervalSince1970])};
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    [manager GET:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager GET:url parameters:params headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         @try {
             if (responseObject) {
                 if ([[responseObject objectForKey:@"ret"] integerValue] == 1) {
@@ -238,7 +238,7 @@ static NSMutableDictionary *checkUpdateVersion;
         [fm createFileAtPath:releaseFile contents:[[Config getyyyMMddHHmmss] dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         NSString *tempUrl = [[NSString alloc] initWithFormat:@"%@&id=%@", [self getUrl:@"update-success"], id];
-        [manager GET:tempUrl parameters:nil progress:nil success:nil failure:nil];
+        [manager GET:tempUrl parameters:nil headers:nil progress:nil success:nil failure:nil];
     }else if (valid == 2) {
         //开始删除
         BOOL isDelete = NO;
@@ -257,7 +257,7 @@ static NSMutableDictionary *checkUpdateVersion;
         //标记回调
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         NSString *tempUrl = [[NSString alloc] initWithFormat:@"%@&id=%@", [self getUrl:@"update-delete"], id];
-        [manager GET:tempUrl parameters:nil progress:nil success:nil failure:nil];
+        [manager GET:tempUrl parameters:nil headers:nil progress:nil success:nil failure:nil];
     }
     [Config clear];
     if (clearCache == 1) {
