@@ -5,8 +5,8 @@
 //  Created by 高一 on 2019/4/10.
 //
 
-#import "WXComponent.h"
+#import "WXDivComponent.h"
 
-@interface eeuiAComponent : WXComponent <UIGestureRecognizerDelegate>
+@interface eeuiAComponent : WXDivComponent <UIGestureRecognizerDelegate>
 
 @end

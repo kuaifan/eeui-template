@@ -46,6 +46,7 @@
 - (void)viewDidLoad
 {
     [self.view addGestureRecognizer:_tap];
+    [self fireEvent:@"ready" params:nil];
 }
 
 - (void)openURL

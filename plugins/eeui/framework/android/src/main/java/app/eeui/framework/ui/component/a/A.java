@@ -1,5 +1,9 @@
 package app.eeui.framework.ui.component.a;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.weex.WXSDKInstance;
 import com.taobao.weex.dom.WXAttr;
@@ -11,6 +15,7 @@ import com.taobao.weex.ui.view.WXFrameLayout;
 import java.util.Map;
 
 import app.eeui.framework.extend.module.eeuiCommon;
+import app.eeui.framework.extend.module.eeuiConstants;
 import app.eeui.framework.extend.module.eeuiJson;
 import app.eeui.framework.extend.module.eeuiParse;
 import app.eeui.framework.ui.eeui;
@@ -31,6 +36,14 @@ public class A extends WXDiv {
 
     public A(WXSDKInstance instance, WXVContainer parent, BasicComponentData basicComponentData) {
         super(instance, parent, basicComponentData);
+    }
+
+    @Override
+    protected WXFrameLayout initComponentHostView(@NonNull Context context) {
+        if (getEvents().contains(eeuiConstants.Event.READY)) {
+            fireEvent(eeuiConstants.Event.READY, null);
+        }
+        return super.initComponentHostView(context);
     }
 
     @Override
