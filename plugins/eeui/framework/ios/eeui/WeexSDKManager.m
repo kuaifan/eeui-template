@@ -8,7 +8,6 @@
 
 #import "WeexSDKManager.h"
 #import "WeexSDK.h"
-#import "eeuiViewController.h"
 #import "WXImgLoaderDefaultImpl.h"
 
 @implementation WeexSDKManager
@@ -55,6 +54,7 @@
 
     //Component
     [WXSDKEngine registerComponent:@"a" withClass:NSClassFromString(@"eeuiAComponent")];
+    [WXSDKEngine registerComponent:@"view" withClass:NSClassFromString(@"eeuiViewComponent")];
     [WXSDKEngine registerComponent:@"banner" withClass:NSClassFromString(@"eeuiBannerComponent")];
     [WXSDKEngine registerComponent:@"button" withClass:NSClassFromString(@"eeuiButtonComponent")];
     [WXSDKEngine registerComponent:@"grid" withClass:NSClassFromString(@"eeuiGridComponent")];

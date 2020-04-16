@@ -181,6 +181,7 @@ public class eeui {
             WXSDKEngine.registerModule("event", WeexEventModule.class);
             //
             WXSDKEngine.registerComponent("a", A.class);
+            WXSDKEngine.registerComponent("view", app.eeui.framework.ui.component.view.View.class);
             WXSDKEngine.registerComponent("banner", Banner.class);
             WXSDKEngine.registerComponent("button", Button.class);
             WXSDKEngine.registerComponent("grid", Grid.class);

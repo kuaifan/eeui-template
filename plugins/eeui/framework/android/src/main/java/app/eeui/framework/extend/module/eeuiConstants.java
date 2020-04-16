@@ -69,6 +69,9 @@ public class eeuiConstants {
 
         //接收网页通信
         String RECEIVE_MESSAGE = "receiveMessage";
+
+        //尺寸发生改变
+        String COMPONENT_RESIZE = "resize";
     }
 
 }
