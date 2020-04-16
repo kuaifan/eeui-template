@@ -72,17 +72,19 @@ public class TabbarPage extends WXVContainer<TabbarPageView> {
             lView.setLayoutParams(mLayoutParams);
             lView.setOrientation(LinearLayout.VERTICAL);
 
-            ScrollView sView = new ScrollView(context);
-            sView.setLayoutParams(mLayoutParams);
-            sView.addView(lView);
-
-            mView.addView(sView);
-            formatAttrs(getAttrs());
-
             if (getEvents().contains(eeuiConstants.Event.REFRESH_LISTENER)) {
+                ScrollView sView = new ScrollView(context);
+                sView.setLayoutParams(mLayoutParams);
+                sView.addView(lView);
+                mView.addView(sView);
+                formatAttrs(getAttrs());
+                //
                 mView.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
                 mView.setOnRefreshListener(() -> fireEvent(eeuiConstants.Event.REFRESH_LISTENER, mView.getBarBean().toMap()));
             }else{
+                mView.addView(lView);
+                formatAttrs(getAttrs());
+                //
                 mView.setEnabled(false);
             }
 
