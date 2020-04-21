@@ -256,4 +256,8 @@
         <item name="SpinKit_Style">MultiplePulseRing</item>
     </style>
 
+    <declare-styleable name="BlurView">
+        <attr name="blurOverlayColor" format="color"/>
+    </declare-styleable>
+
 </resources>

@@ -75,6 +75,7 @@ import app.eeui.framework.extend.view.loading.LoadingDialog;
 import app.eeui.framework.extend.view.webviewBridge.JsCallback;
 import app.eeui.framework.ui.component.a.A;
 import app.eeui.framework.ui.component.banner.Banner;
+import app.eeui.framework.ui.component.blurView.BlurView;
 import app.eeui.framework.ui.component.button.Button;
 import app.eeui.framework.ui.component.grid.Grid;
 import app.eeui.framework.ui.component.icon.Icon;
@@ -181,8 +182,8 @@ public class eeui {
             WXSDKEngine.registerModule("event", WeexEventModule.class);
             //
             WXSDKEngine.registerComponent("a", A.class);
-            WXSDKEngine.registerComponent("view", app.eeui.framework.ui.component.view.View.class);
             WXSDKEngine.registerComponent("banner", Banner.class);
+            WXSDKEngine.registerComponent("blur", BlurView.class);
             WXSDKEngine.registerComponent("button", Button.class);
             WXSDKEngine.registerComponent("grid", Grid.class);
             WXSDKEngine.registerComponent("icon", Icon.class);
@@ -197,6 +198,7 @@ public class eeui {
             WXSDKEngine.registerComponent("side-panel-menu", SidePanelMenu.class);
             WXSDKEngine.registerComponent("tabbar", Tabbar.class);
             WXSDKEngine.registerComponent("tabbar-page", TabbarPage.class);
+            WXSDKEngine.registerComponent("view", app.eeui.framework.ui.component.view.View.class);
             WXSDKEngine.registerComponent("web-view", WebView.class);
         } catch (WXException e) {
             e.printStackTrace();

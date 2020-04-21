@@ -54,8 +54,8 @@
 
     //Component
     [WXSDKEngine registerComponent:@"a" withClass:NSClassFromString(@"eeuiAComponent")];
-    [WXSDKEngine registerComponent:@"view" withClass:NSClassFromString(@"eeuiViewComponent")];
     [WXSDKEngine registerComponent:@"banner" withClass:NSClassFromString(@"eeuiBannerComponent")];
+    [WXSDKEngine registerComponent:@"blur" withClass:NSClassFromString(@"eeuiBlurComponent")];
     [WXSDKEngine registerComponent:@"button" withClass:NSClassFromString(@"eeuiButtonComponent")];
     [WXSDKEngine registerComponent:@"grid" withClass:NSClassFromString(@"eeuiGridComponent")];
     [WXSDKEngine registerComponent:@"icon" withClass:NSClassFromString(@"eeuiIconComponent")];
@@ -70,6 +70,7 @@
     [WXSDKEngine registerComponent:@"side-panel-menu" withClass:NSClassFromString(@"eeuiSidePanelItemComponent")];
     [WXSDKEngine registerComponent:@"tabbar" withClass:NSClassFromString(@"eeuiTabbarComponent")];
     [WXSDKEngine registerComponent:@"tabbar-page" withClass:NSClassFromString(@"eeuiTabbarPageComponent")];
+    [WXSDKEngine registerComponent:@"view" withClass:NSClassFromString(@"eeuiViewComponent")];
     [WXSDKEngine registerComponent:@"web-view" withClass:NSClassFromString(@"eeuiWebviewComponent")];
 
 #ifdef DEBUG
