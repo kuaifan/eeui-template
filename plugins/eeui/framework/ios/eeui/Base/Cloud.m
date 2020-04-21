@@ -58,7 +58,7 @@ static NSMutableDictionary *checkUpdateVersion;
     }
     //
     NSTimeInterval interval = [[NSDate date] timeIntervalSince1970];
-    long timeStamp = interval;
+    long timeStamp = (long) interval;
     NSDictionary *appInfo = [Cloud getAppInfo];
     long welcome_limit_s = [WXConvert NSInteger:appInfo[@"welcome_limit_s"]];
     long welcome_limit_e = [WXConvert NSInteger:appInfo[@"welcome_limit_e"]];
@@ -72,7 +72,7 @@ static NSMutableDictionary *checkUpdateVersion;
     myClickWelcome = click;
     if (view != nil) {
         welcomeView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        [welcomeView sd_setImageWithURL:[NSURL URLWithString:(NSString*) welcome_image]];
+        [welcomeView sd_setImageWithURL:[NSURL URLWithString:welcome_image]];
         welcomeView.contentMode = UIViewContentModeScaleAspectFill;
         welcomeView.clipsToBounds = YES;
         [view addSubview:welcomeView];
@@ -146,7 +146,7 @@ static NSMutableDictionary *checkUpdateVersion;
                     NSDictionary *data = responseObject[@"data"];
                     NSMutableDictionary *jsonData = [NSMutableDictionary dictionaryWithDictionary:data];
                     [[eeuiStorageManager sharedIntstance] setCachesString:@"__system:appInfo" value:[DeviceUtil dictionaryToJson:jsonData] expired:0];
-                    [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[[jsonData objectForKey:@"__system:welcome_wait"] integerValue]];
+                    [self saveWelcomeImage:[NSString stringWithFormat:@"%@", jsonData[@"welcome_image"]] wait:[jsonData[@"welcome_wait"] integerValue]];
                     dispatch_async(dispatch_get_global_queue(0, 0), ^{
                         //
                         if ([[jsonData objectForKey:@"uplists"] isKindOfClass:[NSArray class]]) {

@@ -42,6 +42,11 @@ public class WelcomeActivity extends AppCompatActivity {
         }));
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private void openNext(String pageUrl) {
         if (isOpenNext) {
             return;
