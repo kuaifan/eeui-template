@@ -26,7 +26,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-@interface WXWebView : UIWebView
+@interface WXWebView : WKWebView
 
 @end
 
@@ -42,8 +42,6 @@
 @end
 
 @interface WXWebComponent ()
-
-@property (nonatomic, strong) JSContext *jsContext;
 
 @property (nonatomic, strong) WXWebView *webview;
 
@@ -75,61 +73,71 @@ WX_EXPORT_METHOD(@selector(goForward))
 {
     if (self = [super initWithRef:ref type:type styles:styles attributes:attributes events:events weexInstance:weexInstance]) {
         self.url = attributes[@"src"];
-        
+
         if(attributes[@"source"]){
             self.inInitsource = attributes[@"source"];
         }
-        
+
     }
     return self;
 }
 
+- (WKWebViewConfiguration *)baseConfiguration {
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    NSString *scalesPageToFitScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
+    WKUserScript *userScript = [[WKUserScript alloc] initWithSource:scalesPageToFitScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+    WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+    [userContentController addUserScript:userScript];
+    configuration.userContentController = userContentController;
+    configuration.allowsInlineMediaPlayback = YES;
+
+    return configuration;
+}
+
 - (UIView *)loadView
 {
-    return [[WXWebView alloc] init];
+    return [[WXWebView alloc] initWithFrame:CGRectZero configuration:[self baseConfiguration]];
 }
 
 - (void)viewDidLoad
 {
     _webview = (WXWebView *)self.view;
-    _webview.delegate = self;
-    _webview.allowsInlineMediaPlayback = YES;
-    _webview.scalesPageToFit = YES;
+    _webview.navigationDelegate = self;
     [_webview setBackgroundColor:[UIColor clearColor]];
     _webview.opaque = NO;
-    _jsContext = [_webview valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
-    __weak typeof(self) weakSelf = self;
+//    _jsContext = [_webview valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"];
+//    __weak typeof(self) weakSelf = self;
 
     // This method will be abandoned slowly.
-    _jsContext[@"$notifyWeex"] = ^(JSValue *data) {
-        if (weakSelf.notifyEvent) {
-            [weakSelf fireEvent:@"notify" params:[data toDictionary]];
-        }
-    };
-
-    //Weex catch postMessage event from web
-    _jsContext[@"postMessage"] = ^() {
-
-        NSArray *args = [JSContext currentArguments];
-
-        if (args && args.count < 2) {
-            return;
-        }
-
-        NSDictionary *data = [args[0] toDictionary];
-        NSString *origin = [args[1] toString];
-
-        if (data == nil) {
-            return;
-        }
-
-        NSDictionary *initDic = @{ @"type" : @"message",
-                                   @"data" : data,
-                                   @"origin" : origin
-        };
-
-        [weakSelf fireEvent:@"message" params:initDic];
-    };
+//    _jsContext[@"$notifyWeex"] = ^(JSValue *data) {
+//        if (weakSelf.notifyEvent) {
+//            [weakSelf fireEvent:@"notify" params:[data toDictionary]];
+//        }
+//    };
+//
+//    //Weex catch postMessage event from web
+//    _jsContext[@"postMessage"] = ^() {
+//
+//        NSArray *args = [JSContext currentArguments];
+//
+//        if (args && args.count < 2) {
+//            return;
+//        }
+//
+//        NSDictionary *data = [args[0] toDictionary];
+//        NSString *origin = [args[1] toString];
+//
+//        if (data == nil) {
+//            return;
+//        }
+//
+//        NSDictionary *initDic = @{ @"type" : @"message",
+//                                   @"data" : data,
+//                                   @"origin" : origin
+//        };
+//
+//        [weakSelf fireEvent:@"message" params:initDic];
+//    };
 
     self.source = _inInitsource;
     if (_url) {
@@ -169,7 +177,7 @@ WX_EXPORT_METHOD(@selector(goForward))
     if (!newURL) {
         return;
     }
-    
+
     if (![newURL isEqualToString:_url]) {
         _url = newURL;
         if (_url) {
@@ -190,7 +198,7 @@ WX_EXPORT_METHOD(@selector(goForward))
             [_webview loadHTMLString:_source baseURL:nil];
         }
     }
-    
+
 }
 
 - (void)loadURL:(NSString *)url
@@ -225,7 +233,7 @@ WX_EXPORT_METHOD(@selector(goForward))
 {
     NSString *json = [WXUtility JSONString:data];
     NSString *code = [NSString stringWithFormat:@"(function(){var evt=null;var data=%@;if(typeof CustomEvent==='function'){evt=new CustomEvent('notify',{detail:data})}else{evt=document.createEvent('CustomEvent');evt.initCustomEvent('notify',true,true,data)}document.dispatchEvent(evt)}())", json];
-    [_jsContext evaluateScript:code];
+    [_webview evaluateJavaScript:code completionHandler:nil];
 }
 
 // Weex postMessage to web
@@ -241,69 +249,74 @@ WX_EXPORT_METHOD(@selector(goForward))
     }
 
     NSDictionary *initDic = @{
-        @"type" : @"message",
-        @"data" : data,
-        @"origin" : bundleUrlOrigin
+            @"type" : @"message",
+            @"data" : data,
+            @"origin" : bundleUrlOrigin
     };
 
     NSString *json = [WXUtility JSONString:initDic];
 
     NSString *code = [NSString stringWithFormat:@"(function (){window.dispatchEvent(new MessageEvent('message', %@));}())", json];
-    [_jsContext evaluateScript:code];
+    [_webview evaluateJavaScript:code completionHandler:nil];
 }
 
 #pragma mark Webview Delegate
 
-- (NSMutableDictionary<NSString *, id> *)baseInfo
-{
+- (void)baseInfoWithCompletion:(void (^)(NSMutableDictionary<NSString *, id> *data))completion {
     NSMutableDictionary<NSString *, id> *info = [NSMutableDictionary new];
-    [info setObject:self.webview.request.URL.absoluteString ?: @"" forKey:@"url"];
-    [info setObject:[self.webview stringByEvaluatingJavaScriptFromString:@"document.title"] ?: @"" forKey:@"title"];
+    [info setObject:self.webview.URL.absoluteString ?: @"" forKey:@"url"];
     [info setObject:@(self.webview.canGoBack) forKey:@"canGoBack"];
     [info setObject:@(self.webview.canGoForward) forKey:@"canGoForward"];
-    return info;
+    [self.webview evaluateJavaScript:@"document.title" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        [info setObject:result ? result : @"" forKey:@"title"];
+        if (completion) {
+            completion(info);
+        }
+    }];
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
 {
-    
+
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
     if (_finishLoadEvent) {
-        NSDictionary *data = [self baseInfo];
-        [self fireEvent:@"pagefinish" params:data domChanges:@{@"attrs": @{@"src":self.webview.request.URL.absoluteString}}];
+        [self baseInfoWithCompletion:^(NSMutableDictionary<NSString *,id> *data) {
+            [self fireEvent:@"pagefinish" params:data domChanges:@{@"attrs": @{@"src":self.webview.URL.absoluteString}}];
+        }];
     }
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
     if (_failLoadEvent) {
-        NSMutableDictionary *data = [self baseInfo];
-        [data setObject:[error localizedDescription] forKey:@"errorMsg"];
-        [data setObject:[NSString stringWithFormat:@"%ld", (long)error.code] forKey:@"errorCode"];
-        
-        NSString * urlString = error.userInfo[NSURLErrorFailingURLStringErrorKey];
-        if (urlString) {
-            // webview.request may not be the real error URL, must get from error.userInfo
-            [data setObject:urlString forKey:@"url"];
-            if (![urlString hasPrefix:@"http"]) {
-                return;
+        [self baseInfoWithCompletion:^(NSMutableDictionary<NSString *,id> *data) {
+            [data setObject:[error localizedDescription] forKey:@"errorMsg"];
+            [data setObject:[NSString stringWithFormat:@"%ld", (long)error.code] forKey:@"errorCode"];
+
+            NSString * urlString = error.userInfo[NSURLErrorFailingURLStringErrorKey];
+            if (urlString) {
+                // webview.request may not be the real error URL, must get from error.userInfo
+                [data setObject:urlString forKey:@"url"];
+                if (![urlString hasPrefix:@"http"]) {
+                    return;
+                }
             }
-        }
-        [self fireEvent:@"error" params:data];
+            [self fireEvent:@"error" params:data];
+        }];
     }
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     if (_startLoadEvent) {
         NSMutableDictionary<NSString *, id> *data = [NSMutableDictionary new];
-        [data setObject:request.URL.absoluteString ?:@"" forKey:@"url"];
+        [data setObject:navigationAction.request.URL.absoluteString ?:@"" forKey:@"url"];
         [self fireEvent:@"pagestart" params:data];
     }
-    return YES;
+
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

@@ -19,6 +19,7 @@
 #import "SGEasyButton.h"
 #import "SDWebImageDownloader.h"
 #import "UINavigationController+FDFullscreenPopGesture.h"
+@import WebKit;
 
 #define kCacheUrl @"cache_url"
 #define kCacheTime @"cache_time"
@@ -27,14 +28,14 @@
 
 static int easyNavigationButtonTag = 8000;
 
-@interface eeuiViewController ()<UIWebViewDelegate, UIGestureRecognizerDelegate>
+@interface eeuiViewController ()<WKNavigationDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) WXSDKInstance *instance;
 @property (nonatomic, strong) UIView *weexView;
 @property (nonatomic, assign) CGFloat weexHeight;
 @property (nonatomic, strong) NSMutableArray *listenerList;
 @property (nonatomic, strong) NSString *renderUrl;
-@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, strong) UIView *statusBar;
 @property (nonatomic, assign) NSString *notificationStatus;
@@ -493,8 +494,8 @@ static int easyNavigationButtonTag = 8000;
 
 - (void)loadWebPage
 {
-    self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    self.webView.delegate = self;
+    self.webView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    self.webView.navigationDelegate = self;
     NSURL *url = [NSURL URLWithString:_url];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:request];
@@ -1042,25 +1043,18 @@ static int easyNavigationButtonTag = 8000;
 }
 
 #pragma mark webDelegate
-//是否允许加载网页，也可获取js要打开的url，通过截取此url可与js交互
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType
-{
-    return YES;
-}
-
 //开始加载网页
-- (void)webViewDidStartLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation
 {
     self.webBlock(@{@"status":@"statusChanged", @"webStatus":@"", @"errCode":@"", @"errMsg":@"", @"errUrl":@"", @"title":@""});
 }
 
 //网页加载完成
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didFinishNavigation:( WKNavigation *)navigation
 {
     [self stopLoading];
 
-    NSString *title = [webView stringByEvaluatingJavaScriptFromString:@"document.title"];
+    NSString *title = [webView title];
     if (![self.title isEqualToString:title]) {
         self.title = title;
         self.webBlock(@{@"status":@"titleChanged", @"webStatus":@"", @"errCode":@"", @"errMsg":@"", @"errUrl":@"", @"title":title});
@@ -1068,14 +1062,16 @@ static int easyNavigationButtonTag = 8000;
 }
 
 //网页加载错误
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
-    [self stopLoading];
-
     if (error) {
-        NSString *code = [NSString stringWithFormat:@"%ld", (long) error.code];
-        NSString *msg = [NSString stringWithFormat:@"%@", error.description];
-        self.webBlock(@{@"status":@"errorChanged", @"webStatus":@"", @"errCode":code, @"errMsg":msg, @"errUrl":_url, @"title":@""});
+        [self stopLoading];
+
+        if (error) {
+            NSString *code = [NSString stringWithFormat:@"%ld", (long) error.code];
+            NSString *msg = [NSString stringWithFormat:@"%@", error.description];
+            self.webBlock(@{@"status":@"errorChanged", @"webStatus":@"", @"errCode":code, @"errMsg":msg, @"errUrl":_url, @"title":@""});
+        }
     }
 }
 
