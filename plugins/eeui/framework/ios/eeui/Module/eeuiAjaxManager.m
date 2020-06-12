@@ -255,6 +255,9 @@
                 id obj = files[key];
                 if ([obj isKindOfClass:[NSString class]]) {
                     NSString *mimeType = [self mimeTypeForFileAtPath:obj];
+                    if (mimeType == nil) {
+                        continue;
+                    }
                     NSString *fileName = files[key];
                     if ([mimeType hasPrefix:@"image"]) {
                         UIImage *image = [UIImage imageWithContentsOfFile:fileName];
@@ -278,8 +281,11 @@
                         id obj_item = obj[i];
                         NSString *tempName = [NSString stringWithFormat:@"%@[%ld]", key, (long) i];
                         if ([obj_item isKindOfClass:[NSString class]]) {
-                            NSString *mimeType = [self mimeTypeForFileAtPath:obj];
-                            NSString *fileName = files[key];
+                            NSString *mimeType = [self mimeTypeForFileAtPath:obj_item];
+                            if (mimeType == nil) {
+                                continue;
+                            }
+                            NSString *fileName = obj_item;
                             if ([mimeType hasPrefix:@"image"]) {
                                 UIImage *image = [UIImage imageWithContentsOfFile:fileName];
                                 if (!image) {
@@ -457,9 +463,29 @@
 - (NSString *)mimeTypeForFileAtPath:(NSString *)path
 {
     if (![[[NSFileManager alloc] init] fileExistsAtPath:path]) {
-        return nil;
+        
+        NSString *type = [path pathExtension];
+        
+        if ([type isEqualToString:@"png"]) {
+            return [NSString stringWithFormat:@"image/%@", type];
+        }
+        
+        if ([type isEqualToString:@"jpg"]) {
+            return [NSString stringWithFormat:@"image/%@", type];
+        }
+        
+        if ([type isEqualToString:@"jpeg"]) {
+            return [NSString stringWithFormat:@"image/%@", type];
+        }
+        
+        if ([type isEqualToString:@"gif"]) {
+            return [NSString stringWithFormat:@"image/%@", type];
+        }
+        
+        return @"application/octet-stream";
     }
     
+
     CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
     CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
     CFRelease(UTI);
