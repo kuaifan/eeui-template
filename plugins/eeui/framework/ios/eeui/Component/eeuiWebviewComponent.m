@@ -8,7 +8,6 @@
 
 #import "eeuiWebviewComponent.h"
 #import "DeviceUtil.h"
-#import "YHWebViewProgress.h"
 #import "YHWebViewProgressView.h"
 #import "eeuiStorageManager.h"
 #import "JSCallCommon.h"
@@ -81,18 +80,26 @@ WX_EXPORT_METHOD(@selector(goForward:))
 - (WKWebView*)loadView
 {
     //设置userAgent
-    NSString *originalUserAgent = nil;
+    __block NSString *originalUserAgent = nil;
     if (_customUserAgent.length > 0) {
         originalUserAgent = _customUserAgent;
     }else{
         eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
         originalUserAgent = [storage getCachesString:@"__system:originalUserAgent" defaultVal:@""];
         if (![originalUserAgent containsString:@";ios_kuaifan_eeui/"]) {
-            UIWebView *webView = [[UIWebView alloc] init];
-            NSString *versionName = (NSString*)[[[NSBundle mainBundle] infoDictionary]  objectForKey:@"CFBundleShortVersionString"];
-            originalUserAgent = [NSString stringWithFormat:@"%@;ios_kuaifan_eeui/%@", [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"], versionName];
-            [storage setCachesString:@"__system:originalUserAgent" value:originalUserAgent expired:0];
-            webView =  nil;
+            WKWebView *wkWebView = [[WKWebView alloc] initWithFrame:CGRectZero];
+            [wkWebView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+                if (!error) {
+                    NSString *versionName = (NSString*)[[[NSBundle mainBundle] infoDictionary]  objectForKey:@"CFBundleShortVersionString"];
+                    originalUserAgent = [NSString stringWithFormat:@"%@;ios_kuaifan_eeui/%@", result, versionName];
+                    if (_userAgent.length > 0) {
+                        originalUserAgent = [NSString stringWithFormat:@"%@/%@", originalUserAgent, _userAgent];
+                    }
+                    [storage setCachesString:@"__system:originalUserAgent" value:originalUserAgent expired:0];
+                    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:originalUserAgent, @"UserAgent", nil];
+                    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+                }
+            }];
         }
         if (_userAgent.length > 0) {
             originalUserAgent = [NSString stringWithFormat:@"%@/%@", originalUserAgent, _userAgent];
@@ -300,7 +307,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 // 在发送请求之前，决定是否跳转
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)action decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    if (action.navigationType == UIWebViewNavigationTypeLinkClicked) {
+    if (action.navigationType == WKNavigationTypeLinkActivated) {
 
     }
     decisionHandler(WKNavigationActionPolicyAllow);

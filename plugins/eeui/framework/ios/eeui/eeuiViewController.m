@@ -92,7 +92,10 @@ static int easyNavigationButtonTag = 8000;
     [center addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];
     _keyBoardlsVisible = NO;
 
-    [self.navigationController setNavigationBarHidden:_showNavigationBar];
+    self.navigationController.navigationBar.shadowImage = [[UIImage alloc]init];
+    if (!_isChildSubview) {
+        [self.navigationController setNavigationBarHidden:_showNavigationBar];
+    }
 
     if (_backgroundColor) {
         self.view.backgroundColor = [WXConvert UIColor:_backgroundColor];
