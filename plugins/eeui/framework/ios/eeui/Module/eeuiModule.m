@@ -187,6 +187,7 @@ WX_EXPORT_METHOD(@selector(setRefreshing:refreshing:))
 WX_EXPORT_METHOD(@selector(setPageStatusListener:callback:))
 WX_EXPORT_METHOD(@selector(clearPageStatusListener:))
 WX_EXPORT_METHOD(@selector(onPageStatusListener:status:))
+WX_EXPORT_METHOD(@selector(postMessage:))
 WX_EXPORT_METHOD(@selector(getCacheSizePage:))
 WX_EXPORT_METHOD(@selector(clearCachePage))
 WX_EXPORT_METHOD(@selector(closePage:))
@@ -264,6 +265,11 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 - (void)onPageStatusListener:(id)params status:(NSString*)status
 {
     [[eeuiNewPageManager sharedIntstance] onPageStatusListener:params status:status];
+}
+
+- (void)postMessage:(id)params
+{
+    [[eeuiNewPageManager sharedIntstance] postMessage:params];
 }
 
 - (void)getCacheSizePage:(WXModuleKeepAliveCallback)callback

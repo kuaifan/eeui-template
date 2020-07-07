@@ -202,6 +202,11 @@
     [[eeuiNewPageManager sharedIntstance] onPageStatusListener:params status:status];
 }
 
+- (void)postMessage:(id)params
+{
+    [[eeuiNewPageManager sharedIntstance] postMessage:params];
+}
+
 - (void)getCacheSizePage:(WXModuleKeepAliveCallback)callback
 {
     [[eeuiNewPageManager sharedIntstance] getCacheSizePage:callback];

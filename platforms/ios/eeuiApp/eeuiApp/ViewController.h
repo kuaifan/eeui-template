@@ -15,5 +15,9 @@
 
 - (void) clickWelcome;
 
+- (BOOL) isBugBtnClick;
+
+- (void) setBugBtnClick;
+
 @end
 

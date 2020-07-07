@@ -90,6 +90,9 @@ static int easyNavigationButtonTag = 8000;
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
     [center addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];
+    [center addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
+    [center addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [center addObserver:self selector:@selector(postMessage:) name:@"VCPostMessage" object:nil];
     _keyBoardlsVisible = NO;
 
     self.navigationController.navigationBar.shadowImage = [[UIImage alloc]init];
@@ -309,6 +312,53 @@ static int easyNavigationButtonTag = 8000;
     [CustomWeexSDKManager setKeyBoardlsVisible:_keyBoardlsVisible];
 }
 
+// 页面失活
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    _isResignActive = YES;
+    [_instance fireGlobalEvent:@"__appLifecycleStatus" params:@{
+            @"status": @"deactive",
+            @"type": @"app",
+            @"pageType": _isChildSubview ? @"tabbar" : _pageType,
+            @"pageName": _pageName,
+            @"pageUrl": _url,
+    }];
+}
+
+// 页面重活（失活之后）
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    if (_isResignActive) {
+        [_instance fireGlobalEvent:@"__appLifecycleStatus" params:@{
+                @"status": @"active",
+                @"type": @"app",
+                @"pageType": _isChildSubview ? @"tabbar" : _pageType,
+                @"pageName": _pageName,
+                @"pageUrl": _url,
+        }];
+    }
+}
+
+// 页面接收到消息
+- (void)postMessage:(NSNotification *)notification
+{
+    NSString *pageName = nil;
+    id message = [notification object];
+    if ([message isKindOfClass:[NSDictionary class]]) {
+        pageName = [WXConvert NSString:message[@"pageName"]];
+    }
+    if (pageName.length == 0 || [pageName isEqualToString:_pageName]) {
+        [_instance fireGlobalEvent:@"__appLifecycleStatus" params:@{
+                @"status": @"message",
+                @"type": @"page",
+                @"pageType": _isChildSubview ? @"tabbar" : _pageType,
+                @"pageName": _pageName,
+                @"pageUrl": _url,
+                @"message": message
+        }];
+    }
+}
+
 // iOS 13
 - (UIStatusBarStyle)preferredStatusBarStyle {
     if ([_statusBarStyleCustom isEqualToString:@"1"]) {
@@ -376,6 +426,13 @@ static int easyNavigationButtonTag = 8000;
     }
 
     [[WXSDKManager bridgeMgr] fireEvent:_instance.instanceId ref:WX_SDK_ROOT_REF type:kLifeCycle params:@{@"status":status} domChanges:nil];
+    [_instance fireGlobalEvent:@"__appLifecycleStatus" params:@{
+            @"status": status,
+            @"type": @"page",
+            @"pageType": _isChildSubview ? @"tabbar" : _pageType,
+            @"pageName": _pageName,
+            @"pageUrl": _url,
+    }];
 }
 
 #pragma mark duration

@@ -2,6 +2,8 @@ package app.eeui.framework.extend.view;
 
 import android.content.Context;
 import androidx.viewpager.widget.ViewPager;
+
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,9 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 import app.eeui.framework.activity.PageActivity;
+import app.eeui.framework.extend.bean.PageStatus;
 import app.eeui.framework.extend.module.eeuiCommon;
 import app.eeui.framework.extend.module.eeuiConstants;
+import app.eeui.framework.extend.module.rxtools.tool.RxDataTool;
 import app.eeui.framework.extend.view.tablayout.listener.CustomTabEntity;
+import app.eeui.framework.ui.component.tabbar.TabbarPageView;
 import app.eeui.framework.ui.component.tabbar.bean.WXSDKBean;
 
 
@@ -101,7 +106,7 @@ public class NoAnimationViewPager extends ViewPager {
     }
 
     /**
-     * 生命周期
+     * 生命周期（页面）
      * @param position
      * @param status
      * @param isFinal
@@ -128,6 +133,7 @@ public class NoAnimationViewPager extends ViewPager {
                         default:
                             return;
                     }
+                    //
                     WXComponent mWXComponent = sdkBean.getInstance().getRootComponent();
                     if (mWXComponent != null) {
                         WXEvent events = mWXComponent.getEvents();
@@ -155,6 +161,14 @@ public class NoAnimationViewPager extends ViewPager {
                             }
                         }
                     }
+                    //
+                    Map<String, Object> retApp = new HashMap<>();
+                    retApp.put("status", status);
+                    retApp.put("type", "page");
+                    retApp.put("pageType", "tabbar");
+                    retApp.put("pageName", sdkBean.getTabName());
+                    retApp.put("pageUrl", (sdkBean.getView() instanceof String) ? String.valueOf(sdkBean.getView()) : "");
+                    sdkBean.getInstance().fireGlobalEventCallback("__appLifecycleStatus", retApp);
                 }
             }
         }
@@ -166,5 +180,33 @@ public class NoAnimationViewPager extends ViewPager {
 
     public void lifecycleListener(String status) {
         lifecycleListener(getCurrentItem(), status);
+    }
+
+    /**
+     * 生命周期（app）
+     * @param position
+     * @param mPageStatus
+     */
+    public void appStatusListeners(int position, PageStatus mPageStatus) {
+        if (position < WXSDKList.size()) {
+            String getTabName = getTabName(position);
+            WXSDKBean sdkBean = WXSDKList.get(getTabName);
+            if (sdkBean != null) {
+                if (TextUtils.isEmpty(mPageStatus.getPageName()) || sdkBean.getTabName().contentEquals(mPageStatus.getPageName())) {
+                    if (sdkBean.getInstance() != null) {
+                        Map<String, Object> retApp = new HashMap<>();
+                        retApp.put("status", mPageStatus.getStatus());
+                        retApp.put("type", mPageStatus.getType());
+                        retApp.put("pageType", "tabbar");
+                        retApp.put("pageName", sdkBean.getTabName());
+                        retApp.put("pageUrl", (sdkBean.getView() instanceof String) ? String.valueOf(sdkBean.getView()) : "");
+                        if (mPageStatus.getMessage() != null) {
+                            retApp.put("message", mPageStatus.getMessage());
+                        }
+                        sdkBean.getInstance().fireGlobalEventCallback("__appLifecycleStatus", retApp);
+                    }
+                }
+            }
+        }
     }
 }

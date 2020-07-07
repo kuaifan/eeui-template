@@ -28,6 +28,7 @@ static NSMutableDictionary *tabViewDebug;
 - (void)setPageStatusListener:(id)params callback:(WXModuleKeepAliveCallback)callback;
 - (void)clearPageStatusListener:(id)params;
 - (void)onPageStatusListener:(id)params status:(NSString*)status;
+- (void)postMessage:(id)params;
 - (void)getCacheSizePage:(WXModuleKeepAliveCallback)callback;
 - (void)clearCachePage;
 - (void)closePage:(id)params weexInstance:(WXSDKInstance*)weexInstance;

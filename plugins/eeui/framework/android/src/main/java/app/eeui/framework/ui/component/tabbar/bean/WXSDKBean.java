@@ -19,6 +19,7 @@ public class WXSDKBean {
 
     private WXSDKInstance instance;
 
+    private String tabName = "";
     private String type = "";
     private Object params;
     private long cache = 0;
@@ -83,6 +84,14 @@ public class WXSDKBean {
 
     public void setInstance(WXSDKInstance instance) {
         this.instance = instance;
+    }
+
+    public String getTabName() {
+        return tabName;
+    }
+
+    public void setTabName(String tabName) {
+        this.tabName = tabName;
     }
 
     public String getType() {

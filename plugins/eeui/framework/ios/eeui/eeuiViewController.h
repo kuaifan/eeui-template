@@ -64,6 +64,7 @@ typedef NS_ENUM(NSInteger, LifeCycleType) {
 @property (nonatomic,strong) NSString *identify;
 
 @property (nonatomic,assign) BOOL isCache;
+@property (nonatomic, assign) BOOL isResignActive;
 
 - (void)stopLoading;
 - (void)startLoading;

@@ -63,6 +63,7 @@ import java.util.concurrent.TimeUnit;
 import app.eeui.framework.BuildConfig;
 import app.eeui.framework.R;
 import app.eeui.framework.extend.bean.PageBean;
+import app.eeui.framework.extend.bean.PageStatus;
 import app.eeui.framework.extend.integration.actionsheet.ActionItem;
 import app.eeui.framework.extend.integration.actionsheet.ActionSheet;
 import app.eeui.framework.extend.integration.glide.Glide;
@@ -129,6 +130,7 @@ public class PageActivity extends AppCompatActivity {
     public interface OnRefreshListener { void refresh(String pageName); }
 
     private Map<String, JSCallback> mOnPageStatusListeners = new HashMap<>();
+    private List<ResultCallback<PageStatus>> mOnAppStatusListeners = new LinkedList<>();
     private static List<ResultCallback<String>> tabViewDebug = new LinkedList<>();
 
     //模板部分
@@ -1038,6 +1040,7 @@ public class PageActivity extends AppCompatActivity {
                 default:
                     return;
             }
+            //
             WXComponent mWXComponent = mWXSDKInstance.getRootComponent();
             if (mWXComponent != null) {
                 WXEvent events = mWXComponent.getEvents();
@@ -1062,6 +1065,28 @@ public class PageActivity extends AppCompatActivity {
                             break;
                         }
                     }
+                }
+            }
+            //
+            Map<String, Object> retApp = new HashMap<>();
+            retApp.put("status", status);
+            retApp.put("type", "page");
+            retApp.put("pageType", getPageInfo().getPageType());
+            retApp.put("pageName", getPageInfo().getPageName());
+            retApp.put("pageUrl", getPageInfo().getUrl());
+            mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retApp);
+            switch (status) {
+                case "ready": {
+                    retApp.put("status", "resume");
+                    mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retApp);
+                    break;
+                }
+                case "pause": {
+                    if (isFinishing()) {
+                        retApp.put("status", "destroy");
+                        mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retApp);
+                    }
+                    break;
                 }
             }
         }
@@ -1139,6 +1164,55 @@ public class PageActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    /****************************************************************************************************/
+    /****************************************************************************************************/
+    /****************************************************************************************************/
+
+    /**
+     * 添加app状态监听
+     * @param callback
+     */
+    public void setAppStatusListeners(ResultCallback<PageStatus> callback) {
+        mOnAppStatusListeners.add(callback);
+    }
+
+    /**
+     * 移除app状态监听
+     * @param callback
+     */
+    public void removeAppStatusListeners(ResultCallback<PageStatus> callback) {
+        mOnAppStatusListeners.remove(callback);
+    }
+
+    /**
+     * 触发app状态
+     * @param mPageStatus
+     */
+    public void onAppStatusListener(PageStatus mPageStatus)
+    {
+        if (TextUtils.isEmpty(mPageStatus.getPageName()) || getPageInfo().getPageName().contentEquals(mPageStatus.getPageName())) {
+            if (mWXSDKInstance != null) {
+                Map<String, Object> retApp = new HashMap<>();
+                retApp.put("status", mPageStatus.getStatus());
+                retApp.put("type", mPageStatus.getType());
+                retApp.put("pageType", getPageInfo().getPageType());
+                retApp.put("pageName", getPageInfo().getPageName());
+                retApp.put("pageUrl", getPageInfo().getUrl());
+                if (mPageStatus.getMessage() != null) {
+                    retApp.put("message", mPageStatus.getMessage());
+                }
+                mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retApp);
+            }
+        }
+        //
+        for (int i = 0; i < mOnAppStatusListeners.size(); i++) {
+            ResultCallback<PageStatus> call = mOnAppStatusListeners.get(i);
+            if (call != null) {
+                call.onReceiveResult(mPageStatus);
+            }
+        }
     }
 
     /****************************************************************************************************/
@@ -1759,6 +1833,7 @@ public class PageActivity extends AppCompatActivity {
      * debug按钮点击事件
      */
     private View.OnClickListener deBugClickListener = v -> {
+        eeuiCommon.setVariate("__system:deBugSocket:Click", 1);
         List<ActionItem> mActionItem = new ArrayList<>();
         mActionItem.add(new ActionItem(1, eeuiCommon.getVariateInt("__system:deBugSocket:Status") == 1 ? "WiFi真机同步 [已连接]" : "WiFi真机同步"));
         mActionItem.add(new ActionItem(2, deBugKeepScreen.contentEquals("ON") ? "屏幕常亮 [已开启]" : "屏幕常亮"));
@@ -2089,6 +2164,25 @@ public class PageActivity extends AppCompatActivity {
                     if (activityList.size() >= 2 && activityList.get(0).getClass().getName().endsWith(".WelcomeActivity")) {
                         activityList.remove(0);
                     }
+                    if (eeuiCommon.getVariateInt("__system:deBugSocket:Click") != 1) {
+                        boolean meetSkip = true;
+                        String valueHP = getHostPort(value);
+                        for (int i = activityList.size() - 1; i >= 0; --i) {
+                            Activity activity = activityList.get(i);
+                            if (activity instanceof PageActivity) {
+                                PageBean mPageBean = ((PageActivity) activity).getPageInfo();
+                                String hostPort = getHostPort(mPageBean.getUrl());
+                                if (!hostPort.equals(valueHP)) {
+                                    meetSkip = false;
+                                }
+                            } else {
+                                meetSkip = false;
+                            }
+                        }
+                        if (meetSkip) {
+                            return;
+                        }
+                    }
                     for (int i = activityList.size() - 1; i >= 0; --i) {
                         Activity activity = activityList.get(i);
                         if (i == 0) {
@@ -2100,7 +2194,7 @@ public class PageActivity extends AppCompatActivity {
                                     mHandler.postDelayed(() -> {
                                         String curUrl = mActivity.mPageInfo.getUrl();
                                         mActivity.mPageInfo.setUrl(value);
-                                        if (!value.contentEquals(curUrl) || eeuiCommon.timeStamp() - mActivity.mPageInfo.getLoadTime() > 5) {
+                                        if (!value.contentEquals(curUrl) || eeuiCommon.getVariateInt("__system:deBugSocket:Click") == 1) {
                                             mActivity.reload();
                                         }
                                         BGAKeyboardUtil.closeKeyboard(PageActivity.this);

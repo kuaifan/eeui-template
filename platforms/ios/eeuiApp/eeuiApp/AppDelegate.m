@@ -256,6 +256,7 @@ NSDictionary *mLaunchOptions;
 
 //点击悬浮按钮
 - (void) clickDebugBtn {
+    [mController setBugBtnClick];
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"开发工具菜单"
                                           message:nil
@@ -546,6 +547,28 @@ NSDictionary *mLaunchOptions;
         }
     }
     if ([type isEqualToString:@"HOMEPAGE"]) {
+        if (![mController isBugBtnClick]) {
+            BOOL meetSkip = YES;
+            NSURL *valueUri = [NSURL URLWithString:value];
+            NSString *valueHP = [NSString stringWithFormat:@"%@:%ld", [valueUri host], (long)[[valueUri port] integerValue]];
+            NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
+            for (NSString *pageName in viewData) {
+                id view = [viewData objectForKey:pageName];
+                if ([view isKindOfClass:[eeuiViewController class]]) {
+                    eeuiViewController *vc = (eeuiViewController*)view;
+                    NSURL *hostUri = [NSURL URLWithString:[vc url]];
+                    NSString *hostHP = [NSString stringWithFormat:@"%@:%ld", [hostUri host], (long)[[hostUri port] integerValue]];
+                    if (![hostHP isEqualToString:valueHP]) {
+                        meetSkip = NO;
+                    }
+                } else {
+                    meetSkip = NO;
+                }
+            }
+            if (meetSkip) {
+                return;
+            }
+        }
         [[[DeviceUtil getTopviewControler] navigationController] popToRootViewControllerAnimated:NO];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [mController loadUrl:value forceRefresh:NO];

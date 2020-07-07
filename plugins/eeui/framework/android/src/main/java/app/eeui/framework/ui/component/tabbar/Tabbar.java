@@ -139,6 +139,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                     mViewPager.lifecycleListener(mViewPager.getCurrentItem(), eeuiParse.parseStr(retData.get("status")));
                 }
             });
+            ((PageActivity) context).setAppStatusListeners(mPageStatus -> mViewPager.appStatusListeners(mViewPager.getCurrentItem(), mPageStatus));
         }
         //
         if (BuildConfig.DEBUG) {
@@ -541,6 +542,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
         sdkBean.setProgressBackground(view.findViewById(R.id.v_progressbg));
         sdkBean.setErrorView(view.findViewById(R.id.v_error));
         sdkBean.setErrorCodeView(view.findViewById(R.id.v_error_code));
+        sdkBean.setTabName(barBean.getTabName());
         sdkBean.setCache(barBean.getCache());
         sdkBean.setParams(barBean.getParams());
         sdkBean.setLoading(barBean.isLoading());

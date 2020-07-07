@@ -183,6 +183,15 @@ public class WeexModule extends WXModule {
     }
 
     /**
+     * 向指定页面发送信息
+     * @param object
+     */
+    @JSMethod
+    public void postMessage(String object) {
+        myApp().postMessage(mWXSDKInstance.getContext(), object);
+    }
+
+    /**
      * 获取页面缓存大小
      */
     @JSMethod

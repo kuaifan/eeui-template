@@ -411,10 +411,15 @@
     [vc postStatusListener:listener data:dic];
 }
 
+- (void)postMessage:(id)params
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"VCPostMessage" object:params];
+}
+
 - (void)getCacheSizePage:(WXModuleKeepAliveCallback)callback
 {
     NSString *filePath =  [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"page_cache"];
-    NSInteger  size = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
+    NSInteger size = (NSInteger) [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
 
     if (callback) {
         callback(@{@"size":@(size)}, YES);

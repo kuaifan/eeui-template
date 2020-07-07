@@ -1,3 +1,5 @@
+# 修改内容
+
 ## 一
 
 ```js
@@ -27,4 +29,22 @@ cn\(e\).concat\(\["__(.*?)"\]\)
 
 ```
 eeuiNativeLog.create(cn(e), "$1")
+```
+
+## 四
+
+
+在`E=[......,"errorCaptured"]`数组添加
+
+```
+"appActive","appDeactive","pageReady","pageResume","pagePause","pageDestroy","pageMessage"
+```
+
+## 五
+
+
+在第一个`mixin.beforeCreate`里面最后加入
+
+```
+;(function(t){var g=t.$requireWeexModule("globalEvent");var u=function(s){return s.charAt(0).toUpperCase()+s.slice(1)};g.addEventListener("__appLifecycleStatus",function(data){if(typeof data=="object"&&data!=null&&data.status){var n=data.type+u(data.status);var e=t.$options[n];if(e){for(var r=0,o=e.length;r<o;r++){try{e[r].call(t,data)}catch(e){Ne(e,t,n+" hook")}}}}})})(this)
 ```

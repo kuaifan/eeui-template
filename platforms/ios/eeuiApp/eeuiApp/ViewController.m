@@ -20,6 +20,7 @@
 @interface ViewController ()
 
 @property (nonatomic, assign) BOOL ready;
+@property (nonatomic, assign) BOOL bugBtnClick;
 @property (nonatomic, assign) BOOL isOpenNext;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 
@@ -69,10 +70,10 @@ eeuiViewController *homeController;
         dispatch_async(dispatch_get_main_queue(), ^{
             [WeexSDKManager sharedIntstance].weexUrl = bundleUrl;
             [[WeexSDKManager sharedIntstance] setup];
-            
+
             [self.activityIndicatorView setHidden:YES];
             [self.activityIndicatorView stopAnimating];
-            
+
             self.ready = YES;
             homeController = [[eeuiViewController alloc] init];
             homeController.url = bundleUrl;
@@ -104,13 +105,13 @@ eeuiViewController *homeController;
             [[UIApplication sharedApplication] delegate].window.rootViewController =  [[WXRootViewController alloc] initWithRootViewController:homeController];
             [[eeuiNewPageManager sharedIntstance] setPageData:homeController.pageName vc:homeController];
         });
-    }];   
+    }];
 }
 
 - (void) loadUrl:(NSString*) url forceRefresh:(BOOL) forceRefresh {
     [WeexSDKManager sharedIntstance].weexUrl = url;
     NSString *curUrl = homeController.url;
-    if (forceRefresh || ![url isEqualToString:curUrl] || [[NSDate date] timeIntervalSince1970] - homeController.loadTime > 5) {
+    if (forceRefresh || ![url isEqualToString:curUrl] || self.bugBtnClick) {
         [homeController setHomeUrl: url refresh:YES];
     }else{
         [homeController setHomeUrl: url refresh:NO];
@@ -127,6 +128,14 @@ eeuiViewController *homeController;
     if (welcome_jump.length > 0) {
         [self openNext:welcome_jump];
     }
+}
+
+- (BOOL) isBugBtnClick {
+    return self.bugBtnClick;
+}
+
+- (void) setBugBtnClick {
+    self.bugBtnClick = YES;
 }
 
 @end

@@ -44,6 +44,7 @@ import app.eeui.framework.extend.adapter.DrawableLoader;
 import app.eeui.framework.extend.adapter.ImageAdapter;
 import app.eeui.framework.extend.annotation.ModuleEntry;
 import app.eeui.framework.extend.bean.PageBean;
+import app.eeui.framework.extend.bean.PageStatus;
 import app.eeui.framework.extend.integration.glide.Glide;
 import app.eeui.framework.extend.integration.glide.load.engine.DiskCacheStrategy;
 import app.eeui.framework.extend.integration.glide.request.RequestOptions;
@@ -114,6 +115,9 @@ public class eeui {
     private static LinkedList<Activity> mActivityList = new LinkedList<>();
 
     public static int finishingNumber = 0;
+
+    private static int activityStartCount = 0;
+    private static boolean activityStopped = false;
 
     public static Application getApplication() {
         return application;
@@ -220,6 +224,17 @@ public class eeui {
         @Override
         public void onActivityStarted(Activity activity) {
             setTopActivity(activity);
+            if (activityStartCount++ == 0) {
+                // 页面重活（失活之后）
+                if (activityStopped) {
+                    LinkedList<Activity> activityList = eeui.getActivityList();
+                    for (Activity context : activityList) {
+                        if (context instanceof PageActivity) {
+                            ((PageActivity) context).onAppStatusListener(new PageStatus("app", "active", null, null));
+                        }
+                    }
+                }
+            }
         }
 
         @Override
@@ -234,7 +249,16 @@ public class eeui {
 
         @Override
         public void onActivityStopped(Activity activity) {
-
+            if (--activityStartCount == 0) {
+                // 页面失活
+                activityStopped = true;
+                LinkedList<Activity> activityList = eeui.getActivityList();
+                for (Activity context : activityList) {
+                    if (context instanceof PageActivity) {
+                        ((PageActivity) context).onAppStatusListener(new PageStatus("app", "deactive", null, null));
+                    }
+                }
+            }
         }
 
         @Override
@@ -848,6 +872,21 @@ public class eeui {
         }
         PageActivity mPageActivity = ((PageActivity) mPageBean.getContext());
         mPageActivity.onPageStatusListener(eeuiJson.getString(json, "listenerName", object), status, json.get("extra"));
+    }
+
+    /**
+     * 向指定页面发送信息
+     * @param object
+     */
+    public void postMessage(Context context, String object) {
+        JSONObject json = eeuiJson.parseObject(object);
+        String pageName = eeuiJson.getString(json, "pageName");
+        LinkedList<Activity> activityList = eeui.getActivityList();
+        for (Activity mContext : activityList) {
+            if (mContext instanceof PageActivity) {
+                ((PageActivity) mContext).onAppStatusListener(new PageStatus("page", "message", pageName, json));
+            }
+        }
     }
 
     /**

@@ -166,6 +166,14 @@ public class WebModule {
     }
 
     /**
+     * 向指定页面发送信息
+     * @param object
+     */
+    public static void postMessage(ExtendWebView webView, String object) {
+        myApp().postMessage(webView.getContext(), object);
+    }
+
+    /**
      * 获取页面缓存大小
      */
     public static void getCacheSizePage(ExtendWebView webView, JsCallback callback) {
