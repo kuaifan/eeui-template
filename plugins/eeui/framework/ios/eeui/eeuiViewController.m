@@ -1285,7 +1285,7 @@ static int easyNavigationButtonTag = 8000;
         if (icon.length > 0) {
             if (![self isFontIcon:icon]) {
                 icon = [DeviceUtil rewriteUrl:icon mInstance:[[WXSDKManager bridgeMgr] topInstance]];
-                [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:icon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:icon] options:SDWebImageDownloaderUseNSURLCache progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
                             [customButton setImage:[DeviceUtil imageResize:image andResizeTo:CGSizeMake([self NAVSCALE:iconSize], [self NAVSCALE:iconSize]) icon:nil] forState:UIControlStateNormal];

@@ -1536,7 +1536,11 @@ public class PageActivity extends AppCompatActivity {
         });
 
         if (!mPageInfo.isFirstPage() && titleBarLeftNull) {
-            JSONObject styles = eeuiBase.config.getObject("navigationBarStyle").getJSONObject("left");
+            JSONObject defaultStyle = eeuiBase.config.getObject("navigationBarStyle");
+            JSONObject styles = new JSONObject();
+            if (defaultStyle != null && defaultStyle.getJSONObject("left") != null) {
+                styles = defaultStyle.getJSONObject("left");
+            }
             if (styles.get("icon") == null) {
                 styles.put("icon","tb-back");
             }
