@@ -206,7 +206,7 @@
 		B2B1EAA42227E23D0087A8D1 /* WeexSDKManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9B82227E23C0087A8D1 /* WeexSDKManager.m */; };
 		B2B1EAA52227E23D0087A8D1 /* eeuiNavbarItemComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9BA2227E23C0087A8D1 /* eeuiNavbarItemComponent.m */; };
 		B2B1EAA62227E23D0087A8D1 /* eeuiRecylerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9BB2227E23C0087A8D1 /* eeuiRecylerComponent.m */; };
-		B2B1EAA72227E23D0087A8D1 /* eeuiWebviewComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9BC2227E23C0087A8D1 /* eeuiWebviewComponent.m */; };
+		B2B1EAA72227E23D0087A8D1 /* eeuiWKWebViewComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9BC2227E23C0087A8D1 /* eeuiWKWebViewComponent.m */; };
 		B2B1EAA82227E23D0087A8D1 /* eeuiMarqueeComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9BD2227E23C0087A8D1 /* eeuiMarqueeComponent.m */; };
 		B2B1EAA92227E23D0087A8D1 /* eeuiIconComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9BE2227E23C0087A8D1 /* eeuiIconComponent.m */; };
 		B2B1EAAA2227E23D0087A8D1 /* eeuiRippleComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B1E9BF2227E23C0087A8D1 /* eeuiRippleComponent.m */; };
@@ -621,7 +621,7 @@
 		B2B1E9B82227E23C0087A8D1 /* WeexSDKManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeexSDKManager.m; sourceTree = "<group>"; };
 		B2B1E9BA2227E23C0087A8D1 /* eeuiNavbarItemComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eeuiNavbarItemComponent.m; sourceTree = "<group>"; };
 		B2B1E9BB2227E23C0087A8D1 /* eeuiRecylerComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eeuiRecylerComponent.m; sourceTree = "<group>"; };
-		B2B1E9BC2227E23C0087A8D1 /* eeuiWebviewComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eeuiWebviewComponent.m; sourceTree = "<group>"; };
+		B2B1E9BC2227E23C0087A8D1 /* eeuiWKWebViewComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eeuiWKWebViewComponent.m; sourceTree = "<group>"; };
 		B2B1E9BD2227E23C0087A8D1 /* eeuiMarqueeComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eeuiMarqueeComponent.m; sourceTree = "<group>"; };
 		B2B1E9BE2227E23C0087A8D1 /* eeuiIconComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eeuiIconComponent.m; sourceTree = "<group>"; };
 		B2B1E9BF2227E23C0087A8D1 /* eeuiRippleComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eeuiRippleComponent.m; sourceTree = "<group>"; };
@@ -637,7 +637,7 @@
 		B2B1E9C92227E23C0087A8D1 /* eeuiBannerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiBannerComponent.h; sourceTree = "<group>"; };
 		B2B1E9CA2227E23C0087A8D1 /* eeuiTabbarPageComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiTabbarPageComponent.h; sourceTree = "<group>"; };
 		B2B1E9CB2227E23C0087A8D1 /* eeuiMarqueeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiMarqueeComponent.h; sourceTree = "<group>"; };
-		B2B1E9CC2227E23C0087A8D1 /* eeuiWebviewComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiWebviewComponent.h; sourceTree = "<group>"; };
+		B2B1E9CC2227E23C0087A8D1 /* eeuiWKWebViewComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiWKWebViewComponent.h; sourceTree = "<group>"; };
 		B2B1E9CD2227E23C0087A8D1 /* eeuiRecylerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiRecylerComponent.h; sourceTree = "<group>"; };
 		B2B1E9CE2227E23C0087A8D1 /* eeuiNavbarItemComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiNavbarItemComponent.h; sourceTree = "<group>"; };
 		B2B1E9CF2227E23C0087A8D1 /* eeuiTabbarComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eeuiTabbarComponent.h; sourceTree = "<group>"; };
@@ -1545,7 +1545,7 @@
 			children = (
 				B2B1E9BA2227E23C0087A8D1 /* eeuiNavbarItemComponent.m */,
 				B2B1E9BB2227E23C0087A8D1 /* eeuiRecylerComponent.m */,
-				B2B1E9BC2227E23C0087A8D1 /* eeuiWebviewComponent.m */,
+				B2B1E9BC2227E23C0087A8D1 /* eeuiWKWebViewComponent.m */,
 				B2B1E9BD2227E23C0087A8D1 /* eeuiMarqueeComponent.m */,
 				B2B1E9BE2227E23C0087A8D1 /* eeuiIconComponent.m */,
 				B2B1E9BF2227E23C0087A8D1 /* eeuiRippleComponent.m */,
@@ -1561,7 +1561,7 @@
 				B2B1E9C92227E23C0087A8D1 /* eeuiBannerComponent.h */,
 				B2B1E9CA2227E23C0087A8D1 /* eeuiTabbarPageComponent.h */,
 				B2B1E9CB2227E23C0087A8D1 /* eeuiMarqueeComponent.h */,
-				B2B1E9CC2227E23C0087A8D1 /* eeuiWebviewComponent.h */,
+				B2B1E9CC2227E23C0087A8D1 /* eeuiWKWebViewComponent.h */,
 				B2B1E9CD2227E23C0087A8D1 /* eeuiRecylerComponent.h */,
 				B2B1E9CE2227E23C0087A8D1 /* eeuiNavbarItemComponent.h */,
 				B2B1E9CF2227E23C0087A8D1 /* eeuiTabbarComponent.h */,
@@ -1682,7 +1682,7 @@
 				B2B1EA712227E23D0087A8D1 /* SDImageCacheConfig.m in Sources */,
 				B2B1E9FA2227E23C0087A8D1 /* MJRefreshNormalHeader.m in Sources */,
 				B2B1EA9C2227E23D0087A8D1 /* eeuiStorageManager.m in Sources */,
-				B2B1EAA72227E23D0087A8D1 /* eeuiWebviewComponent.m in Sources */,
+				B2B1EAA72227E23D0087A8D1 /* eeuiWKWebViewComponent.m in Sources */,
 				B2B1EA5F2227E23D0087A8D1 /* SDWebImageCodersManager.m in Sources */,
 				B2B1EAA02227E23D0087A8D1 /* eeuiAdDialogManager.m in Sources */,
 				B2B1EA0E2227E23C0087A8D1 /* DGActivityIndicatorRotatingSquaresAnimation.m in Sources */,

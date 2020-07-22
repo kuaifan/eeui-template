@@ -1,8 +1,8 @@
 {
     "name": "eeui-template",
-    "version": "2.3.7",
+    "version": "2.3.8",
     "description": "A eeui project",
-    "eeuiclimin": "2.3.7",
+    "eeuiclimin": "2.3.8",
     "author": "kuaifan",
     "scripts": {
         "dev": "eeui dev",

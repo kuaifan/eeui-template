@@ -71,7 +71,7 @@
     [WXSDKEngine registerComponent:@"tabbar" withClass:NSClassFromString(@"eeuiTabbarComponent")];
     [WXSDKEngine registerComponent:@"tabbar-page" withClass:NSClassFromString(@"eeuiTabbarPageComponent")];
     [WXSDKEngine registerComponent:@"view" withClass:NSClassFromString(@"eeuiViewComponent")];
-    [WXSDKEngine registerComponent:@"web-view" withClass:NSClassFromString(@"eeuiWebviewComponent")];
+    [WXSDKEngine registerComponent:@"web-view" withClass:NSClassFromString(@"eeuiWKWebViewComponent")];
 
 #ifdef DEBUG
     [WXLog setLogLevel:WXLogLevelLog];

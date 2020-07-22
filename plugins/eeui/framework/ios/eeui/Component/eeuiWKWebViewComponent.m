@@ -1,26 +1,26 @@
 //
-//  eeuiWebviewComponent.m
+//  eeuiWKWebViewComponent.m
 //  WeexTestDemo
 //
 //  Created by apple on 2018/6/5.
 //  Copyright © 2018年 TomQin. All rights reserved.
 //
 
-#import "eeuiWebviewComponent.h"
+#import "eeuiWKWebViewComponent.h"
 #import "DeviceUtil.h"
 #import "YHWebViewProgressView.h"
 #import "eeuiStorageManager.h"
 #import "JSCallCommon.h"
 
-@interface eeuiWebView : WKWebView
+@interface eeuiWKWebView : WKWebView
 @end
 
-@implementation eeuiWebView
+@implementation eeuiWKWebView
 
 
 @end
 
-@interface eeuiWebviewComponent() <WKNavigationDelegate, WKUIDelegate>
+@interface eeuiWKWebViewComponent() <WKNavigationDelegate, WKUIDelegate>
 
 @property (nonatomic, strong) NSString *content;
 @property (nonatomic, strong) NSString *url;
@@ -40,7 +40,7 @@
 
 @end
 
-@implementation eeuiWebviewComponent
+@implementation eeuiWKWebViewComponent
 
 WX_EXPORT_METHOD(@selector(setContent:))
 WX_EXPORT_METHOD(@selector(setUrl:))
@@ -108,14 +108,14 @@ WX_EXPORT_METHOD(@selector(goForward:))
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:originalUserAgent, @"UserAgent", nil];
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
     //初始化浏览器对象
-    return [[eeuiWebView alloc] init];
+    return [[eeuiWKWebView alloc] init];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
 
     self.progressView = [[YHWebViewProgressView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 2)];
     self.progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleBottomMargin;
@@ -178,7 +178,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 {
     if (_isRemoveObserver != YES) {
         _isRemoveObserver = YES;
-        eeuiWebView *webView = (eeuiWebView*)self.view;
+        eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
         if (_isHeightChanged) {
             [webView.scrollView removeObserver:self forKeyPath:@"contentSize" context:nil];
         }
@@ -190,7 +190,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    eeuiWebView *webView = (eeuiWebView*) self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*) self.view;
     if ([keyPath isEqualToString:@"contentSize"]) {
         CGFloat webViewHeight = webView.scrollView.contentSize.height;
         CGFloat contentHeight = 750 * 1.0 / [UIScreen mainScreen].bounds.size.width * webViewHeight;
@@ -354,7 +354,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 //设置浏览器内容
 - (void)setContent:(NSString*)content
 {
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
     if (![content containsString:@"</html>"] && ![content containsString:@"</HTML>"]) {
         NSString *html = @"<html><header><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no'><style type='text/css'>{commonStyle}</style></header><body>{content}</body></html>";
         html = [html stringByReplacingOccurrencesOfString:@"{commonStyle}" withString:[DeviceUtil webCommonStyle]];
@@ -366,7 +366,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 //设置浏览器地址
 - (void)setUrl:(NSString*)urlStr
 {
-    eeuiWebView *webView = (eeuiWebView*) self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*) self.view;
     _url = urlStr;
     NSURL *url = [NSURL URLWithString:urlStr];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
@@ -376,7 +376,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 //设置JavaScript
 - (void)setJavaScript:(NSString*)script
 {
-    eeuiWebView *webView = (eeuiWebView*) self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*) self.view;
     NSString *javaScript = [@";(function(){?})();" stringByReplacingOccurrencesOfString:@"?" withString:script];
     [webView evaluateJavaScript:javaScript completionHandler:nil];
 }
@@ -394,7 +394,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 //设置是否透明背景
 - (void)setTransparency:(BOOL)var
 {
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
     if (var) {
         webView.opaque = NO;
         webView.backgroundColor = [UIColor clearColor];
@@ -408,21 +408,21 @@ WX_EXPORT_METHOD(@selector(goForward:))
 - (void)setScrollEnabled:(BOOL)var
 {
     _isScrollEnabled = var;
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
     ((UIScrollView *)[webView.subviews objectAtIndex:0]).scrollEnabled = var;
 }
 
 //是否可以后退
 - (void)canGoBack:(WXModuleKeepAliveCallback)callback
 {
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
     callback(@(webView.canGoBack), NO);
 }
 
 //后退并返回是否后退成功
 - (void)goBack:(WXModuleKeepAliveCallback)callback
 {
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
 
     if (webView.canGoBack) {
         [webView goBack];
@@ -433,14 +433,14 @@ WX_EXPORT_METHOD(@selector(goForward:))
 //是否可以前进
 - (void)canGoForward:(WXModuleKeepAliveCallback)callback
 {
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
     callback(@(webView.canGoForward), NO);
 }
 
 //前进并返回是否前进成功
 - (void)goForward:(WXModuleKeepAliveCallback)callback
 {
-    eeuiWebView *webView = (eeuiWebView*)self.view;
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
     if (webView.canGoForward) {
         [webView goForward];
     }

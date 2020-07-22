@@ -1,5 +1,5 @@
 //
-//  eeuiWebviewComponent.h
+//  eeuiWKWebViewComponent.h
 //  WeexTestDemo
 //
 //  Created by apple on 2018/6/5.
@@ -9,6 +9,6 @@
 #import "WXComponent.h"
 #import "WeexSDK.h"
 
-@interface eeuiWebviewComponent : WXComponent
+@interface eeuiWKWebViewComponent : WXComponent
 
 @end
