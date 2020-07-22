@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -48,6 +49,8 @@ import com.taobao.weex.common.WXRenderStrategy;
 import com.taobao.weex.dom.WXEvent;
 import com.taobao.weex.ui.component.WXComponent;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1434,7 +1437,7 @@ public class PageActivity extends AppCompatActivity {
      * @return
      */
     private boolean isFontIcon(String var) {
-        return var != null && !var.contains("//") && !var.startsWith("data:");
+        return var != null && !var.contains("//") && !var.startsWith("data:") && !var.endsWith(".png") && !var.endsWith(".jpg") && !var.endsWith(".jpeg") && !var.endsWith(".gif");
     }
 
     /**
@@ -1477,16 +1480,26 @@ public class PageActivity extends AppCompatActivity {
             item = eeuiJson.parseObject(params);
         }
 
-        String title = eeuiJson.getString(item, "title", "");
-        String titleColor = eeuiJson.getString(item, "titleColor", "");
-        float titleSize = eeuiJson.getFloat(item, "titleSize", 32f);
-        boolean titleBold = eeuiJson.getBoolean(item, "titleBold", false);
-        String subtitle = eeuiJson.getString(item, "subtitle", "");
-        String subtitleColor = eeuiJson.getString(item, "subtitleColor", "");
-        float subtitleSize = eeuiJson.getFloat(item, "subtitleSize", 24f);
-        navigationBarBackgroundColor = eeuiJson.getString(item, "backgroundColor", (!mPageInfo.getStatusBarColor().equals("") ? mPageInfo.getStatusBarColor() : "#3EB4FF"));
+        JSONObject defaultStyles = eeuiBase.config.getObject("navigationBarStyle");
+        String title = eeuiJson.getString(item, "title", eeuiJson.getString(defaultStyles, "title", ""));
+        String titleColor = eeuiJson.getString(item, "titleColor", eeuiJson.getString(defaultStyles, "titleColor", ""));
+        float titleSize = eeuiJson.getFloat(item, "titleSize", eeuiJson.getFloat(defaultStyles, "titleSize", 32f));
+        boolean titleBold = eeuiJson.getBoolean(item, "titleBold", eeuiJson.getBoolean(defaultStyles, "titleBold", false));
+        String subtitle = eeuiJson.getString(item, "subtitle", eeuiJson.getString(defaultStyles, "subtitle", ""));
+        String subtitleColor = eeuiJson.getString(item, "subtitleColor", eeuiJson.getString(defaultStyles, "subtitleColor", ""));
+        float subtitleSize = eeuiJson.getFloat(item, "subtitleSize", eeuiJson.getFloat(defaultStyles, "subtitleSize", 24f));
+        navigationBarBackgroundColor = eeuiJson.getString(item, "backgroundColor", (!mPageInfo.getStatusBarColor().equals("") ? mPageInfo.getStatusBarColor() : eeuiJson.getString(defaultStyles, "backgroundColor", "#3EB4FF")));
 
         titleBar.setBackgroundColor(Color.parseColor(navigationBarBackgroundColor));
+
+        float titleBarHeight = eeuiJson.getFloat(item, "barHeight", eeuiJson.getFloat(defaultStyles, "barHeight", 0f));
+        if (titleBarHeight != 0f) {
+            ViewGroup.LayoutParams lp;
+            lp = titleBar.getLayoutParams();
+            lp.height =  eeuiScreenUtils.weexPx2dp(mWXSDKInstance, titleBarHeight);
+            titleBar.setLayoutParams(lp);
+        }
+
         showNavigation();
 
         if (TextUtils.isEmpty(titleColor)) {
@@ -1523,7 +1536,17 @@ public class PageActivity extends AppCompatActivity {
         });
 
         if (!mPageInfo.isFirstPage() && titleBarLeftNull) {
-            setNavigationItems(eeuiJson.parseObject("{'icon':'tb-back', 'iconSize': 36, 'width': 98}"), "left", result -> eeuiPage.closeWin(mPageInfo.getPageName()));
+            JSONObject styles = eeuiBase.config.getObject("navigationBarStyle").getJSONObject("left");
+            if (styles.get("icon") == null) {
+                styles.put("icon","tb-back");
+            }
+            if (styles.get("iconSize") == null) {
+                styles.put("iconSize", 36);
+            }
+            if (styles.get("width") == null) {
+                styles.put("width", 98);
+            }
+            setNavigationItems(styles, "left", result -> eeuiPage.closeWin(mPageInfo.getPageName()));
         }
     }
 
@@ -1551,18 +1574,20 @@ public class PageActivity extends AppCompatActivity {
         } else {
             titleBarLeft.removeAllViews();
         }
+        JSONObject defaultStyles = eeuiBase.config.getObject("navigationBarStyle");
+        defaultStyles = defaultStyles.getJSONObject(position);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         for (int i = 0; i < buttonArray.size(); i++) {
             JSONObject item = eeuiJson.parseObject(buttonArray.get(i));
-            String title = eeuiJson.getString(item, "title", "");
-            String titleColor = eeuiJson.getString(item, "titleColor", "");
-            float titleSize = eeuiJson.getFloat(item, "titleSize", 28f);
-            boolean titleBold = eeuiJson.getBoolean(item, "titleBold", false);
-            String icon = eeuiJson.getString(item, "icon", "");
-            String iconColor = eeuiJson.getString(item, "iconColor", "");
-            float iconSize = eeuiJson.getFloat(item, "iconSize", 28f);
-            int width = eeuiScreenUtils.weexPx2dp(mWXSDKInstance, item.get("width"));
-            int spacing = eeuiScreenUtils.weexPx2dp(mWXSDKInstance, item.get("spacing"), 10);
+            String title = eeuiJson.getString(item, "title", eeuiJson.getString(defaultStyles, "title", ""));
+            String titleColor = eeuiJson.getString(item, "titleColor", eeuiJson.getString(defaultStyles, "titleColor", ""));
+            float titleSize = eeuiJson.getFloat(item, "titleSize", eeuiJson.getFloat(defaultStyles, "titleSize", 28f));
+            boolean titleBold = eeuiJson.getBoolean(item, "titleBold", eeuiJson.getBoolean(defaultStyles, "titleBold", false));
+            String icon = eeuiJson.getString(item, "icon", eeuiJson.getString(defaultStyles, "icon", ""));
+            String iconColor = eeuiJson.getString(item, "iconColor", eeuiJson.getString(defaultStyles, "iconColor", ""));
+            float iconSize = eeuiJson.getFloat(item, "iconSize", eeuiJson.getFloat(defaultStyles, "iconSize", 28f));
+            int width = eeuiScreenUtils.weexPx2dp(mWXSDKInstance, item.get("width"), eeuiJson.getInt(defaultStyles, "width", 0));
+            int spacing = eeuiScreenUtils.weexPx2dp(mWXSDKInstance, item.get("spacing"), eeuiJson.getInt(defaultStyles, "spacing", 10));
 
             if (TextUtils.isEmpty(titleColor)) {
                 titleColor = navigationBarBackgroundColor.contentEquals("#3EB4FF") ? "#ffffff" : "#232323";
@@ -1587,19 +1612,31 @@ public class PageActivity extends AppCompatActivity {
                     iconView.setTextColor(Color.parseColor(iconColor));
                     customButton.addView(iconView);
                 }else{
+                    icon = eeuiPage.rewriteUrl(this, icon);
                     ImageView imgView = new ImageView(this);
                     imgView.setLayoutParams(new LinearLayout.LayoutParams(eeuiScreenUtils.weexPx2dp(mWXSDKInstance, iconSize), LinearLayout.LayoutParams.MATCH_PARENT));
                     imgView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    Glide.with(imgView.getContext()).load(icon).apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)).listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            return false;
+                    if (icon.startsWith("file://assets/")) {
+                        icon = icon.substring(14);
+                        try {
+                            InputStream is = getAssets().open(icon);
+                            Bitmap bitmap= BitmapFactory.decodeStream(is);
+                            imgView.setImageBitmap(bitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    }).into(imgView);
+                    } else {
+                        Glide.with(imgView.getContext()).load(icon).apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)).listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                return false;
+                            }
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                return false;
+                            }
+                        }).into(imgView);
+                    }
                     customButton.addView(imgView);
                 }
             }
