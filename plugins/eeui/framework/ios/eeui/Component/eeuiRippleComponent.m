@@ -74,14 +74,14 @@
 {
     CGRect frame = self.view.frame;
     if (_rippleButton == nil) {
-        __block typeof(self) bself = self;
+        __weak __typeof(self)weakSelf = self;
         _rippleButton = [[ZYCRippleButton alloc]initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
         _rippleButton.rippleLineWidth = 1;
         _rippleButton.rippleColor = [UIColor darkGrayColor];
         _rippleButton.backgroundColor = [UIColor clearColor];
         _rippleButton.rippleBlock = ^(void){
-            [bself fireEvent:@"click" params:nil];
-            [bself fireEvent:@"itemClick" params:nil];
+            [weakSelf fireEvent:@"click" params:nil];
+            [weakSelf fireEvent:@"itemClick" params:nil];
         };
         [self.view addSubview:_rippleButton];
     }else{

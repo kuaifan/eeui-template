@@ -597,7 +597,8 @@
 - (void)setPageData:(NSString*)pageName vc:(eeuiViewController *)vc
 {
     if (pageName.length > 0) {
-        [self.viewData setObject:vc forKey:pageName];
+        __weak __typeof(vc)weakVC = vc;
+        [self.viewData setObject:weakVC forKey:pageName];
 
         NSMutableDictionary *res = [NSMutableDictionary dictionaryWithDictionary:@{}];
         [res setObject:vc.url forKey:@"url"];
