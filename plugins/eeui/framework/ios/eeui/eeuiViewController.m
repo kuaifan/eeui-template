@@ -1145,20 +1145,23 @@ static int easyNavigationButtonTag = 8000;
         _navigationCallbackDictionary = [[NSMutableDictionary alloc] init];
     }
 
+    NSDictionary *defaultStyles = [Config getObject:@"navigationBarStyle"];
     NSMutableDictionary *item = [[NSMutableDictionary alloc] init];
     if ([params isKindOfClass:[NSString class]]) {
         item[@"title"] = [WXConvert NSString:params];
     } else if ([params isKindOfClass:[NSDictionary class]]) {
         item = [params copy];
     }
-    NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : @"";
-    NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"";
-    CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : 32.0;
-    BOOL titleBold = [item[@"titleBold"] boolValue];
-    NSString *subtitle = item[@"subtitle"] ? [WXConvert NSString:item[@"subtitle"]] : @"";
-    NSString *subtitleColor = item[@"subtitleColor"] ? [WXConvert NSString:item[@"subtitleColor"]] : @"";
-    CGFloat subtitleSize = item[@"subtitleSize"] ? [WXConvert CGFloat:item[@"subtitleSize"]] : 24.0;
-    _navigationBarBarColor = item[@"backgroundColor"] ? [WXConvert NSString:item[@"backgroundColor"]] : (_statusBarColor ? _statusBarColor : @"#3EB4FF");
+
+    
+    NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : (defaultStyles[@"title"] ? [WXConvert NSString:defaultStyles[@"title"]] : @"");
+    NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : (defaultStyles[@"titleColor"] ? [WXConvert NSString:defaultStyles[@"titleColor"]] : @"");
+    CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : (defaultStyles[@"titleSize"] ? [WXConvert CGFloat:defaultStyles[@"titleSize"]] : 32.0);
+    BOOL titleBold = item[@"titleBold"] ? [item[@"titleBold"] boolValue] : [defaultStyles[@"titleBold"] boolValue];
+    NSString *subtitle = item[@"subtitle"] ? [WXConvert NSString:item[@"subtitle"]] : (defaultStyles[@"subtitle"] ? [WXConvert NSString:defaultStyles[@"subtitle"]] : @"");
+    NSString *subtitleColor = item[@"subtitleColor"] ? [WXConvert NSString:item[@"subtitleColor"]] : (defaultStyles[@"subtitleColor"] ? [WXConvert NSString:defaultStyles[@"subtitleColor"]] : @"");
+    CGFloat subtitleSize = item[@"subtitleSize"] ? [WXConvert CGFloat:item[@"subtitleSize"]] : (defaultStyles[@"subtitleSize"] ? [WXConvert CGFloat:defaultStyles[@"subtitleSize"]] : 24.0);
+    _navigationBarBarColor = item[@"backgroundColor"] ? [WXConvert NSString:item[@"backgroundColor"]] : (_statusBarColor ? _statusBarColor : (defaultStyles[@"backgroundColor"] ? [WXConvert NSString:defaultStyles[@"backgroundColor"]] : @"#3EB4FF"));
 
     //背景色
     CGFloat alpha = (255 - _statusBarAlpha) * 1.0 / 255;
@@ -1229,7 +1232,9 @@ static int easyNavigationButtonTag = 8000;
     }
 
     if (!_isFirstPage && self.navigationItem.leftBarButtonItems.count == 0) {
-        [self setNavigationItems:@{@"icon":@"tb-back", @"iconSize":@(36)} position:@"left" callback:^(id result, BOOL keepAlive) {
+        NSDictionary *defaultStyles = [Config getObject:@"navigationBarStyle"];
+        defaultStyles = defaultStyles[@"left"] ? defaultStyles[@"left"] : nil;
+        [self setNavigationItems:@{@"icon":defaultStyles[@"icon"] ? defaultStyles[@"icon"] : @"tb-back", @"iconSize":defaultStyles[@"iconSize"] ? defaultStyles[@"iconSize"] : @(36)} position:@"left" callback:^(id result, BOOL keepAlive) {
             [[[DeviceUtil getTopviewControler] navigationController] popViewControllerAnimated:YES];
         }];
     }
@@ -1252,18 +1257,21 @@ static int easyNavigationButtonTag = 8000;
         [buttonArray addObject:params];
     }
 
+    NSDictionary *defaultStyles = [Config getObject:@"navigationBarStyle"];
+    defaultStyles = defaultStyles[position] ? defaultStyles[position] : nil;
+    
     UIView *buttonItems = [[UIView alloc] init];
     for (NSDictionary *item in buttonArray)
     {
-        NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : @"";
-        NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"";
-        CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : 28.0;
-        BOOL titleBold = [item[@"titleBold"] boolValue];
-        NSString *icon = item[@"icon"] ? [WXConvert NSString:item[@"icon"]] : @"";
-        NSString *iconColor = item[@"iconColor"] ? [WXConvert NSString:item[@"iconColor"]] : @"";
-        CGFloat iconSize = item[@"iconSize"] ? [WXConvert CGFloat:item[@"iconSize"]] : 28.0;
-        NSInteger width = item[@"width"] ? [WXConvert NSInteger:item[@"width"]] : 0;
-        NSInteger spacing = item[@"spacing"] ? [WXConvert NSInteger:item[@"spacing"]] : 10;
+        NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : (defaultStyles[@"title"] ? [WXConvert NSString:defaultStyles[@"title"]] : @"");
+        NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : (defaultStyles[@"titleColor"] ? [WXConvert NSString:defaultStyles[@"titleColor"]] : @"");
+        CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : (defaultStyles[@"titleSize"] ? [WXConvert CGFloat:defaultStyles[@"titleSize"]] : 28.0);
+        BOOL titleBold = item[@"titleBold"] ? [item[@"titleBold"] boolValue] : [defaultStyles[@"titleBold"] boolValue];
+        NSString *icon = item[@"icon"] ? [WXConvert NSString:item[@"icon"]] : (defaultStyles[@"icon"] ? [WXConvert NSString:defaultStyles[@"icon"]] : @"");
+        NSString *iconColor = item[@"iconColor"] ? [WXConvert NSString:item[@"iconColor"]] : (defaultStyles[@"iconColor"] ? [WXConvert NSString:defaultStyles[@"iconColor"]] : @"");
+        CGFloat iconSize = item[@"iconSize"] ? [WXConvert CGFloat:item[@"iconSize"]] : (defaultStyles[@"iconSize"] ? [WXConvert CGFloat:defaultStyles[@"iconSize"]] : 28.0);
+        NSInteger width = item[@"width"] ? [WXConvert NSInteger:item[@"width"]]  : (defaultStyles[@"width"] ? [WXConvert CGFloat:defaultStyles[@"width"]] : 0);
+        NSInteger spacing = item[@"spacing"] ? [WXConvert NSInteger:item[@"spacing"]] : (defaultStyles[@"spacing"] ? [WXConvert CGFloat:defaultStyles[@"spacing"]] : 10);
         
         //文字默认颜色
         if (titleColor.length == 0) {
@@ -1275,7 +1283,8 @@ static int easyNavigationButtonTag = 8000;
 
         UIButton *customButton = [UIButton buttonWithType:UIButtonTypeCustom];
         if (icon.length > 0) {
-            if ([icon containsString:@"//"] || [icon hasPrefix:@"data:"]) {
+            if (![self isFontIcon:icon]) {
+                icon = [DeviceUtil rewriteUrl:icon mInstance:[[WXSDKManager bridgeMgr] topInstance]];
                 [SDWebImageDownloader.sharedDownloader downloadImageWithURL:[NSURL URLWithString:icon] options:SDWebImageDownloaderLowPriority progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     if (image) {
                         WXPerformBlockOnMainThread(^{
@@ -1381,6 +1390,19 @@ static int easyNavigationButtonTag = 8000;
 - (CGFloat)NAVSCALE:(CGFloat)size
 {
     return MIN([UIScreen mainScreen].bounds.size.width, 375) * 1.0f/750 * size;
+}
+
+- (BOOL)isFontIcon:(NSString*)var
+{
+    if (var == nil) {
+        return NO;
+    }
+    NSString *val = [var lowercaseString];
+    if ([val containsString:@"//"] || [val hasPrefix:@"data:"] || [val hasSuffix:@".png"] || [val hasSuffix:@".jpg"] || [val hasSuffix:@".jpeg"] || [val hasSuffix:@".gif"]) {
+        return NO;
+    }else{
+        return YES;
+    }
 }
 
 @end
