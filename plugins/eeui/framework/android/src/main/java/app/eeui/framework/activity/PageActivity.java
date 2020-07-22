@@ -1536,11 +1536,7 @@ public class PageActivity extends AppCompatActivity {
         });
 
         if (!mPageInfo.isFirstPage() && titleBarLeftNull) {
-            JSONObject defaultStyle = eeuiBase.config.getObject("navigationBarStyle");
-            JSONObject styles = new JSONObject();
-            if (defaultStyle != null && defaultStyle.getJSONObject("left") != null) {
-                styles = defaultStyle.getJSONObject("left");
-            }
+            JSONObject styles = eeuiJson.parseObject(defaultStyles.getJSONObject("left"));
             if (styles.get("icon") == null) {
                 styles.put("icon","tb-back");
             }
@@ -1578,8 +1574,7 @@ public class PageActivity extends AppCompatActivity {
         } else {
             titleBarLeft.removeAllViews();
         }
-        JSONObject defaultStyles = eeuiBase.config.getObject("navigationBarStyle");
-        defaultStyles = defaultStyles.getJSONObject(position);
+        JSONObject defaultStyles = eeuiJson.parseObject(eeuiBase.config.getObject("navigationBarStyle").getJSONObject(position));
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         for (int i = 0; i < buttonArray.size(); i++) {
             JSONObject item = eeuiJson.parseObject(buttonArray.get(i));
