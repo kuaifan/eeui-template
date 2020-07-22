@@ -1480,6 +1480,7 @@ public class PageActivity extends AppCompatActivity {
         String title = eeuiJson.getString(item, "title", "");
         String titleColor = eeuiJson.getString(item, "titleColor", "");
         float titleSize = eeuiJson.getFloat(item, "titleSize", 32f);
+        boolean titleBold = eeuiJson.getBoolean(item, "titleBold", false);
         String subtitle = eeuiJson.getString(item, "subtitle", "");
         String subtitleColor = eeuiJson.getString(item, "subtitleColor", "");
         float subtitleSize = eeuiJson.getFloat(item, "subtitleSize", 24f);
@@ -1501,6 +1502,7 @@ public class PageActivity extends AppCompatActivity {
             titleBarTitle.setVisibility(View.VISIBLE);
             titleBarTitle.setText(title);
             titleBarTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, eeuiScreenUtils.weexPx2dp(mWXSDKInstance, titleSize));
+            titleBarTitle.getPaint().setFakeBoldText(titleBold);
             titleBarTitle.setTextColor(Color.parseColor(titleColor));
         }
 
@@ -1555,6 +1557,7 @@ public class PageActivity extends AppCompatActivity {
             String title = eeuiJson.getString(item, "title", "");
             String titleColor = eeuiJson.getString(item, "titleColor", "");
             float titleSize = eeuiJson.getFloat(item, "titleSize", 28f);
+            boolean titleBold = eeuiJson.getBoolean(item, "titleBold", false);
             String icon = eeuiJson.getString(item, "icon", "");
             String iconColor = eeuiJson.getString(item, "iconColor", "");
             float iconSize = eeuiJson.getFloat(item, "iconSize", 28f);
@@ -1608,6 +1611,7 @@ public class PageActivity extends AppCompatActivity {
                 titleView.setGravity(Gravity.CENTER);
                 titleView.setText(title);
                 titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, eeuiScreenUtils.weexPx2dp(mWXSDKInstance, titleSize));
+                titleView.getPaint().setFakeBoldText(titleBold);
                 titleView.setTextColor(Color.parseColor(titleColor));
                 customButton.addView(titleView);
             }

@@ -1154,6 +1154,7 @@ static int easyNavigationButtonTag = 8000;
     NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : @"";
     NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"";
     CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : 32.0;
+    BOOL titleBold = [item[@"titleBold"] boolValue];
     NSString *subtitle = item[@"subtitle"] ? [WXConvert NSString:item[@"subtitle"]] : @"";
     NSString *subtitleColor = item[@"subtitleColor"] ? [WXConvert NSString:item[@"subtitleColor"]] : @"";
     CGFloat subtitleSize = item[@"subtitleSize"] ? [WXConvert CGFloat:item[@"subtitleSize"]] : 24.0;
@@ -1178,7 +1179,12 @@ static int easyNavigationButtonTag = 8000;
     [titleLabel setBackgroundColor:[UIColor clearColor]];
     [titleLabel setTextColor:[WXConvert UIColor:titleColor]];
     [titleLabel setText:[[NSString alloc] initWithFormat:@"  %@  ", title]];
-    [titleLabel setFont:[UIFont systemFontOfSize:[self NAVSCALE:titleSize]]];
+    if (titleBold) {
+        [titleLabel setFont:[UIFont boldSystemFontOfSize:[self NAVSCALE:titleSize]]];
+    } else {
+        [titleLabel setFont:[UIFont systemFontOfSize:[self NAVSCALE:titleSize]]];
+    }
+    
     [titleLabel sizeToFit];
 
     if (subtitle.length > 0) {
@@ -1252,6 +1258,7 @@ static int easyNavigationButtonTag = 8000;
         NSString *title = item[@"title"] ? [WXConvert NSString:item[@"title"]] : @"";
         NSString *titleColor = item[@"titleColor"] ? [WXConvert NSString:item[@"titleColor"]] : @"";
         CGFloat titleSize = item[@"titleSize"] ? [WXConvert CGFloat:item[@"titleSize"]] : 28.0;
+        BOOL titleBold = [item[@"titleBold"] boolValue];
         NSString *icon = item[@"icon"] ? [WXConvert NSString:item[@"icon"]] : @"";
         NSString *iconColor = item[@"iconColor"] ? [WXConvert NSString:item[@"iconColor"]] : @"";
         CGFloat iconSize = item[@"iconSize"] ? [WXConvert CGFloat:item[@"iconSize"]] : 28.0;
@@ -1282,7 +1289,12 @@ static int easyNavigationButtonTag = 8000;
             }
         }
         if (title.length > 0){
-            customButton.titleLabel.font = [UIFont systemFontOfSize:[self NAVSCALE:titleSize]];
+            if (titleBold) {
+                customButton.titleLabel.font = [UIFont boldSystemFontOfSize:[self NAVSCALE:titleSize]];
+            } else {
+                customButton.titleLabel.font = [UIFont systemFontOfSize:[self NAVSCALE:titleSize]];
+            }
+            
             [customButton setTitle:title forState:UIControlStateNormal];
             [customButton setTitleColor:[WXConvert UIColor:titleColor] forState:UIControlStateNormal];
             [customButton.titleLabel sizeToFit];

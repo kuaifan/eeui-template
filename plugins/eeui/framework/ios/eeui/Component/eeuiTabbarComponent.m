@@ -858,7 +858,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
                 [eeuiNewPageManager removeTabViewDebug:tempName];
             }
         };
-
+        __weak __typeof(vc)weakVC = vc;
         [eeuiNewPageManager setTabViewDebug:tempName callback:^(id result, BOOL keepAlive) {
             NSString *url = [WXConvert NSString:result];
             if ([[DeviceUtil realUrl:[vc url]] hasPrefix:url]) {
