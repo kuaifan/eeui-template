@@ -344,7 +344,8 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
 {
     key = [DeviceUtil convertToCamelCaseFromSnakeCase:key];
     if ([key isEqualToString:@"eeui"] && [value isKindOfClass:[NSDictionary class]]) {
-        for (NSString *k in [value allKeys]) {
+        NSArray *keys = [value allKeys];
+        for (NSString *k in keys) {
             [self dataKey:k value:value[k] isUpdate:isUpdate];
         }
     } else if ([key isEqualToString:@"tabPages"]) {
@@ -860,9 +861,9 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         };
         __weak __typeof(vc)weakVC = vc;
         [eeuiNewPageManager setTabViewDebug:tempName callback:^(id result, BOOL keepAlive) {
-            NSString *url = [WXConvert NSString:result];
-            if ([[DeviceUtil realUrl:[vc url]] hasPrefix:url]) {
-                [vc refreshPage];
+            NSString *resUrl = [WXConvert NSString:result];
+            if ([[DeviceUtil realUrl:[weakVC url]] hasPrefix:resUrl]) {
+                [weakVC refreshPage];
             }
         }];
 #endif
@@ -870,7 +871,7 @@ WX_EXPORT_METHOD(@selector(setTabSlideSwitch:))
         [_tabInstance.viewController addChildViewController:vc];
         [scoView addSubview:vc.view];
 
-        CGRect frame = vc.view.frame;
+        CGRect frame;
         UIEdgeInsets safeArea = UIEdgeInsetsZero;
 
         if (@available(iOS 11.0, *)) {

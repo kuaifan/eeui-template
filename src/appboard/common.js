@@ -390,9 +390,12 @@ Vue.mixin({
          * @returns {*}
          */
         jsonParse(str, defaultVal) {
-            try{
+            if (str && this.isJson(str)) {
+                return str;
+            }
+            try {
                 return JSON.parse(str);
-            }catch (e) {
+            } catch (e) {
                 return defaultVal ? defaultVal : {};
             }
         },
@@ -404,9 +407,12 @@ Vue.mixin({
          * @returns {string}
          */
         jsonStringify(json, defaultVal) {
-            try{
+            if (json && typeof json === "string") {
+                return json;
+            }
+            try {
                 return JSON.stringify(json);
-            }catch (e) {
+            } catch (e) {
                 return defaultVal ? defaultVal : "";
             }
         },
