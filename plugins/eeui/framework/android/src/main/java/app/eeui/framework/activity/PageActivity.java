@@ -1078,16 +1078,20 @@ public class PageActivity extends AppCompatActivity {
             retApp.put("pageName", getPageInfo().getPageName());
             retApp.put("pageUrl", getPageInfo().getUrl());
             mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retApp);
+            //
+            Map<String, Object> retAgain = new HashMap<>();
             switch (status) {
                 case "ready": {
-                    retApp.put("status", "resume");
-                    mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retApp);
+                    retAgain.putAll(retApp);
+                    retAgain.put("status", "resume");
+                    mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retAgain);
                     break;
                 }
                 case "pause": {
                     if (isFinishing()) {
-                        retApp.put("status", "destroy");
-                        mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retApp);
+                        retAgain.putAll(retApp);
+                        retAgain.put("status", "destroy");
+                        mWXSDKInstance.fireGlobalEventCallback("__appLifecycleStatus", retAgain);
                     }
                     break;
                 }

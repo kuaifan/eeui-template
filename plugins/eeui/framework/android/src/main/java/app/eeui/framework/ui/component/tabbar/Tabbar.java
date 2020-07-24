@@ -139,7 +139,7 @@ public class Tabbar extends WXVContainer<ViewGroup> {
                     mViewPager.lifecycleListener(mViewPager.getCurrentItem(), eeuiParse.parseStr(retData.get("status")));
                 }
             });
-            ((PageActivity) context).setAppStatusListeners(mPageStatus -> mViewPager.appStatusListeners(mViewPager.getCurrentItem(), mPageStatus));
+            ((PageActivity) context).setAppStatusListeners(mPageStatus -> mViewPager.appStatusListeners(mPageStatus));
         }
         //
         if (BuildConfig.DEBUG) {

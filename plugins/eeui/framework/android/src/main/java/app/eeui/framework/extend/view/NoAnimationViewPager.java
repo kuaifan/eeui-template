@@ -184,13 +184,10 @@ public class NoAnimationViewPager extends ViewPager {
 
     /**
      * 生命周期（app）
-     * @param position
      * @param mPageStatus
      */
-    public void appStatusListeners(int position, PageStatus mPageStatus) {
-        if (position < WXSDKList.size()) {
-            String getTabName = getTabName(position);
-            WXSDKBean sdkBean = WXSDKList.get(getTabName);
+    public void appStatusListeners(PageStatus mPageStatus) {
+        for (WXSDKBean sdkBean : WXSDKList.values()) {
             if (sdkBean != null) {
                 if (TextUtils.isEmpty(mPageStatus.getPageName()) || sdkBean.getTabName().contentEquals(mPageStatus.getPageName())) {
                     if (sdkBean.getInstance() != null) {
