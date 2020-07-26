@@ -881,12 +881,7 @@ public class eeui {
     public void postMessage(Context context, String object) {
         JSONObject json = eeuiJson.parseObject(object);
         String pageName = eeuiJson.getString(json, "pageName");
-        LinkedList<Activity> activityList = eeui.getActivityList();
-        for (Activity mContext : activityList) {
-            if (mContext instanceof PageActivity) {
-                ((PageActivity) mContext).onAppStatusListener(new PageStatus("page", "message", pageName, json));
-            }
-        }
+        eeuiPage.postMessage(pageName, json);
     }
 
     /**

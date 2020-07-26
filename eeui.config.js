@@ -18,6 +18,25 @@ module.exports = {
         appid: 'wx76cd9902f7e09bf3',
     },
 
+    getui: {
+        GETUI_APP_ID    : "",
+        GETUI_APP_KEY   : "",
+        GETUI_APP_SECRET: "",
+        XIAOMI_APP_ID   : "",
+        XIAOMI_APP_KEY  : "",
+
+        MEIZU_APP_ID    : "",
+        MEIZU_APP_KEY   : "",
+
+        HUAWEI_APP_ID   : "",
+
+        OPPO_APP_KEY    : "",
+        OPPO_APP_SECRET : "",
+
+        VIVO_APP_ID     : "",
+        VIVO_APP_KEY    : ""
+    },
+
     rongim: {
         ios: {
             enabled: true,

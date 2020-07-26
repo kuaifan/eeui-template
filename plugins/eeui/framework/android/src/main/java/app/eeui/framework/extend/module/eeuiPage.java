@@ -15,10 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 import app.eeui.framework.BuildConfig;
@@ -27,6 +25,7 @@ import app.eeui.framework.activity.PageActivity;
 import app.eeui.framework.activity.PageActivityNoTransparent;
 import app.eeui.framework.activity.PageActivityTransparent;
 import app.eeui.framework.extend.bean.PageBean;
+import app.eeui.framework.extend.bean.PageStatus;
 import app.eeui.framework.extend.integration.swipebacklayout.BGAKeyboardUtil;
 import app.eeui.framework.extend.module.http.HttpResponseParser;
 import app.eeui.framework.extend.module.rxtools.tool.RxFileTool;
@@ -487,5 +486,27 @@ public class eeuiPage {
     public interface OnCachePageCallback {
         void success(Map<String, Object> resParams, String newUrl);
         void error(Map<String, Object> resParams, String newUrl);
+    }
+
+    /**
+     * 给页面发送消息（所有页面）
+     * @param message
+     */
+    public static void postMessage(Object message) {
+        postMessage(null, message);
+    }
+
+    /**
+     * 给页面发送消息（指定页面）
+     * @param pageName
+     * @param message
+     */
+    public static void postMessage(String pageName, Object message) {
+        LinkedList<Activity> activityList = eeui.getActivityList();
+        for (Activity mContext : activityList) {
+            if (mContext instanceof PageActivity) {
+                ((PageActivity) mContext).onAppStatusListener(new PageStatus("page", "message", pageName, message));
+            }
+        }
     }
 }
