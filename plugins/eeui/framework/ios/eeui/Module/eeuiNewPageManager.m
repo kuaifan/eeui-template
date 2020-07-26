@@ -13,6 +13,19 @@
 #import "NSString+BHURLHelper.h"
 #import "UIViewController+HHTransition.h"
 
+typedef id (^WeakReference)(void);
+
+WeakReference makeWeakReference(id object) {
+    __weak id weakref = object;
+    return ^{
+        return weakref;
+    };
+}
+
+id weakReferenceNonretainedObjectValue(WeakReference ref) {
+    return ref ? ref() : nil;
+}
+
 @interface eeuiNewPageManager ()
 
 @property (nonatomic, strong) NSMutableDictionary *pageData;
@@ -205,7 +218,7 @@
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
     if (name.length > 0) {
-        id data = self.viewData[name];
+        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
         if (data && [data isKindOfClass:[UIViewController class]]) {
             vc = data;
         } else {
@@ -229,7 +242,7 @@
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
     if (name.length > 0) {
-        id data = self.viewData[name];
+        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
         if (data && [data isKindOfClass:[UIViewController class]]) {
             vc = data;
         } else {
@@ -266,7 +279,7 @@
 {
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
-    id data = self.viewData[name];
+    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
@@ -278,7 +291,7 @@
 {
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
-    id data = self.viewData[name];
+    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
@@ -302,7 +315,7 @@
     }
 
     eeuiViewController *vc = nil;
-    id data = self.viewData[name];
+    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
@@ -354,7 +367,7 @@
     }
 
     eeuiViewController *vc = nil;
-    id data = self.viewData[name];
+    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
@@ -395,7 +408,7 @@
     }
 
     eeuiViewController *vc = nil;
-    id data = self.viewData[name];
+    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
@@ -454,7 +467,7 @@
         return;
     }
 
-    id data = self.viewData[name];
+    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
     if (data == nil) {
         return;
     }
@@ -518,7 +531,7 @@
         return;
     }
 
-    id data = self.viewData[name];
+    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
     if (data == nil) {
         return;
     }
@@ -597,8 +610,7 @@
 - (void)setPageData:(NSString*)pageName vc:(eeuiViewController *)vc
 {
     if (pageName.length > 0) {
-        __weak __typeof(vc)weakVC = vc;
-        [self.viewData setObject:weakVC forKey:pageName];
+        [self.viewData setObject:makeWeakReference(vc) forKey:pageName];
 
         NSMutableDictionary *res = [NSMutableDictionary dictionaryWithDictionary:@{}];
         [res setObject:vc.url forKey:@"url"];
