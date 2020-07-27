@@ -61,6 +61,16 @@ module.exports = {
             appKey: "5cfa3958570df3a0e8001015",
             messageSecret: "49d0bac141dc8dc6df35d210a9c79289",
             channel: "eeuidemo",
+
+            xiaomiAppId: "",
+            xiaomiAppKey: "",
+            huaweiAppId: "",
+            meizuAppId: "",
+            meizuAppKey: "",
+            oppoAppKey: "",
+            oppoAppSecret: "",
+            vivoAppId: "",
+            vivoAppKey: "",
         }
     },
 
