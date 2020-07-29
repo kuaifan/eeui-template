@@ -375,7 +375,7 @@ NSDictionary *mLaunchOptions;
     scan.headTitle = @"二维码/条码";
     scan.scanerBlock = ^(NSDictionary *dic) {
         if ([dic[@"status"] isEqualToString:@"success"]) {
-            NSString *text = dic[@"url"];
+            NSString *text = dic[@"text"];
             NSString *url = text, *host = @"", *port = @"";
             if ([url hasPrefix:@"http"]) {
                 if ([text containsString:@"?socket="]) {

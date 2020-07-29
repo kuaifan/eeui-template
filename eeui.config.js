@@ -16,6 +16,7 @@ module.exports = {
 
     wxpay: {
         appid: 'wx76cd9902f7e09bf3',
+        universalLink: 'https://eeui.app/open/wxapp/',
     },
 
     getui: {
