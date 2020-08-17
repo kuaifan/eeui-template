@@ -171,7 +171,13 @@ static int easyNavigationButtonTag = 8000;
             if ([_statusBarStyleCustom isEqualToString:@"1"]) {
                 [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
             }else{
-                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+                if (@available(iOS 13.0, *)) {
+                    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDarkContent];
+                } else {
+                    // Fallback on earlier versions
+                    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+                }
+
             }
         }
     }
@@ -209,7 +215,13 @@ static int easyNavigationButtonTag = 8000;
         if ([_statusBarStyleCustom isEqualToString:@"1"]) {
             [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
         }else{
-            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+            if (@available(iOS 13.0, *)) {
+                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDarkContent];
+            } else {
+                // Fallback on earlier versions
+                [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+            }
+
         }
     }
 }
@@ -364,7 +376,11 @@ static int easyNavigationButtonTag = 8000;
     if ([_statusBarStyleCustom isEqualToString:@"1"]) {
         return UIStatusBarStyleLightContent;
     }else{
-        return UIStatusBarStyleDefault;
+        if (@available(iOS 13.0, *)) {
+            return UIStatusBarStyleDarkContent;
+        } else {
+            return UIStatusBarStyleDefault;
+        }
     }
 }
 
