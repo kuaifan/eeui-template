@@ -565,7 +565,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
                 isClose = YES;
             }
         }
-        if (!isRemove) {
+        if (!isRemove || i + 1 == array.count) {
             [newArray addObject:array[i]];
         }
     }
