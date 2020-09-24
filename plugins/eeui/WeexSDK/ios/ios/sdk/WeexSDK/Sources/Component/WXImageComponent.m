@@ -566,7 +566,7 @@ WX_EXPORT_METHOD(@selector(save:))
             }
             
             if ([strongSelf isViewLoaded] && !viewImage) {
-                ((UIImageView *)strongSelf.view).image = image;
+                strongSelf.view.layer.contents = (__bridge id _Nullable)(image.CGImage);
                 strongSelf.imageDownloadFinish = YES;
                 [strongSelf readyToRender];
             } else if (strongSelf->_isCompositingChild) {
@@ -623,7 +623,7 @@ WX_EXPORT_METHOD(@selector(save:))
             
             if ([strongSelf isViewLoaded]) {
                 strongSelf.imageDownloadFinish = YES;
-                ((UIImageView *)strongSelf.view).image = image;
+                strongSelf.view.layer.contents = (__bridge id _Nullable)(image.CGImage);
                 [strongSelf readyToRender];
             } else if (strongSelf->_isCompositingChild) {
                 strongSelf.imageDownloadFinish = YES;
