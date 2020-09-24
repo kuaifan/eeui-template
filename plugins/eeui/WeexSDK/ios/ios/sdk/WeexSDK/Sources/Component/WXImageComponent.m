@@ -36,6 +36,18 @@
 #import "WXMonitor.h"
 #import "WXSDKInstance_performance.h"
 
+@interface WXImageView : UIImageView
+
+@end
+
+@implementation WXImageView
+
++ (Class)layerClass
+{
+    return [WXLayer class];
+}
+
+@end
 
 static dispatch_queue_t WXImageUpdateQueue;
 
@@ -214,7 +226,7 @@ WX_EXPORT_METHOD(@selector(save:))
 
 - (UIView *)loadView
 {
-    return [[UIImageView alloc] init];
+    return [[WXImageView alloc] init];
 }
 
 - (void)addEvent:(NSString *)eventName {
