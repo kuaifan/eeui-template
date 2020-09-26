@@ -296,6 +296,15 @@ WX_EXPORT_METHOD(@selector(save:))
     
 }
 
+- (void)didFinishDrawingLayer:(BOOL)success {
+    if ([self isViewLoaded]) {
+        UIImage *image = ((UIImageView *)self.view).image;
+        if (image && !_layer.contents) {
+            _layer.contents = (id)(image.CGImage);
+        }
+    }
+}
+
 - (BOOL)_needsDrawBorder
 {
     return NO;
@@ -330,7 +339,7 @@ WX_EXPORT_METHOD(@selector(save:))
     
     WXRoundedRect *borderRect = [[WXRoundedRect alloc] initWithRect:rect topLeft:_borderTopLeftRadius topRight:_borderTopRightRadius bottomLeft:_borderBottomLeftRadius bottomRight:_borderBottomRightRadius];
 
-    WXRadii *radii = borderRect.radii;    
+    WXRadii *radii = borderRect.radii;
     if ([radii hasBorderRadius]) {
         CGFloat topLeft = radii.topLeft, topRight = radii.topRight, bottomLeft = radii.bottomLeft, bottomRight = radii.bottomRight;
         UIBezierPath *bezierPath = [UIBezierPath wx_bezierPathWithRoundedRect:rect topLeft:topLeft topRight:topRight bottomLeft:bottomLeft bottomRight:bottomRight];
