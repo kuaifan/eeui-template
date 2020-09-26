@@ -163,7 +163,7 @@ public class eeui {
         eeui.application = app;
         eeui.application.registerActivityLifecycleCallbacks(mCallbacks);
 
-        ImageAdapter.imageEngine = eeuiJson.getString(eeuiBase.config.getObject("android"), "imageEngine").toLowerCase();
+        ImageAdapter.imageEngine = eeuiJson.getString(eeuiBase.config.getObject("android"), "imageEngine", "picasso").toLowerCase();
 
         eeuiIhttp.init(application);
 
