@@ -92,11 +92,13 @@ public class ImageAdapter implements IWXImgLoaderAdapter {
         Log.d(TAG, "loadImage: " + tempUrl);
         //
         if (!TextUtils.isEmpty(strategy.placeHolder)) {
-            String placeHolder = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, handCachePageUrl(view.getContext(), strategy.placeHolder)));
-            Picasso.Builder builder = new Picasso.Builder(WXEnvironment.getApplication());
-            Picasso picasso = builder.build();
-            picasso.load(Uri.parse(placeHolder)).into(view);
-            view.setTag(strategy.placeHolder.hashCode(), picasso);
+            try {
+                String placeHolder = eeuiBase.config.verifyFile(eeuiPage.rewriteUrl(view, handCachePageUrl(view.getContext(), strategy.placeHolder)));
+                Picasso.Builder builder = new Picasso.Builder(WXEnvironment.getApplication());
+                Picasso picasso = builder.build();
+                picasso.load(Uri.parse(placeHolder)).into(view);
+                view.setTag(strategy.placeHolder.hashCode(), picasso);
+            }catch (Exception e) {}
         }
         //
         try {
