@@ -1,0 +1,305 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+ plugins {
+     id "com.github.hierynomus.license" version "0.14.0"
+     id 'com.jfrog.artifactory' version '4.10.0'
+ }
+
+apply plugin: 'com.android.library'
+apply plugin: 'checkstyle'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+//eeui dev start
+//apply from: 'buildSrc/jcenter.gradle'
+apply from: 'buildSrc/unstripped.gradle'
+apply from: 'buildSrc/checkStyle.gradle'
+apply from: 'buildSrc/download_jsc.gradle'
+apply from: 'buildSrc/packageName.gradle'
+apply from: 'buildSrc/asan.gradle'
+
+version = project.weex_sdkLibVersion
+group = 'org.apache.weex'
+//eeui dev end
+
+//Check version, the version must have 4 sections. The leading three section must be number, and the last section is odd number with or without suffix string.
+if (!project.hasProperty('ignoreVersionCheck') || !project.getProperty('ignoreVersionCheck').equals("true")) {
+    version.tokenize('.').eachWithIndex { it, i ->
+        if (i < 3) {
+            assert it.isNumber() : "Please use semantic versioning witch 4 sections, you are using ${${i} + 1} section instead."
+        } else if (i == 3) {
+            it.split("[-_]").toList().eachWithIndex { inner_it, inner_i ->
+                if (inner_i == 0) {
+                    assert inner_it.isNumber() && inner_it.toInteger() % 2 : "The 4th dight in the versioning number must be a odd number, and it is ${inner_it} currently."
+                } else {
+                    assert !inner_it.isNumber() : "The suffix of the versioning number is not allowed to contain any number, and it is ${inner_it} currently."
+                }
+            }.size == 4
+        } else {
+            assert false: "Please use semantic versioning witch 4 sections, you are using ${${i} + 1} section instead."
+        }
+    }
+}
+
+android {
+    compileSdkVersion project.compileSdkVersion
+    resourcePrefix "weex"
+    useLibrary 'org.apache.http.legacy'
+    if(project.hasProperty('removeSharedLib') && "true".equals(project.getProperty('removeSharedLib'))) {
+        packagingOptions {
+            exclude 'lib/armeabi-v7a/libc++_shared.so'
+            exclude 'lib/arm64-v8a/libc++_shared.so'
+            exclude 'lib/x86/libc++_shared.so'
+            exclude 'lib/x86_64/libc++_shared.so'
+        }
+    }
+    copy {
+        from '../../pre-build'
+        into new File(projectDir,"assets")
+        include 'native-bundle-main.js'
+        rename('native-bundle-main.js','main.js')
+    }
+    def line
+    new File(projectDir,"assets/main.js").withReader { line = it.readLine() }
+    def m = line =~ /[A-Z\s]+\s+([0-9\.]+),\s+Build\s+[0-9]+/;
+    def jsfmVersion // = m[0][1]
+    println jsfmVersion
+
+    copy {
+        from '../../pre-build'
+        into new File(projectDir,"assets")
+        include 'weex-main-jsfm.js'
+        rename('weex-main-jsfm.js','weex-main-jsfm.js')
+    }
+
+    copy {
+        from '../../pre-build'
+        into new File(projectDir,"assets")
+        include 'weex-rax-api.js'
+    }
+
+    def ndkversion = 16;
+    def api_level = "";
+    def compile_tool = "clang";
+    def cxx_stl = "c++_shared";
+    if (ndkversion < 16) {
+        api_level = "android-14";
+    } else {
+        api_level = "android-16";
+    }
+
+    def android_project_dir = projectDir
+
+    def buildRuntimeApi = project.hasProperty('buildRuntimeApi') ? project.property('buildRuntimeApi').toBoolean() : true
+    def jsInterpolatorName = project.hasProperty('JSInterpolatorName') ? project.property('JSInterpolatorName') : 'jsc'
+    def initJSCPrivateApi = false
+    if (buildRuntimeApi){
+        initJSCPrivateApi = jsInterpolatorName =="JavaScriptCore"
+    }
+
+    defaultConfig {
+        buildConfigField "String", "buildJavascriptFrameworkVersion", "\"${jsfmVersion}\""
+        buildConfigField "String", "buildVersion", "\"${version}\""
+        buildConfigField "String", "JSInterpolatorName", "\"${jsInterpolatorName}\""
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+
+        multiDexEnabled true
+
+        versionCode 1
+        versionName project.version
+        ndk {
+            if(!project.hasProperty('supportArmeabi-v7a') || "false" != project.getProperty('supportArmeabi-v7a')){
+                abiFilters 'armeabi-v7a'
+            }
+
+            if(!project.hasProperty('supportArm64-v8a') || "false" != project.getProperty('supportArm64-v8a')){
+                abiFilters 'arm64-v8a'
+            }
+
+            if(!project.hasProperty('supportX86') || "false" != project.getProperty('supportX86')){
+                abiFilters 'x86'
+            }
+            if(!project.hasProperty('supportX86_64') || "false" != project.getProperty('supportX86_64')){
+                abiFilters 'x86_64'
+            }
+        }
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_PLATFORM=' + "${api_level}",
+                        '-DANDROID_TOOLCHAIN=' + "${compile_tool}",
+                        '-DANDROID_STL=' + "${cxx_stl}",
+                        '-DCMAKE_BUILD_TYPE=Release',
+                        '-DANDROID_PROJECT_DIR=' + "${android_project_dir}",
+                        '-DENABLE_ASAN=false'
+                if(buildRuntimeApi){
+                    arguments '-DBUILD_RUNTIME_API='+"${buildRuntimeApi}"
+                    if (initJSCPrivateApi){
+                        arguments '-DINIT_JSC_PRIVATE_API='+"${initJSCPrivateApi}"
+                    }
+                }
+                if(project.hasProperty('enableASan') && "true" == project.getProperty('enableASan')) {
+                    cppFlags "-fsanitize=address -fno-omit-frame-pointer"
+                }
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            buildConfigField "boolean", "ENABLE_TRACE", "false"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), useApachePackageName ? 'proguard-rules.pro' : 'proguard-rules-legacy.pro'
+            consumerProguardFiles useApachePackageName ? 'proguard-rules.pro' : 'proguard-rules-legacy.pro'
+        }
+
+        debug {
+            buildConfigField "boolean", "ENABLE_TRACE", "true"
+            jniDebuggable true
+            debuggable true
+            testCoverageEnabled disableCov.toBoolean()
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+
+        apacheRelease{
+            initWith release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+
+        legacyRelease{
+            initWith release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),  'proguard-rules-legacy.pro'
+            consumerProguardFiles 'proguard-rules-legacy.pro'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            if(project.useApachePackageName) {
+                path '../../weex_core/CMakeLists.txt'
+            }
+            else{
+                copy{
+                    from new File('../../weex_core/CMakeLists.txt')
+                    into new File('src/legacyRelease/cpp')
+                }
+                path 'src/legacyRelease/cpp/CMakeLists.txt'
+            }
+        }
+    }
+
+    sourceSets {
+        main.assets.srcDirs = ['assets']
+        apacheRelease.java.srcDirs = ['src/main/java']
+        apacheRelease.manifest.srcFile(new File('src/main/AndroidManifest.xml'))
+        legacyRelease.java.srcDirs = ['src/legacyRelease/java']
+        legacyRelease.manifest.srcFile(new File('src/legacyRelease/AndroidManifest.xml'))
+        if(!project.useApachePackageName){
+            main.java.srcDirs = ['src/legacyRelease/java']
+            main.manifest.srcFile(new File('src/legacyRelease/AndroidManifest.xml'))
+        }
+
+        if(project.unbundlingJSC){
+            main.jniLibs.srcDirs = []
+        }
+    }
+
+    compileOptions.encoding = "UTF-8"
+    lintOptions {
+        abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    testOptions {
+        unitTests.all {
+            maxHeapSize = "1024m"
+            jvmArgs += ['-XX:-UseSplitVerifier', '-noverify','-Xverify:none']/* fix VerifyError  */
+        }
+    }
+}
+
+dependencies {
+    //eeui dev start
+    //noinspection GradleDependency
+    //compileOnly "com.android.support:recyclerview-v7:${project.supportLibVersion}"
+    //noinspection GradleDependency
+    //compileOnly "com.android.support:support-v4:${project.supportLibVersion}"
+    //noinspection GradleDependency
+    //compileOnly "com.android.support:appcompat-v7:${project.supportLibVersion}"
+    compileOnly "androidx.legacy:legacy-support-v4:${project.supportv4Version}"
+    compileOnly "androidx.appcompat:appcompat:${project.appcompatVersion}"
+    compileOnly "androidx.recyclerview:recyclerview:${project.recyclerviewVersion}"
+    //eeui dev end
+    compileOnly "com.alibaba:fastjson:${project.fastjsonLibVersion}"
+
+    testImplementation "com.alibaba:fastjson:${project.fastjsonLibVersion}"
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.hamcrest:hamcrest-core:1.3'
+    testImplementation 'org.javassist:javassist:3.20.0-GA'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    //noinspection GradleDependency
+    testImplementation 'org.objenesis:objenesis:2.1'
+    testImplementation 'org.powermock:powermock-core:1.6.4'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.4'
+    testImplementation 'org.powermock:powermock-module-junit4-common:1.6.4'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.4'
+    testImplementation 'org.powermock:powermock-module-junit4-legacy:1.6.4'
+    testImplementation 'org.powermock:powermock-module-testng:1.6.4'
+    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.4'
+    testImplementation "org.powermock:powermock-module-junit4-rule:1.6.4"
+    testImplementation 'org.robolectric:robolectric:3.3.2'
+    testImplementation "org.robolectric:shadows-httpclient:3.3.2"
+    testImplementation 'org.json:json:20160212'
+}
+
+license {
+    header = file('../license/LICENSE')
+    mapping('cpp', 'JAVADOC_STYLE')
+    mapping('h', 'JAVADOC_STYLE')
+    excludes(['org/apache/weex/utils/WXDataStructureUtil.java'])
+}
+
+task weex_core_license(type: com.hierynomus.gradle.license.tasks.LicenseFormat) {
+    source = fileTree(dir: "../../weex_core").include(['**/*.h', '**/*.cpp', '**/*.cc', '**/*.c']).
+            exclude(['Source/rapidjson/**/*.h', 'Source/rapidjson/**/*.cpp',
+                     'Source/android/jniprebuild/jniheader/*.h',
+                     'Source/base/Compatible.cpp',
+                     'Source/IPC/**/*.h', 'Source/IPC/**/*.cpp', 'Source/IPC/**/*.c',
+                     'Source/base/base64/modp_base64/**/*.h',
+                     'Source/base/base64/modp_base64/**/*.cc',
+                     'Source/base/third_party/icu/*.h',
+                     'Source/base/third_party/icu/*.cpp',
+                     'Source/android/jsengine/dependence/**/*.h',
+                     'Source/android/jsengine/dependence/**/*.cpp',
+                     'Source/include/wtf/**/*.h',
+                     'Source/include/wtf/**/*.c',
+                     'Source/include/wtf/**/*.cpp',
+                     'Source/include/JavaScriptCore/**/*.h',
+                     'Source/include/JavaScriptCore/**/*.c',
+                     'Source/include/JavaScriptCore/**/*.cpp'])
+}
+
+//eeui dev start
+//preBuild.dependsOn licenseFormat, copyJSCHeaderToWeexCore
+//clean.dependsOn cleanCopyJSCHeaderToWeexCore
+preBuild.dependsOn licenseFormat
+clean.dependsOn
+//eeui dev end
