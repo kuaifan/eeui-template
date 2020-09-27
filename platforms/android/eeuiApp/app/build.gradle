@@ -12,7 +12,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
-            abiFilters "arm64-v8a", "armeabi-v7a", "x86"
+            abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
         }
         javaCompileOptions {
             annotationProcessorOptions {
@@ -45,11 +45,6 @@ android {
             }
         }
     }
-    sourceSets {
-        main {
-            jniLibs.srcDir(['libs'])
-        }
-    }
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -69,8 +64,12 @@ dependencies {
     implementation "androidx.core:core:${project.coreVersion}"
     implementation "com.google.android.material:material:${project.materialVersion}"
     //
+    if (project.implementFromWeex) {
+        implementation project(':weex_sdk')
+    } else {
+        implementation "org.apache.weex:sdk_legacy:${project.weex_sdkLibVersion}"
+    }
     implementation "com.alibaba:fastjson:${project.fastjsonLibVersion}"
-    implementation "org.apache.weex:sdk_legacy:${project.weex_sdkLibVersion}"
     implementation "com.taobao.android:weexplugin-loader:${project.weex_loaderVersion}"
     implementation "com.taobao.android:weexplugin-processor:${project.weex_processorVersion}"
     implementation "com.alibaba.android:bindingx-core:1.1.4"

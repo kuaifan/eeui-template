@@ -2,3 +2,6 @@ include ':app'
 
 include ":eeui"
 project (':eeui').projectDir = new File("../../../plugins/eeui/framework/android")
+
+include ":weex_sdk"
+project (':weex_sdk').projectDir = new File("../../../plugins/eeui/WeexSDK/android/sdk")
