@@ -26,7 +26,7 @@
 #import <AdSupport/AdSupport.h>
 #import "CustomWeexSDKManager.h"
 
-#define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
+#define iPhoneXSeries [DeviceUtil isNotchedScreen]
 
 @implementation eeuiBridge
 

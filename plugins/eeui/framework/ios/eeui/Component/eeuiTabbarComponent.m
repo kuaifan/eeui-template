@@ -25,7 +25,7 @@
 #define TabItemDotTag 3000
 #define TabBgScrollTag 4000
 
-#define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
+#define iPhoneXSeries [DeviceUtil isNotchedScreen]
 
 @interface eeuiTabbarComponent() <UIScrollViewDelegate>
 

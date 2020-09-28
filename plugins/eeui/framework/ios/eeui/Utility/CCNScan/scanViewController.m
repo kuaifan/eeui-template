@@ -15,7 +15,7 @@
 
 #define mainWidth [UIScreen mainScreen].bounds.size.width
 #define mainHeight [UIScreen mainScreen].bounds.size.height
-#define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
+#define iPhoneXSeries [DeviceUtil isNotchedScreen]
 
 @interface scanViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate,AVCaptureMetadataOutputObjectsDelegate>{
     UIImagePickerController *imagePicker;

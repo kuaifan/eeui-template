@@ -7,8 +7,8 @@
 //
 
 #import "LBXScanViewStyle.h"
-
-#define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
+#import "DeviceUtil.h"
+#define iPhoneXSeries [DeviceUtil isNotchedScreen]
 
 @implementation LBXScanViewStyle
 
