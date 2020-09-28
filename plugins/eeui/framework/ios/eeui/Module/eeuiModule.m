@@ -29,7 +29,7 @@
 #import "UIImage+eeuiScreenshots.h"
 #import <AdSupport/AdSupport.h>
 
-#define iPhoneXSeries (([[UIApplication sharedApplication] statusBarFrame].size.height == 44.0f) ? (YES):(NO))
+#define iPhoneXSeries [DeviceUtil isNotchedScreen]
 
 @implementation eeuiModule
 

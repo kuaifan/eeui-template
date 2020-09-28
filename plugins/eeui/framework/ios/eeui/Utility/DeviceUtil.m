@@ -13,6 +13,12 @@
 #import "eeuiViewController.h"
 #import "Config.h"
 
+/// 设备宽度，跟横竖屏无关
+#define DEVICE_WIDTH MIN([[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)
+
+/// 设备高度，跟横竖屏无关
+#define DEVICE_HEIGHT MAX([[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)
+
 @implementation DeviceUtil
 
 
@@ -539,4 +545,81 @@
     return @"body{background-color:#FFF;color:#000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14px;line-height:1.3;scrollbar-3dlight-color:#F0F0EE;scrollbar-arrow-color:#676662;scrollbar-base-color:#F0F0EE;scrollbar-darkshadow-color:#DDD;scrollbar-face-color:#E0E0DD;scrollbar-highlight-color:#F0F0EE;scrollbar-shadow-color:#F0F0EE;scrollbar-track-color:#F5F5F5}td,th{font-family:Verdana,Arial,Helvetica,sans-serif;font-size:14px}.word-wrap{word-wrap:break-word;-ms-word-break:break-all;word-break:break-all;word-break:break-word;-ms-hyphens:auto;-moz-hyphens:auto;-webkit-hyphens:auto;hyphens:auto}.mce-content-body .mce-reset{margin:0;padding:0;border:0;outline:0;vertical-align:top;background:0 0;text-decoration:none;color:#000;font-family:Arial;font-size:11px;text-shadow:none;float:none;position:static;width:auto;height:auto;white-space:nowrap;cursor:inherit;line-height:normal;font-weight:400;text-align:left;-webkit-tap-highlight-color:transparent;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;direction:ltr;max-width:none}.mce-object{border:1px dotted #3A3A3A;background:#D5D5D5 url(data:image/gif;base64,R0lGODlhEQANALMPAOXl5T8/P29vb7S0tFdXV/39/djY2N3d3crKyu/v7/f39/Ly8p2dnf///zMzMwAAACH5BAEAAA8ALAAAAAARAA0AAARF0MlJq3uutay75lmGNU9pjiNFCsipqhgxmO9HSgFTgtt9O4EBABWa3AiGwvBlfAgWisPOyCslDDSbSHTa+SzgpmdMbkQAADs=) no-repeat center}.mce-preview-object{display:inline-block;position:relative;margin:0 2px 0 2px;line-height:0;border:1px solid gray}.mce-preview-object[data-mce-selected=2] .mce-shim{display:none}.mce-preview-object .mce-shim{position:absolute;top:0;left:0;width:100%;height:100%;background:url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)}figure.align-left{float:left}figure.align-right{float:right}figure.image.align-center{display:table;margin-left:auto;margin-right:auto}figure.image{display:inline-block;border:1px solid gray;margin:0 2px 0 1px;background:#f5f2f0}figure.image img{margin:8px 8px 0 8px}figure.image figcaption{margin:6px 8px 6px 8px;text-align:center}.mce-toc{border:1px solid gray}.mce-toc h2{margin:4px}.mce-toc li{list-style-type:none}.mce-pagebreak{cursor:default;display:block;border:0;width:100%;height:5px;border:1px dashed #666;margin-top:15px;page-break-before:always}@media print{.mce-pagebreak{border:0}}.mce-item-anchor{cursor:default;display:inline-block;-webkit-user-select:all;-webkit-user-modify:read-only;-moz-user-select:all;-moz-user-modify:read-only;user-select:all;user-modify:read-only;width:9px!important;height:9px!important;border:1px dotted #3A3A3A;background:#D5D5D5 url(data:image/gif;base64,R0lGODlhBwAHAIABAAAAAP///yH5BAEAAAEALAAAAAAHAAcAAAIMjGGJmMH9mHQ0AlYAADs=) no-repeat center}.mce-nbsp,.mce-shy{background:#AAA}.mce-shy::after{content:'-'}.mce-match-marker{background:#AAA;color:#fff}.mce-match-marker-selected{background:#39f;color:#fff}.mce-spellchecker-word{border-bottom:2px solid rgba(208,2,27,.5);cursor:default}.mce-spellchecker-grammar{border-bottom:2px solid green;cursor:default}.mce-item-table,.mce-item-table caption,.mce-item-table td,.mce-item-table th{border:1px dashed #BBB}td[data-mce-selected],th[data-mce-selected]{background-color:#2276d2!important}.mce-edit-focus{outline:1px dotted #333}.mce-content-body [contentEditable=false] [contentEditable=true]:focus{outline:2px solid #2276d2}.mce-content-body [contentEditable=false] [contentEditable=true]:hover{outline:2px solid #2276d2}.mce-content-body [contentEditable=false][data-mce-selected]{outline:2px solid #2276d2}.mce-content-body [data-mce-selected=inline-boundary]{background:#bfe6ff}.mce-content-body .mce-item-anchor[data-mce-selected]{background:#D5D5D5 url(data:image/gif;base64,R0lGODlhBwAHAIABAAAAAP///yH5BAEAAAEALAAAAAAHAAcAAAIMjGGJmMH9mHQ0AlYAADs=) no-repeat center}.mce-content-body hr{cursor:default}.mce-content-body table{-webkit-nbsp-mode:normal}.ephox-snooker-resizer-bar{background-color:#2276d2;opacity:0}.ephox-snooker-resizer-cols{cursor:col-resize}.ephox-snooker-resizer-rows{cursor:row-resize}.ephox-snooker-resizer-bar.ephox-snooker-resizer-bar-dragging{opacity:.2}";
 }
 
+static NSInteger isNotchedScreen = -1;
++ (BOOL)isNotchedScreen {
+    if (@available(iOS 11, *)) {
+        if (isNotchedScreen < 0) {
+            if (@available(iOS 12.0, *)) {
+                /*
+                 检测方式解释/测试要点：
+                 1. iOS 11 与 iOS 12 可能行为不同，所以要分别测试。
+                 2. 与触发 [QMUIHelper isNotchedScreen] 方法时的进程有关，例如 https://github.com/Tencent/QMUI_iOS/issues/482#issuecomment-456051738 里提到的 [NSObject performSelectorOnMainThread:withObject:waitUntilDone:NO] 就会导致较多的异常。
+                 3. iOS 12 下，在非第2点里提到的情况下，iPhone、iPad 均可通过 UIScreen -_peripheryInsets 方法的返回值区分，但如果满足了第2点，则 iPad 无法使用这个方法，这种情况下要依赖第4点。
+                 4. iOS 12 下，不管是否满足第2点，不管是什么设备类型，均可以通过一个满屏的 UIWindow 的 rootViewController.view.frame.origin.y 的值来区分，如果是非全面屏，这个值必定为20，如果是全面屏，则可能是24或44等不同的值。但由于创建 UIWindow、UIViewController 等均属于较大消耗，所以只在前面的步骤无法区分的情况下才会使用第4点。
+                 5. 对于第4点，经测试与当前设备的方向、是否有勾选 project 里的 General - Hide status bar、当前是否处于来电模式的状态栏这些都没关系。
+                 */
+                SEL peripheryInsetsSelector = NSSelectorFromString([NSString stringWithFormat:@"_%@%@", @"periphery", @"Insets"]);
+                UIEdgeInsets peripheryInsets = UIEdgeInsetsZero;
+                [self performSelector:peripheryInsetsSelector withPrimitiveReturnValue:&peripheryInsets arguments:nil];
+                if (peripheryInsets.bottom <= 0) {
+                    UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+                    peripheryInsets = window.safeAreaInsets;
+                    if (peripheryInsets.bottom <= 0) {
+                        UIViewController *viewController = [UIViewController new];
+                        window.rootViewController = viewController;
+                        if (CGRectGetMinY(viewController.view.frame) > 20) {
+                            peripheryInsets.bottom = 1;
+                        }
+                    }
+                }
+                isNotchedScreen = peripheryInsets.bottom > 0 ? 1 : 0;
+            } else {
+                isNotchedScreen = [self is58InchScreen] ? 1 : 0;
+            }
+        }
+    } else {
+        isNotchedScreen = 0;
+    }
+    
+    return isNotchedScreen > 0;
+}
++ (void)performSelector:(SEL)selector withPrimitiveReturnValue:(void *)returnValue arguments:(void *)firstArgument, ... {
+
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[[UIScreen mainScreen] methodSignatureForSelector:selector]];
+    [invocation setTarget:[UIScreen mainScreen]];
+    [invocation setSelector:selector];
+    
+    if (firstArgument) {
+        va_list valist;
+        va_start(valist, firstArgument);
+        [invocation setArgument:firstArgument atIndex:2];// 0->self, 1->_cmd
+        
+        void *currentArgument;
+        NSInteger index = 3;
+        while ((currentArgument = va_arg(valist, void *))) {
+            [invocation setArgument:currentArgument atIndex:index];
+            index++;
+        }
+        va_end(valist);
+    }
+    
+    [invocation invoke];
+    
+    if (returnValue) {
+        [invocation getReturnValue:returnValue];
+    }
+}
+
+static NSInteger is58InchScreen = -1;
++ (BOOL)is58InchScreen {
+    if (is58InchScreen < 0) {
+        // Both iPhone XS and iPhone X share the same actual screen sizes, so no need to compare identifiers
+        // iPhone XS 和 iPhone X 的物理尺寸是一致的，因此无需比较机器 Identifier
+        is58InchScreen = (DEVICE_WIDTH == self.screenSizeFor58Inch.width && DEVICE_HEIGHT == self.screenSizeFor58Inch.height) ? 1 : 0;
+    }
+    return is58InchScreen > 0;
+}
++ (CGSize)screenSizeFor58Inch {
+    return CGSizeMake(375, 812);
+}
 @end

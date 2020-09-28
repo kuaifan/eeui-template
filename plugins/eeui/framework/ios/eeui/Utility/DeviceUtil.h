@@ -69,4 +69,5 @@ static NSMutableDictionary * mAppboardWifi;
 
 + (NSString *) webCommonStyle;
 
++ (BOOL)isNotchedScreen;
 @end
