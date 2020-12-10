@@ -559,18 +559,25 @@ static NSInteger isNotchedScreen = -1;
                  5. 对于第4点，经测试与当前设备的方向、是否有勾选 project 里的 General - Hide status bar、当前是否处于来电模式的状态栏这些都没关系。
                  */
                 SEL peripheryInsetsSelector = NSSelectorFromString([NSString stringWithFormat:@"_%@%@", @"periphery", @"Insets"]);
-                UIEdgeInsets peripheryInsets = UIEdgeInsetsZero;
+                __block UIEdgeInsets peripheryInsets = UIEdgeInsetsZero;
                 [self performSelector:peripheryInsetsSelector withPrimitiveReturnValue:&peripheryInsets arguments:nil];
                 if (peripheryInsets.bottom <= 0) {
-                    UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-                    peripheryInsets = window.safeAreaInsets;
-                    if (peripheryInsets.bottom <= 0) {
-                        UIViewController *viewController = [UIViewController new];
-                        window.rootViewController = viewController;
-                        if (CGRectGetMinY(viewController.view.frame) > 20) {
-                            peripheryInsets.bottom = 1;
+                    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+                        peripheryInsets = window.safeAreaInsets;
+                        if (peripheryInsets.bottom <= 0) {
+                            UIViewController *viewController = [UIViewController new];
+                            window.rootViewController = viewController;
+                            if (CGRectGetMinY(viewController.view.frame) > 20) {
+                                peripheryInsets.bottom = 1;
+                            }
                         }
-                    }
+                        
+                        dispatch_semaphore_signal(signal);
+                    });
+                    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
+
                 }
                 isNotchedScreen = peripheryInsets.bottom > 0 ? 1 : 0;
             } else {
