@@ -19,6 +19,8 @@
 /// 设备高度，跟横竖屏无关
 #define DEVICE_HEIGHT MAX([[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)
 
+#define NSEC_PER_SEC 1000000000ull //1000000000纳秒/秒
+
 @implementation DeviceUtil
 
 
@@ -562,8 +564,9 @@ static NSInteger isNotchedScreen = -1;
                 __block UIEdgeInsets peripheryInsets = UIEdgeInsetsZero;
                 [self performSelector:peripheryInsetsSelector withPrimitiveReturnValue:&peripheryInsets arguments:nil];
                 if (peripheryInsets.bottom <= 0) {
-                    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(dispatch_get_main_queue())) == 0) {
+                        //当前为主线程
                         UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
                         peripheryInsets = window.safeAreaInsets;
                         if (peripheryInsets.bottom <= 0) {
@@ -573,11 +576,23 @@ static NSInteger isNotchedScreen = -1;
                                 peripheryInsets.bottom = 1;
                             }
                         }
-                        
-                        dispatch_semaphore_signal(signal);
-                    });
-                    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
-
+                    }else{
+                        dispatch_semaphore_t signal = dispatch_semaphore_create(0);
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            UIWindow *window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+                            peripheryInsets = window.safeAreaInsets;
+                            if (peripheryInsets.bottom <= 0) {
+                                UIViewController *viewController = [UIViewController new];
+                                window.rootViewController = viewController;
+                                if (CGRectGetMinY(viewController.view.frame) > 20) {
+                                    peripheryInsets.bottom = 1;
+                                }
+                            }
+                            
+                            dispatch_semaphore_signal(signal);
+                        });
+                        dispatch_semaphore_wait(signal, dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC));
+                    }
                 }
                 isNotchedScreen = peripheryInsets.bottom > 0 ? 1 : 0;
             } else {
