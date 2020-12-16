@@ -34,9 +34,11 @@ apply from: 'buildSrc/download_jsc.gradle'
 apply from: 'buildSrc/packageName.gradle'
 apply from: 'buildSrc/asan.gradle'
 
+//version = project.weexVersion
+//group = project.groupId
 version = project.weex_sdkLibVersion
 group = 'org.apache.weex'
-//eeui dev end
+
 
 //Check version, the version must have 4 sections. The leading three section must be number, and the last section is odd number with or without suffix string.
 if (!project.hasProperty('ignoreVersionCheck') || !project.getProperty('ignoreVersionCheck').equals("true")) {
