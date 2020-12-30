@@ -263,7 +263,11 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
         return;
     }
     vc.statusBarStyleCustom = isLight ? @"1" : @"0";
-    [[UIApplication sharedApplication] setStatusBarStyle:isLight ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault];
+    if (@available(iOS 13.0, *)) {
+        [[UIApplication sharedApplication] setStatusBarStyle:isLight ? UIStatusBarStyleLightContent : UIStatusBarStyleDarkContent];
+    } else {
+        [[UIApplication sharedApplication] setStatusBarStyle:isLight ? UIStatusBarStyleLightContent : UIStatusBarStyleDefault];
+    }
 }
 
 - (void)setPageBackPressed:(id)params callback:(WXModuleKeepAliveCallback)callback
