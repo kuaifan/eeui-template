@@ -70,7 +70,10 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
         if (weexInstance != nil && [weexInstance.viewController isKindOfClass:[eeuiViewController class]]) {
             name = [(eeuiViewController*)weexInstance.viewController pageName];
         }else{
-            name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+            UIViewController *vc = [DeviceUtil getTopviewControler];
+            if ([vc isKindOfClass:eeuiViewController.class]) {
+                name = [(eeuiViewController*)vc pageName];
+            }
         }
     }
     return name;
@@ -222,7 +225,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
         if (data && [data isKindOfClass:[UIViewController class]]) {
             vc = data;
         } else {
-            vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+            vc = (eeuiViewController*)weexInstance.viewController;
         }
     }
     if (vc == nil) {
@@ -246,7 +249,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
         if (data && [data isKindOfClass:[UIViewController class]]) {
             vc = data;
         } else {
-            vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+            vc = (eeuiViewController*)weexInstance.viewController;
         }
     }
     if (vc == nil) {
@@ -256,9 +259,18 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     [CustomWeexSDKManager setSoftInputMode:modo];
 }
 
-- (void)setStatusBarStyle:(BOOL)isLight
+- (void)setStatusBarStyle:(BOOL)isLight weexInstance:(WXSDKInstance*)weexInstance
 {
-    eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+    eeuiViewController *vc = nil;
+    if (weexInstance && weexInstance.viewController) {
+        vc = (eeuiViewController*)weexInstance.viewController;
+    } else {
+        UIViewController *viewController = [DeviceUtil getTopviewControler];
+        if ([viewController isKindOfClass:eeuiViewController.class]) {
+            vc = (eeuiViewController*)viewController;
+        }
+    }
+    
     if (vc == nil) {
         return;
     }
@@ -287,7 +299,10 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
-        vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+        UIViewController *viewController = [DeviceUtil getTopviewControler];
+        if ([viewController isKindOfClass:eeuiViewController.class]) {
+            vc = (eeuiViewController*)viewController;
+        }
     }
 }
 
@@ -299,31 +314,53 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
-        vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+        UIViewController *viewController = [DeviceUtil getTopviewControler];
+        if ([viewController isKindOfClass:eeuiViewController.class]) {
+            vc = (eeuiViewController*)viewController;
+        }
     }
 
     //    [vc changeRefresh:refreshing];
 }
 
 
-- (void)setPageStatusListener:(id)params callback:(WXModuleKeepAliveCallback)callback
+- (void)setPageStatusListener:(id)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback
 {
     NSString *listener = @"";
     NSString *name = @"";
-    if ([params isKindOfClass:[NSString class]]) {
+    if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
+        name = [(eeuiViewController*)weexInstance.viewController pageName];
+    } else if ([params isKindOfClass:[NSString class]]) {
         listener = params;
-        name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        UIViewController *viewController = [DeviceUtil getTopviewControler];
+        if ([viewController isKindOfClass:eeuiViewController.class]) {
+            name = [(eeuiViewController*)viewController pageName];
+        }
     } else if ([params isKindOfClass:[NSDictionary class]]) {
         listener = [WXConvert NSString:params[@"listenerName"]];
-        name = params[@"pageName"] ? [WXConvert NSString:params[@"pageName"]] : [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        if (params[@"pageName"]) {
+            name = [WXConvert NSString:params[@"pageName"]];
+        } else {
+            UIViewController *viewController = [DeviceUtil getTopviewControler];
+            if ([viewController isKindOfClass:eeuiViewController.class]) {
+                name = [(eeuiViewController*)viewController pageName];
+            }
+        }
     }
 
     eeuiViewController *vc = nil;
-    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
-    if (data && [data isKindOfClass:[eeuiViewController class]]) {
-        vc = (eeuiViewController*)data;
+    if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
+        vc = (eeuiViewController*)weexInstance.viewController;
     } else {
-        vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        if (data && [data isKindOfClass:[eeuiViewController class]]) {
+            vc = (eeuiViewController*)data;
+        } else {
+            UIViewController *viewController = [DeviceUtil getTopviewControler];
+            if ([viewController isKindOfClass:eeuiViewController.class]) {
+                vc = (eeuiViewController*)viewController;
+            }
+        }
     }
 
     [vc addStatusListener:listener];
@@ -358,26 +395,41 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     };
 }
 
-- (void)clearPageStatusListener:(id)params
+- (void)clearPageStatusListener:(id)params weexInstance:(WXSDKInstance*)weexInstance
 {
     NSString *listener = @"";
     NSString *name = @"";
-    if ([params isKindOfClass:[NSString class]]) {
+    if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
+        name = [(eeuiViewController*)weexInstance.viewController pageName];
+    } else if ([params isKindOfClass:[NSString class]]) {
         listener = params;
-        name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        name = [self getPageName:params weexInstance:weexInstance];
     } else if ([params isKindOfClass:[NSDictionary class]]) {
         listener = params[@"listenerName"];
-        name = params[@"pageName"] ? params[@"pageName"] : [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        if (params[@"pageName"]) {
+            name = [WXConvert NSString:params[@"pageName"]];
+        } else {
+            UIViewController *viewController = [DeviceUtil getTopviewControler];
+            if ([viewController isKindOfClass:eeuiViewController.class]) {
+                name = [(eeuiViewController*)viewController pageName];
+            }
+        }
     }
 
     eeuiViewController *vc = nil;
-    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
-    if (data && [data isKindOfClass:[eeuiViewController class]]) {
-        vc = (eeuiViewController*)data;
+    if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
+        vc = (eeuiViewController*)weexInstance.viewController;
     } else {
-        vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        if (data && [data isKindOfClass:[eeuiViewController class]]) {
+            vc = (eeuiViewController*)data;
+        } else {
+            UIViewController *viewController = [DeviceUtil getTopviewControler];
+            if ([viewController isKindOfClass:eeuiViewController.class]) {
+                vc = (eeuiViewController*)viewController;
+            }
+        }
     }
-
     [vc clearStatusListener:listener];
 
     if ([[self.callData allKeys] containsObject:listener]) {
@@ -385,11 +437,11 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     }
 }
 
-- (void)onPageStatusListener:(id)params status:(NSString*)status
+- (void)onPageStatusListener:(id)params status:(NSString*)status weexInstance:(WXSDKInstance*)weexInstance
 {
     NSString *status2 = @"";
     NSString *listener = @"";
-    NSString *name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+    NSString *name = [self getPageName:params weexInstance:weexInstance];
     id extra = nil;
 
     //第二个参数为空，则表示第一个参数是status
@@ -412,11 +464,18 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     }
 
     eeuiViewController *vc = nil;
-    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
-    if (data && [data isKindOfClass:[eeuiViewController class]]) {
-        vc = (eeuiViewController*)data;
+    if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
+        vc = (eeuiViewController*)weexInstance.viewController;
     } else {
-        vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
+        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        if (data && [data isKindOfClass:[eeuiViewController class]]) {
+            vc = (eeuiViewController*)data;
+        } else {
+            UIViewController *viewController = [DeviceUtil getTopviewControler];
+            if ([viewController isKindOfClass:eeuiViewController.class]) {
+                vc = (eeuiViewController*)viewController;
+            }
+        }
     }
 
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"status":status2, @"pageName":name, @"listenerName":listener}];
@@ -465,7 +524,10 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
             animated = params[@"animated"] ? [WXConvert BOOL:params[@"animated"]] : YES;
         }
     } else {
-        name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        UIViewController *viewController = [DeviceUtil getTopviewControler];
+        if ([viewController isKindOfClass:eeuiViewController.class]) {
+            name = [(eeuiViewController*)viewController pageName];
+        }
     }
     if ([name isEqualToString:@""]) {
         return;
@@ -646,43 +708,58 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     }
 }
 
-- (void)setTitle:(id) params callback:(WXModuleKeepAliveCallback) callback
+- (void)setTitle:(id) params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback) callback
 {
-    eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-    if (vc) {
-        [vc setNavigationTitle:params callback:callback];
+    UIViewController *vc = weexInstance.viewController;
+    if (!vc || ![vc isKindOfClass:eeuiViewController.class]) {
+        vc = [DeviceUtil getTopviewControler];
+    }
+    if (vc && [vc isKindOfClass:eeuiViewController.class]) {
+        [(eeuiViewController*)vc setNavigationTitle:params callback:callback];
     }
 }
 
-- (void)setLeftItems:(id) params callback:(WXModuleKeepAliveCallback) callback
+- (void)setLeftItems:(id) params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback) callback
 {
-    eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-    if (vc) {
-        [vc setNavigationItems:params position:@"left" callback:callback];
+    UIViewController *vc = weexInstance.viewController;
+    if (!vc || ![vc isKindOfClass:eeuiViewController.class]) {
+        vc = [DeviceUtil getTopviewControler];
+    }
+    if (vc && [vc isKindOfClass:eeuiViewController.class]) {
+        [(eeuiViewController*)vc setNavigationItems:params position:@"left" callback:callback];
     }
 }
 
-- (void)setRightItems:(id) params callback:(WXModuleKeepAliveCallback) callback
+- (void)setRightItems:(id) params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback) callback
 {
-    eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-    if (vc) {
-        [vc setNavigationItems:params position:@"right" callback:callback];
+    UIViewController *vc = weexInstance.viewController;
+    if (!vc || ![vc isKindOfClass:eeuiViewController.class]) {
+        vc = [DeviceUtil getTopviewControler];
+    }
+    if (vc && [vc isKindOfClass:eeuiViewController.class]) {
+        [(eeuiViewController*)vc setNavigationItems:params position:@"right" callback:callback];
     }
 }
 
-- (void)showNavigation
+- (void)showNavigationWithWeexInstance:(WXSDKInstance*)weexInstance
 {
-    eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-    if (vc) {
-        [vc showNavigation];
+    UIViewController *vc = weexInstance.viewController;
+    if (!vc || ![vc isKindOfClass:eeuiViewController.class]) {
+        vc = [DeviceUtil getTopviewControler];
+    }
+    if (vc && [vc isKindOfClass:eeuiViewController.class]) {
+        [(eeuiViewController*)vc showNavigation];
     }
 }
 
-- (void)hideNavigation
+- (void)hideNavigationWithWeexInstance:(WXSDKInstance*)weexInstance
 {
-    eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-    if (vc) {
-        [vc hideNavigation];
+    UIViewController *vc = weexInstance.viewController;
+    if (!vc || ![vc isKindOfClass:eeuiViewController.class]) {
+        vc = [DeviceUtil getTopviewControler];
+    }
+    if (vc && [vc isKindOfClass:eeuiViewController.class]) {
+        [(eeuiViewController*)vc hideNavigation];
     }
 }
 

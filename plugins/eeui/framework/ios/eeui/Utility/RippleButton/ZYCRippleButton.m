@@ -145,7 +145,7 @@ const CGFloat ZYCRippleInitialRaius = 20;
     if (self.rippleBlock){
         if ([[DeviceUtil getTopviewControler] isKindOfClass:[eeuiViewController class]]) {
             eeuiViewController *vc = (eeuiViewController*)[DeviceUtil getTopviewControler];
-            [[eeuiNewPageManager sharedIntstance] setPageStatusListener:@{@"listenerName": @"ZYCRippleButton:listener", @"pageName": vc.pageName} callback:^(id result, BOOL keepAlive) {
+            [[eeuiNewPageManager sharedIntstance] setPageStatusListener:@{@"listenerName": @"ZYCRippleButton:listener", @"pageName": vc.pageName} weexInstance:nil callback:^(id result, BOOL keepAlive) {
                 NSString *status = @"";
                 if ([result isKindOfClass:[NSString class]]) {
                     status = result;
@@ -159,7 +159,7 @@ const CGFloat ZYCRippleInitialRaius = 20;
                     }
                 }
             }];
-            [[eeuiNewPageManager sharedIntstance] setPageStatusListener:@{@"listenerName": @"otherPlugin", @"pageName": vc.pageName} callback:^(id result, BOOL keepAlive) {
+            [[eeuiNewPageManager sharedIntstance] setPageStatusListener:@{@"listenerName": @"otherPlugin", @"pageName": vc.pageName} weexInstance:nil callback:^(id result, BOOL keepAlive) {
                 NSString *status = @"";
                 if ([result isKindOfClass:[NSString class]]) {
                     status = result;

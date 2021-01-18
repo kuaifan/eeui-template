@@ -34,15 +34,25 @@ WX_EXPORT_METHOD(@selector(pop:callback:))
     NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
     NSString *name = @"";
     if ([params isKindOfClass:[NSString class]]) {
-        name = [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        UIViewController *vc = [DeviceUtil getTopviewControler];
+        if ([vc isKindOfClass:eeuiViewController.class]) {
+            name = [(eeuiViewController*)vc pageName];
+        }
     } else if ([params isKindOfClass:[NSDictionary class]]) {
         info = [[NSMutableDictionary alloc] initWithDictionary:params];
-        name = params[@"pageName"] ? [WXConvert NSString:params[@"pageName"]] : [(eeuiViewController*)[DeviceUtil getTopviewControler] pageName];
+        if (params[@"pageName"]) {
+            name = [WXConvert NSString:params[@"pageName"]];
+        } else {
+            UIViewController *vc = [DeviceUtil getTopviewControler];
+            if ([vc isKindOfClass:eeuiViewController.class]) {
+                name = [(eeuiViewController*)vc pageName];
+            }
+        }
     }
     info[@"pageName"] = name;
     if (callback) {
         info[@"listenerName"] = @"__navigatorPop";
-        [[eeuiNewPageManager sharedIntstance] setPageStatusListener:info callback:callback];
+        [[eeuiNewPageManager sharedIntstance] setPageStatusListener:info weexInstance:weexInstance callback:callback];
     }
     [[eeuiNewPageManager sharedIntstance] closePage:info weexInstance:weexInstance];
 }
