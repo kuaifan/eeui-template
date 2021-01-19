@@ -229,12 +229,12 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 
 - (void)setStatusBarStyle:(BOOL)isLight
 {
-    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight];
+    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight weexInstance:weexInstance];
 }
 
 - (void)statusBarStyle:(BOOL)isLight
 {
-    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight];
+    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight weexInstance:weexInstance];
 }
 
 - (void)setPageBackPressed:(id)params callback:(WXModuleKeepAliveCallback)callback
@@ -254,17 +254,17 @@ WX_EXPORT_METHOD_SYNC(@selector(rewriteUrl:))
 
 - (void)setPageStatusListener:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] setPageStatusListener:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] setPageStatusListener:params weexInstance:weexInstance callback:callback];
 }
 
 - (void)clearPageStatusListener:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] clearPageStatusListener:params];
+    [[eeuiNewPageManager sharedIntstance] clearPageStatusListener:params weexInstance:weexInstance];
 }
 
 - (void)onPageStatusListener:(id)params status:(NSString*)status
 {
-    [[eeuiNewPageManager sharedIntstance] onPageStatusListener:params status:status];
+    [[eeuiNewPageManager sharedIntstance] onPageStatusListener:params status:status weexInstance:weexInstance];
 }
 
 - (void)postMessage:(id)params

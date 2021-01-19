@@ -12,27 +12,27 @@
 
 - (void)setTitle:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] setTitle:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] setTitle:params weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (void)setLeftItem:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] setLeftItems:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] setLeftItems:params weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (void)setRightItem:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] setRightItems:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] setRightItems:params weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (void)show
 {
-    [[eeuiNewPageManager sharedIntstance] showNavigation];
+    [[eeuiNewPageManager sharedIntstance] showNavigationWithWeexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)hide
 {
-    [[eeuiNewPageManager sharedIntstance] hideNavigation];
+    [[eeuiNewPageManager sharedIntstance] hideNavigationWithWeexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 @end

@@ -164,12 +164,12 @@
 
 - (void)setStatusBarStyle:(BOOL)isLight
 {
-    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight];
+    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)statusBarStyle:(BOOL)isLight
 {
-    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight];
+    [[eeuiNewPageManager sharedIntstance] setStatusBarStyle:isLight weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)setPageBackPressed:(id)params callback:(WXModuleKeepAliveCallback)callback
@@ -189,17 +189,17 @@
 
 - (void)setPageStatusListener:(id)params callback:(WXModuleKeepAliveCallback)callback
 {
-    [[eeuiNewPageManager sharedIntstance] setPageStatusListener:params callback:callback];
+    [[eeuiNewPageManager sharedIntstance] setPageStatusListener:params weexInstance:[[WXSDKManager bridgeMgr] topInstance] callback:callback];
 }
 
 - (void)clearPageStatusListener:(id)params
 {
-    [[eeuiNewPageManager sharedIntstance] clearPageStatusListener:params];
+    [[eeuiNewPageManager sharedIntstance] clearPageStatusListener:params  weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)onPageStatusListener:(id)params status:(NSString*)status
 {
-    [[eeuiNewPageManager sharedIntstance] onPageStatusListener:params status:status];
+    [[eeuiNewPageManager sharedIntstance] onPageStatusListener:params status:status weexInstance:[[WXSDKManager bridgeMgr] topInstance]];
 }
 
 - (void)postMessage:(id)params
