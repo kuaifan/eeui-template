@@ -7,6 +7,7 @@
 #import "WXSDKInstance.h"
 
 @interface eeuiViewComponent ()
+@property (nonatomic, assign) BOOL isRemoveObserver;
 @end
 
 @implementation eeuiViewComponent
@@ -20,9 +21,21 @@
     CGRect newFrame = self.view.frame;
     [self fireResize:newFrame.size.width height:newFrame.size.height];
 }
-
+- (void) viewWillUnload
+{
+    [super viewWillUnload];
+    [self removeObserver];
+}
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self removeObserver];
+}
+- (void) removeObserver
+{
+    if (_isRemoveObserver != YES) {
+        _isRemoveObserver = YES;
+        [self.view removeObserver:self forKeyPath:@"frame" context:nil];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
