@@ -95,7 +95,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
         }
     }
 
-    NSString *pageName = params[@"pageName"] ? [WXConvert NSString:params[@"pageName"]] : [NSString stringWithFormat:@"NewPage-%d", (arc4random() % 100) + 1000];
+    NSString *pageName = params[@"pageName"] ? [WXConvert NSString:params[@"pageName"]] : [NSString stringWithFormat:@"NewPage-%lld-%d",  (long long)([[NSDate date] timeIntervalSince1970] * 1000), (arc4random() % 100)];
     NSString *pageTitle = params[@"pageTitle"] ? [WXConvert NSString:params[@"pageTitle"]] : @"";
     NSString *safeAreaBottom = params[@"safeAreaBottom"] ? [WXConvert NSString:params[@"safeAreaBottom"]] : @"";
 
