@@ -22,6 +22,7 @@
 #import "Debug.h"
 #import "eeuiToastManager.h"
 
+
 @interface AppDelegate ()<SRWebSocketDelegate>
 
 @property (nonatomic, strong) SRWebSocket *webSocket;
@@ -553,7 +554,7 @@ NSDictionary *mLaunchOptions;
             NSString *valueHP = [NSString stringWithFormat:@"%@:%ld", [valueUri host], (long)[[valueUri port] integerValue]];
             NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
             for (NSString *pageName in viewData) {
-                id view = [viewData objectForKey:pageName];
+                id view = [viewData weak_getObjectForKey:pageName];
                 if ([view isKindOfClass:[eeuiViewController class]]) {
                     eeuiViewController *vc = (eeuiViewController*)view;
                     NSURL *hostUri = [NSURL URLWithString:[vc url]];
@@ -593,7 +594,7 @@ NSDictionary *mLaunchOptions;
         BOOL already = NO;
         NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
         for (NSString *pageName in viewData) {
-            id view = [viewData objectForKey:pageName];
+            id view = [viewData weak_getObjectForKey:pageName];
             if ([view isKindOfClass:[eeuiViewController class]]) {
                 eeuiViewController *vc = (eeuiViewController*)view;
                 if ([[DeviceUtil realUrl:[vc url]] hasPrefix:url]) {
