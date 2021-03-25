@@ -9,6 +9,9 @@ android {
         versionCode project.eeuiVersionCode
         versionName project.eeuiVersionName
 
+        buildConfigField 'int', 'VERSION_CODE', "${project.eeuiVersionCode}"
+        buildConfigField 'String', 'VERSION_NAME', "\"${project.eeuiVersionName}\""
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
