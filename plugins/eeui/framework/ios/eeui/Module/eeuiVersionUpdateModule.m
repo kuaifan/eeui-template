@@ -42,7 +42,7 @@ WX_EXPORT_METHOD(@selector(startUpdate))
 {
     NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
     for (NSString *pageName in viewData) {
-        id view = [viewData objectForKey:pageName];
+        id view = [viewData weak_getObjectForKey:pageName];
         if ([view isKindOfClass:[eeuiViewController class]]) {
             eeuiViewController *vc = (eeuiViewController*)view;
             [vc hideFixedVersionUpdate];

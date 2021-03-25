@@ -96,7 +96,7 @@
     }
 
     NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
-    id view = [viewData objectForKey:_pageName];
+    id view = [viewData weak_getObjectForKey:_pageName];
     if (![view isKindOfClass:[eeuiViewController class]]) {
         [self closeClick];
         return;

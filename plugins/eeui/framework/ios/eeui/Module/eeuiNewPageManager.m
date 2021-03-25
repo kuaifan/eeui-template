@@ -13,19 +13,6 @@
 #import "NSString+BHURLHelper.h"
 #import "UIViewController+HHTransition.h"
 
-typedef id (^WeakReference)(void);
-
-WeakReference makeWeakReference(id object) {
-    __weak id weakref = object;
-    return ^{
-        return weakref;
-    };
-}
-
-id weakReferenceNonretainedObjectValue(WeakReference ref) {
-    return ref ? ref() : nil;
-}
-
 @interface eeuiNewPageManager ()
 
 @property (nonatomic, strong) NSMutableDictionary *pageData;
@@ -221,7 +208,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
     if (name.length > 0) {
-        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        id data = [self.viewData weak_getObjectForKey:name];
         if (data && [data isKindOfClass:[UIViewController class]]) {
             vc = data;
         } else {
@@ -245,7 +232,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
     if (name.length > 0) {
-        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        id data = [self.viewData weak_getObjectForKey:name];
         if (data && [data isKindOfClass:[UIViewController class]]) {
             vc = data;
         } else {
@@ -295,7 +282,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
 {
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
-    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+    id data = [self.viewData weak_getObjectForKey:name];
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
@@ -310,7 +297,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
 {
     eeuiViewController *vc = nil;
     NSString *name = [self getPageName:params weexInstance:weexInstance];
-    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+    id data = [self.viewData weak_getObjectForKey:name];
     if (data && [data isKindOfClass:[eeuiViewController class]]) {
         vc = (eeuiViewController*)data;
     } else {
@@ -352,7 +339,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
         vc = (eeuiViewController*)weexInstance.viewController;
     } else {
-        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        id data = [self.viewData weak_getObjectForKey:name];
         if (data && [data isKindOfClass:[eeuiViewController class]]) {
             vc = (eeuiViewController*)data;
         } else {
@@ -420,7 +407,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
         vc = (eeuiViewController*)weexInstance.viewController;
     } else {
-        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        id data = [self.viewData weak_getObjectForKey:name];
         if (data && [data isKindOfClass:[eeuiViewController class]]) {
             vc = (eeuiViewController*)data;
         } else {
@@ -467,7 +454,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
     if (weexInstance && weexInstance.viewController && [weexInstance isKindOfClass:eeuiViewController.class]) {
         vc = (eeuiViewController*)weexInstance.viewController;
     } else {
-        id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+        id data = [self.viewData weak_getObjectForKey:name];
         if (data && [data isKindOfClass:[eeuiViewController class]]) {
             vc = (eeuiViewController*)data;
         } else {
@@ -533,7 +520,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
         return;
     }
 
-    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+    id data = [self.viewData weak_getObjectForKey:name];
     if (data == nil) {
         return;
     }
@@ -597,7 +584,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
         return;
     }
 
-    id data = weakReferenceNonretainedObjectValue(self.viewData[name]);
+    id data = [self.viewData weak_getObjectForKey:name];
     if (data == nil) {
         return;
     }
@@ -676,7 +663,7 @@ id weakReferenceNonretainedObjectValue(WeakReference ref) {
 - (void)setPageData:(NSString*)pageName vc:(eeuiViewController *)vc
 {
     if (pageName.length > 0) {
-        [self.viewData setObject:makeWeakReference(vc) forKey:pageName];
+        [self.viewData weak_setObject:vc forKey:pageName];
 
         NSMutableDictionary *res = [NSMutableDictionary dictionaryWithDictionary:@{}];
         [res setObject:vc.url forKey:@"url"];

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "WeexSDK.h"
 #import "eeuiViewController.h"
+#import "NSMutableDictionary+WeakReference.h"
 
 static NSMutableDictionary *tabViewDebug;
 

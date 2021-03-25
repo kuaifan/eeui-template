@@ -299,7 +299,7 @@ static NSMutableDictionary *checkUpdateVersion;
         if ([url hasPrefix:@"http://"] || [url hasPrefix:@"https://"]) {
             NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
             for (NSString *pageName in viewData) {
-                id view = [viewData objectForKey:pageName];
+                id view = [viewData weak_getObjectForKey:pageName];
                 if ([view isKindOfClass:[eeuiViewController class]]) {
                     eeuiViewController *vc = (eeuiViewController*)view;
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -328,7 +328,7 @@ static NSMutableDictionary *checkUpdateVersion;
     [[[DeviceUtil getTopviewControler] navigationController] popToRootViewControllerAnimated:NO];
     NSDictionary *viewData = [[eeuiNewPageManager sharedIntstance] getViewData];
     for (NSString *pageName in viewData) {
-        id view = [viewData objectForKey:pageName];
+        id view = [viewData weak_getObjectForKey:pageName];
         if ([view isKindOfClass:[eeuiViewController class]]) {
             eeuiViewController *vc = (eeuiViewController*)view;
             if (vc.isFirstPage) {
