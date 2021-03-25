@@ -19,7 +19,7 @@
 //
 // Created by Darin on 12/06/2018.
 //
-
+#include <assert.h>
 #include "timer_queue.h"
 //#include "android/jsengine/task/weex_task_queue.h"
 #include "weex_task_queue.h"
