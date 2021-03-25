@@ -19,7 +19,7 @@
 //
 // Created by Darin on 2019/1/8.
 //
-#include <assert.h>
+#include <cassert>
 #include "base/android/log_utils.h"
 #include "android/jsengine/object/weex_env.h"
 #include "back_to_weex_core_queue.h"

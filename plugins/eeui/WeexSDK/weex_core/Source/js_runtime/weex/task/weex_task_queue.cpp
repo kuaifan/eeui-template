@@ -21,7 +21,7 @@
 //
 
 #include "weex_task_queue.h"
-#include <assert.h>
+#include <cassert>
 #include <unistd.h>
 #include "js_runtime/weex/task/impl/native_timer_task.h"
 #include "android/jsengine/bridge/script/script_bridge_in_multi_process.h"
