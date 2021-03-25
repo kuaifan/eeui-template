@@ -44,9 +44,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         tools:replace="android:allowBackup,android:name"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
-
         <activity
             android:name=".WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
