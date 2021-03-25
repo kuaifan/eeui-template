@@ -100,6 +100,7 @@ public class ScanActivity extends AppCompatActivity implements OnCaptureCallback
                 .supportLuminanceInvert(true);
         //
         IconTextView iconFlash = findViewById(R.id.iconFlash);
+        TextView nullView = findViewById(R.id.nullView);
         iconFlash.setOnClickListener(v -> {
             if (mCaptureHelper != null && mCaptureHelper.getCameraManager() != null) {
                 mCaptureHelper.getCameraManager().setTorch(!iconFlash.isSelected());
@@ -109,10 +110,12 @@ public class ScanActivity extends AppCompatActivity implements OnCaptureCallback
             if (tooDark) {
                 if (iconFlash.getVisibility() != View.VISIBLE) {
                     iconFlash.setVisibility(View.VISIBLE);
+                    nullView.setVisibility(View.VISIBLE);
                 }
             } else if (!torch) {
                 if (iconFlash.getVisibility() == View.VISIBLE) {
-                    iconFlash.setVisibility(View.INVISIBLE);
+                    iconFlash.setVisibility(View.GONE);
+                    nullView.setVisibility(View.GONE);
                 }
             }
         });
