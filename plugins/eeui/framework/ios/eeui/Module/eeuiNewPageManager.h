@@ -26,6 +26,7 @@ static NSMutableDictionary *tabViewDebug;
 - (void)setPageBackPressed:(id)params callback:(WXModuleKeepAliveCallback)callback;
 - (void)setOnRefreshListener:(id)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback;
 - (void)setRefreshing:(id)params refreshing:(BOOL)refreshing weexInstance:(WXSDKInstance*)weexInstance;
+- (void)onPageStatusListener:(id)params status:(NSString*)status DEPRECATED_MSG_ATTRIBUTE("Please use 'onPageStatusListener: status: weexInstance:' instill");
 - (void)setPageStatusListener:(id)params weexInstance:(WXSDKInstance*)weexInstance callback:(WXModuleKeepAliveCallback)callback;
 - (void)clearPageStatusListener:(id)params weexInstance:(WXSDKInstance*)weexInstance;
 - (void)onPageStatusListener:(id)params status:(NSString*)status weexInstance:(WXSDKInstance*)weexInstance;

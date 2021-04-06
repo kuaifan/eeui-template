@@ -424,6 +424,10 @@
     }
 }
 
+- (void)onPageStatusListener:(id)params status:(NSString*)status{
+    [self onPageStatusListener:params status:status weexInstance:nil];
+}
+
 - (void)onPageStatusListener:(id)params status:(NSString*)status weexInstance:(WXSDKInstance*)weexInstance
 {
     NSString *status2 = @"";
