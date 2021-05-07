@@ -59,8 +59,8 @@ ext {
     versionCode = 1
     versionName = "1.0"
 
-    eeuiVersionCode = 63
-    eeuiVersionName = "2.4.4"
+    eeuiVersionCode = 64
+    eeuiVersionName = "2.4.5"
 
     minSdkVersion = 16
     appMinSdkVersion = 16
