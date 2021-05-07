@@ -41,7 +41,8 @@ dependencies {
     implementation "com.rabtman.wsmanager:wsmanager:1.0.2"
     implementation "com.gyf.immersionbar:immersionbar:3.0.0"
     implementation "com.google.zxing:core:3.3.3"
-    implementation "app.eeui:zxing:1.0.2"
+    //implementation "app.eeui:zxing:1.0.2" jcenter停用
+    implementation 'com.github.kuaifan:ZXingAsynch:-SNAPSHOT' //启用新的zxing包
     //
     compileOnly "androidx.legacy:legacy-support-v4:${project.supportv4Version}"
     compileOnly "androidx.recyclerview:recyclerview:${project.recyclerviewVersion}"
