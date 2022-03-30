@@ -3,11 +3,14 @@
 buildscript {
     repositories {
         mavenLocal()
-        jcenter()
+        // jcenter()
         mavenCentral()
         maven {
             url 'https://maven.google.com/'
             name 'Google'
+        }
+        maven() {
+            url 'https://maven.aliyun.com/repository/public/'
         }
         google()
     }
@@ -21,7 +24,7 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        jcenter()
+        // jcenter()
         maven {
             url 'https://maven.google.com/'
             name 'Google'
@@ -32,6 +35,9 @@ allprojects {
         }
         maven() {
             url 'http://oss.jfrog.org/oss-snapshot-local/'
+        }
+        maven() {
+            url 'https://maven.aliyun.com/repository/public/'
         }
     }
 }
