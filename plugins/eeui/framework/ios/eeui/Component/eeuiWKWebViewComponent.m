@@ -87,19 +87,11 @@ WX_EXPORT_METHOD(@selector(goForward:))
         eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
         originalUserAgent = [storage getCachesString:@"__system:originalUserAgent" defaultVal:@""];
         if (![originalUserAgent containsString:@";ios_kuaifan_eeui/"]) {
-            WKWebView *wkWebView = [[WKWebView alloc] initWithFrame:CGRectZero];
-            [wkWebView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
-                if (!error) {
-                    NSString *versionName = (NSString*)[[[NSBundle mainBundle] infoDictionary]  objectForKey:@"CFBundleShortVersionString"];
-                    originalUserAgent = [NSString stringWithFormat:@"%@;ios_kuaifan_eeui/%@", result, versionName];
-                    if (_userAgent.length > 0) {
-                        originalUserAgent = [NSString stringWithFormat:@"%@/%@", originalUserAgent, _userAgent];
-                    }
-                    [storage setCachesString:@"__system:originalUserAgent" value:originalUserAgent expired:0];
-                    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:originalUserAgent, @"UserAgent", nil];
-                    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-                }
-            }];
+            UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+            NSString *oldAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"] ?:@"";
+            NSString *versionName = (NSString*)[[[NSBundle mainBundle] infoDictionary]  objectForKey:@"CFBundleShortVersionString"];
+            originalUserAgent = [NSString stringWithFormat:@"%@;ios_kuaifan_eeui/%@", oldAgent, versionName];
+            [storage setCachesString:@"__system:originalUserAgent" value:originalUserAgent expired:0];
         }
         if (_userAgent.length > 0) {
             originalUserAgent = [NSString stringWithFormat:@"%@/%@", originalUserAgent, _userAgent];
