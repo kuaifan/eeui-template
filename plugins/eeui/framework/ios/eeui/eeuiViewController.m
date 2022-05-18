@@ -315,6 +315,14 @@ static int easyNavigationButtonTag = 8000;
 {
     _keyBoardlsVisible = YES;
     [CustomWeexSDKManager setKeyBoardlsVisible:_keyBoardlsVisible];
+    // 键盘事件
+    NSDictionary *userInfo = [notification userInfo];
+    NSValue *aValue = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRect = [aValue CGRectValue];
+    int height = keyboardRect.size.height;
+    int width = keyboardRect.size.width;
+    eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
+    [storage setCachesString:@"__system:keyboardHeight" value:@(height).stringValue expired:0];
 }
 
 // 键盘隐藏触发该方法
@@ -322,6 +330,14 @@ static int easyNavigationButtonTag = 8000;
 {
     _keyBoardlsVisible = NO;
     [CustomWeexSDKManager setKeyBoardlsVisible:_keyBoardlsVisible];
+    // 键盘事件
+    NSDictionary *userInfo = [notification userInfo];
+    NSValue *aValue = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
+    CGRect keyboardRect = [aValue CGRectValue];
+    int height = keyboardRect.size.height;
+    int width = keyboardRect.size.width;
+    eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
+    [storage setCachesString:@"__system:keyboardHeight" value:@(height).stringValue expired:0];
 }
 
 // 页面失活

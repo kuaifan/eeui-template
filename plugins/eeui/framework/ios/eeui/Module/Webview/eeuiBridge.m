@@ -439,15 +439,16 @@
     return [self weexDp2px:[self getStatusBarHeight]];
 }
 
-#warning ssss 与安卓不一致，待解决
 - (NSInteger)getNavigationBarHeight
 {
-    return 0;
+    eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
+    NSString *value = [storage getCachesString:@"__system:keyboardHeight" defaultVal:@"0"];
+    return [value intValue];
 }
 
 - (NSInteger)getNavigationBarHeightPx
 {
-    return 0;
+    return [self weexDp2px:[self getNavigationBarHeight]];
 }
 
 - (NSInteger)getVersion

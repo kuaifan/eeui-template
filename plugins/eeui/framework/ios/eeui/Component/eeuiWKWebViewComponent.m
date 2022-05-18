@@ -12,6 +12,14 @@
 #import "eeuiStorageManager.h"
 #import "JSCallCommon.h"
 
+@interface _NoInputAccessoryView : NSObject
+@end
+@implementation _NoInputAccessoryView
+- (id)inputAccessoryView {
+    return nil;
+}
+@end
+
 @interface eeuiWKWebView : WKWebView
 @end
 
@@ -33,6 +41,7 @@
 @property (nonatomic, assign) BOOL isHeightChanged;
 @property (nonatomic, assign) BOOL isReceiveMessage;
 @property (nonatomic, assign) BOOL isTransparency;
+@property (nonatomic, assign) BOOL isHiddenDone;
 @property (nonatomic, strong) JSCallCommon* JSCall;
 @property (strong, nonatomic) YHWebViewProgressView *progressView;
 
@@ -64,6 +73,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
         _isScrollEnabled = YES;
         _isEnableApi = YES;
         _isTransparency = NO;
+        _isHiddenDone = NO;
         _isHeightChanged = [events containsObject:@"heightChanged"];
         _isReceiveMessage = [events containsObject:@"receiveMessage"];
 
@@ -103,6 +113,33 @@ WX_EXPORT_METHOD(@selector(goForward:))
     return [[eeuiWKWebView alloc] init];
 }
 
+// 去掉 WkWebviewe Done 工具栏
+- (void) hideWKWebviewKeyboardShortcutBar:(WKWebView *)webView {
+    UIView *targetView;
+    
+    for (UIView *view in webView.scrollView.subviews) {
+        if([[view.class description] hasPrefix:@"WKContent"]) {
+            targetView = view;
+        }
+    }
+    if (!targetView) {
+        return;
+    }
+    NSString *noInputAccessoryViewClassName = [NSString stringWithFormat:@"%@_NoInputAccessoryView", targetView.class.superclass];
+    Class newClass = NSClassFromString(noInputAccessoryViewClassName);
+    
+    if(newClass == nil) {
+        newClass = objc_allocateClassPair(targetView.class, [noInputAccessoryViewClassName cStringUsingEncoding:NSASCIIStringEncoding], 0);
+        if(!newClass) {
+            return;
+        }
+        Method method = class_getInstanceMethod([_NoInputAccessoryView class], @selector(inputAccessoryView));
+        class_addMethod(newClass, @selector(inputAccessoryView), method_getImplementation(method), method_getTypeEncoding(method));
+        objc_registerClassPair(newClass);
+    }
+    object_setClass(targetView, newClass);
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -118,6 +155,10 @@ WX_EXPORT_METHOD(@selector(goForward:))
     if (_isTransparency) {
         webView.opaque = NO;
         webView.backgroundColor = [UIColor clearColor];
+    }
+    
+    if (_isHiddenDone) {
+        [self hideWKWebviewKeyboardShortcutBar: webView];
     }
 
     ((UIScrollView *)[webView.subviews objectAtIndex:0]).scrollEnabled = _isScrollEnabled;
@@ -251,6 +292,11 @@ WX_EXPORT_METHOD(@selector(goForward:))
         _isTransparency = [WXConvert BOOL:value];
         if (isUpdate) {
             [self setTransparency:_isTransparency];
+        }
+    } else if ([key isEqualToString:@"hiddenDone"]) {
+        _isHiddenDone = [WXConvert BOOL:value];
+        if (isUpdate) {
+            [self setHiddenDone:_isHiddenDone];
         }
     }
 }
@@ -393,6 +439,17 @@ WX_EXPORT_METHOD(@selector(goForward:))
     }else{
         webView.opaque = YES;
         webView.backgroundColor = [UIColor whiteColor];
+    }
+}
+
+//隐藏键盘done部分（仅支持ios，android无效）
+- (void)setHiddenDone:(BOOL)var
+{
+    eeuiWKWebView *webView = (eeuiWKWebView*)self.view;
+    if (var) {
+        [self hideWKWebviewKeyboardShortcutBar: webView];
+    }else{
+        //不支持恢复
     }
 }
 

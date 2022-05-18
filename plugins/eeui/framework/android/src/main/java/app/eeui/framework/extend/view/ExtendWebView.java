@@ -548,6 +548,14 @@ public class ExtendWebView extends WebView {
     }
 
     /**
+     * 隐藏键盘done部分（仅支持ios，android无效）
+     * @param hiddenDone
+     */
+    public void setHiddenDone(boolean hiddenDone) {
+        //
+    }
+
+    /**
      * 监听状态变化
      * @param call
      */

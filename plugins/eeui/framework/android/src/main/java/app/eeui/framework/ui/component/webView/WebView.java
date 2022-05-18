@@ -174,6 +174,12 @@ public class WebView extends WXVContainer<ViewGroup> {
                 }
                 return true;
 
+            case "hiddenDone":
+                if (v_webview != null) {
+                    v_webview.setHiddenDone(eeuiParse.parseBool(val, false));
+                }
+                return true;
+
             default:
                 return false;
         }
