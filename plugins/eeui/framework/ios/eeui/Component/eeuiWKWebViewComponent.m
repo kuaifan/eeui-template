@@ -97,11 +97,20 @@ WX_EXPORT_METHOD(@selector(goForward:))
         eeuiStorageManager *storage = [eeuiStorageManager sharedIntstance];
         originalUserAgent = [storage getCachesString:@"__system:originalUserAgent" defaultVal:@""];
         if (![originalUserAgent containsString:@";ios_kuaifan_eeui/"]) {
-            UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-            NSString *oldAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"] ?:@"";
-            NSString *versionName = (NSString*)[[[NSBundle mainBundle] infoDictionary]  objectForKey:@"CFBundleShortVersionString"];
-            originalUserAgent = [NSString stringWithFormat:@"%@;ios_kuaifan_eeui/%@", oldAgent, versionName];
-            [storage setCachesString:@"__system:originalUserAgent" value:originalUserAgent expired:0];
+            __block WKWebView *wkWebView = [[WKWebView alloc] initWithFrame:CGRectZero];
+            [wkWebView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+                wkWebView = nil;
+                if (!error) {
+                    NSString *versionName = (NSString*)[[[NSBundle mainBundle] infoDictionary]  objectForKey:@"CFBundleShortVersionString"];
+                    originalUserAgent = [NSString stringWithFormat:@"%@;ios_kuaifan_eeui/%@", result, versionName];
+                    if (self->_userAgent.length > 0) {
+                        originalUserAgent = [NSString stringWithFormat:@"%@/%@", originalUserAgent, self->_userAgent];
+                    }
+                    [storage setCachesString:@"__system:originalUserAgent" value:originalUserAgent expired:0];
+                    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:originalUserAgent, @"UserAgent", nil];
+                    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+                }
+            }];
         }
         if (_userAgent.length > 0) {
             originalUserAgent = [NSString stringWithFormat:@"%@/%@", originalUserAgent, _userAgent];
@@ -116,7 +125,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
 // 去掉 WkWebviewe Done 工具栏
 - (void) hideWKWebviewKeyboardShortcutBar:(WKWebView *)webView {
     UIView *targetView;
-    
+
     for (UIView *view in webView.scrollView.subviews) {
         if([[view.class description] hasPrefix:@"WKContent"]) {
             targetView = view;
@@ -127,7 +136,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
     }
     NSString *noInputAccessoryViewClassName = [NSString stringWithFormat:@"%@_NoInputAccessoryView", targetView.class.superclass];
     Class newClass = NSClassFromString(noInputAccessoryViewClassName);
-    
+
     if(newClass == nil) {
         newClass = objc_allocateClassPair(targetView.class, [noInputAccessoryViewClassName cStringUsingEncoding:NSASCIIStringEncoding], 0);
         if(!newClass) {
@@ -156,7 +165,7 @@ WX_EXPORT_METHOD(@selector(goForward:))
         webView.opaque = NO;
         webView.backgroundColor = [UIColor clearColor];
     }
-    
+
     if (_isHiddenDone) {
         [self hideWKWebviewKeyboardShortcutBar: webView];
     }
