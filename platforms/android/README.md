@@ -10,3 +10,18 @@
 注：
 
 * 可能您第一次构建的时间太长您也可以尝试[解决 Android Studio 第一次导入项目太慢](https://www.jianshu.com/p/ba8189146a6b)。实在不行就请耐心等待 Android Studio 自己构建完成吧
+
+
+## 常见问题
+
+Android Studio 同步项目时，可能会遇到以下问题：
+
+```
+Caused by: org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:
+```
+
+解决方法：
+
+File -> Setting -> Build -> Build Tools -> Gradle -> `Gradle JDK` 选择`15或以下`的版本。（比如：azul-15、azul-11 都是试过可以的）
+
+```
